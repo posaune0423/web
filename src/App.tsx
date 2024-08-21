@@ -1,22 +1,22 @@
-import { useQuerySync } from "@dojoengine/react";
-import { PixelViewer } from "./components/PixelViewer";
-import { useDojo } from "@/libs/dojo/useDojo";
-import { Header } from "./components/Header";
+import { useQuerySync } from '@dojoengine/react'
+import { PixelViewer } from './components/PixelViewer'
+import { useDojo } from '@/libs/dojo/useDojo'
+import { Header } from './components/Header'
 
 function App() {
   const {
     setup: { contractComponents, toriiClient },
     account: { account },
-  } = useDojo();
+  } = useDojo()
 
-  useQuerySync(toriiClient, contractComponents as any, []);
+  useQuerySync(toriiClient, contractComponents as any, [])
 
   return (
     <main>
       <Header account={account} />
       <PixelViewer />
     </main>
-  );
+  )
 }
 
-export default App;
+export default App
