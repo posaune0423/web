@@ -1,12 +1,12 @@
-import Spinner from "../Spinner"
-import EmojiAvatar from "./EmojiAvatar"
-import { cn } from "@/utils"
+import Spinner from "../Spinner";
+import EmojiAvatar from "./EmojiAvatar";
+import { cn } from "@/utils";
 
 interface AvatarProps {
-  address: string
-  loading?: boolean
-  imageUrl?: string | null
-  size: number
+  address: string;
+  loading?: boolean;
+  imageUrl?: string | null;
+  size: number;
 }
 
 const Avatar = ({ address, loading, imageUrl, size }: AvatarProps) => {
@@ -35,7 +35,7 @@ const Avatar = ({ address, loading, imageUrl, size }: AvatarProps) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Avatar
+export default Avatar;

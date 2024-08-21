@@ -1,11 +1,11 @@
-import React from "react"
-import { COLOR_PALETTE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR } from "./const"
-import { usePixelViewer } from "./hooks"
-import { type Color } from "./types"
+import React from "react";
+import { COLOR_PALETTE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR } from "./const";
+import { usePixelViewer } from "./hooks";
+import { type Color } from "./types";
 
 interface PixelViewerProps {
-  backgroundColor?: Color
-  gridColor?: Color
+  backgroundColor?: Color;
+  gridColor?: Color;
 }
 
 const PixelViewer: React.FC<PixelViewerProps> = ({
@@ -23,7 +23,7 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
     handleMouseMove,
     handleMouseUp,
     handleWheel,
-  } = usePixelViewer(backgroundColor, gridColor)
+  } = usePixelViewer(backgroundColor, gridColor);
 
   return (
     <div className="relative h-full w-full">
@@ -58,7 +58,7 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { PixelViewer }
+export { PixelViewer };

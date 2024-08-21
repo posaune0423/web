@@ -1,27 +1,27 @@
-import React from "react"
-import ReactDOM from "react-dom/client"
-import App from "./App.tsx"
-import "./index.css"
-import { setup } from "@/libs/dojo/generated/setup.ts"
-import { DojoProvider } from "@/libs/dojo/DojoContext.tsx"
-import { dojoConfig } from "../dojoConfig.ts"
-import { ThemeProvider } from "./components/ThemeProvider.tsx"
-import { Toaster } from "./components/ui/sonner.tsx"
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+import { setup } from "@/libs/dojo/generated/setup.ts";
+import { DojoProvider } from "@/libs/dojo/DojoContext.tsx";
+import { dojoConfig } from "../dojoConfig.ts";
+import { ThemeProvider } from "./components/ThemeProvider.tsx";
+import { Toaster } from "./components/ui/sonner.tsx";
 
 async function init() {
-  const rootElement = document.getElementById("root")
-  if (!rootElement) throw new Error("React root not found")
-  const root = ReactDOM.createRoot(rootElement as HTMLElement)
+  const rootElement = document.getElementById("root");
+  if (!rootElement) throw new Error("React root not found");
+  const root = ReactDOM.createRoot(rootElement as HTMLElement);
 
-  const setupResult = await setup(dojoConfig)
+  const setupResult = await setup(dojoConfig);
 
   if (!setupResult) {
     root.render(
       <div className="bg-black/90 flex h-screen items-center justify-center text-xl text-white">
         Loading...
       </div>,
-    )
-    return
+    );
+    return;
   }
 
   root.render(
@@ -33,7 +33,7 @@ async function init() {
         </DojoProvider>
       </ThemeProvider>
     </React.StrictMode>,
-  )
+  );
 }
 
-init()
+init();

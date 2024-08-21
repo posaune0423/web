@@ -1,10 +1,10 @@
-import { type Config } from "tailwindcss"
-import { cn } from "@/utils"
+import { type Config } from "tailwindcss";
+import { cn } from "@/utils";
 
 interface SpinnerProps {
-  size?: number
-  color?: Config["color"]
-  className?: string
+  size?: number;
+  color?: Config["color"];
+  className?: string;
 }
 
 const Spinner = ({ size = 4, color = "primary", className }: SpinnerProps) => {
@@ -32,7 +32,7 @@ const Spinner = ({ size = 4, color = "primary", className }: SpinnerProps) => {
       </svg>
       <span className="sr-only">Loading...</span>
     </div>
-  )
-}
+  );
+};
 
-export default Spinner
+export default Spinner;
