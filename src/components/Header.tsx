@@ -19,10 +19,7 @@ const Header = ({ account }: { account: Account }) => {
     account: { select, list, create, remove, isDeploying },
   } = useDojo();
 
-  const otherBurnerAccounts = useMemo(
-    () => list().filter((a) => a.address !== account.address),
-    [account, list],
-  );
+  const otherBurnerAccounts = useMemo(() => list().filter((a) => a.address !== account.address), [account, list]);
 
   const onSelect = (e: React.MouseEvent<HTMLDivElement>, address: string) => {
     e.preventDefault();
@@ -40,7 +37,7 @@ const Header = ({ account }: { account: Account }) => {
   };
 
   return (
-    <header className="bg-primary h-[50px] w-full flex items-center justify-between p-4">
+    <header className="bg-slate-900 h-[50px] w-full flex items-center justify-between p-4">
       <h1 className="text-white text-lg font-bold">
         <img src="logo.png" alt="PixeLAW" className="object-contain h-10" />
       </h1>

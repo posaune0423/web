@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 @layer base {
   :root {
@@ -62,6 +65,7 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: 'Silkscreen', sans-serif;
   }
   body {
     @apply bg-background text-foreground;

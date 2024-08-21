@@ -1,6 +1,6 @@
 import { startTransition, useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
-import { BASE_CELL_SIZE, COLOR_PALETTE, DEFAULT_GRID_DIMENSIONS, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "./const";
-import { ColoredCell, type Color, type GridDimensions, type GridState, type ProgramInfo } from "./types";
+import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "./const";
+import { ColoredCell, type Color, type GridState, type ProgramInfo } from "./types";
 import { initShaderProgram } from "./webgl";
 import { useDojo } from "@/libs/dojo/useDojo";
 import { hexToRgba, rgbaToHex } from "@/utils";
@@ -17,10 +17,10 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const glRef = useRef<WebGLRenderingContext | null>(null);
   const programInfoRef = useRef<ProgramInfo | null>(null);
   const positionBufferRef = useRef<WebGLBuffer | null>(null);
+  const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number } | null>(null);
 
   // States
   const [gridState, setGridState] = useState<GridState>({ offsetX: 0, offsetY: 0, scale: 1 });
-  const [gridDimensions] = useState<GridDimensions>(DEFAULT_GRID_DIMENSIONS);
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
 
   const {
@@ -44,7 +44,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
             color: hexToRgba(data.color),
           };
         })
-        .filter((pixel) => pixel !== undefined),
+        .filter((pixel): pixel is ColoredCell => pixel !== undefined),
     [pixelEntities, Pixel]
   );
 
@@ -53,6 +53,19 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   });
 
   // Handlers
+  const updateCurrentMousePos = useCallback(
+    (canvasX: number, canvasY: number) => {
+      const worldX = gridState.offsetX + canvasX / gridState.scale;
+      const worldY = gridState.offsetY + canvasY / gridState.scale;
+
+      const cellX = Math.floor(worldX / BASE_CELL_SIZE);
+      const cellY = Math.floor(worldY / BASE_CELL_SIZE);
+
+      setCurrentMousePos({ x: cellX, y: cellY });
+    },
+    [gridState]
+  );
+
   const drawGrid = useCallback(() => {
     const gl = glRef.current;
     const programInfo = programInfoRef.current;
@@ -75,8 +88,8 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
     const startX = Math.max(0, Math.floor(gridState.offsetX / BASE_CELL_SIZE) * BASE_CELL_SIZE);
     const startY = Math.max(0, Math.floor(gridState.offsetY / BASE_CELL_SIZE) * BASE_CELL_SIZE);
-    const endX = Math.min(gridDimensions.width, startX + visibleWidth + BASE_CELL_SIZE);
-    const endY = Math.min(gridDimensions.height, startY + visibleHeight + BASE_CELL_SIZE);
+    const endX = startX + visibleWidth + BASE_CELL_SIZE;
+    const endY = startY + visibleHeight + BASE_CELL_SIZE;
 
     // Draw colored cells
     optimisticPixels.forEach((pixel) => {
@@ -96,11 +109,11 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     const positions: number[] = [];
 
     for (let x = startX; x <= endX; x += BASE_CELL_SIZE) {
-      positions.push(x, 0, x, gridDimensions.height);
+      positions.push(x, startY, x, endY);
     }
 
     for (let y = startY; y <= endY; y += BASE_CELL_SIZE) {
-      positions.push(0, y, gridDimensions.width, y);
+      positions.push(startX, y, endX, y);
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBufferRef.current);
@@ -110,42 +123,24 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     gl.vertexAttribPointer(programInfo.attribLocations.position, 2, gl.FLOAT, false, 0, 0);
 
     gl.drawArrays(gl.LINES, 0, positions.length / 2);
-  }, [gridState, backgroundColor, gridColor, gridDimensions, optimisticPixels]);
+  }, [gridState, backgroundColor, gridColor, optimisticPixels]);
 
-  const getMinScale = useCallback(
-    (canvasWidth: number, canvasHeight: number): number => {
-      const scaleX = canvasWidth / gridDimensions.width;
-      const scaleY = canvasHeight / gridDimensions.height;
-      return Math.max(scaleX, scaleY, MIN_SCALE);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent<HTMLCanvasElement>) => {
+      const touch = e.touches[0];
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      updateCurrentMousePos(x, y);
+      touchStartPosRef.current = { x, y };
+      lastTouchPosRef.current = { x: touch.clientX, y: touch.clientY };
     },
-    [gridDimensions]
+    [updateCurrentMousePos]
   );
-
-  const getMaxOffset = useCallback(
-    (scale: number, canvasWidth: number, canvasHeight: number): { maxOffsetX: number; maxOffsetY: number } => {
-      const visibleWidth = canvasWidth / scale;
-      const visibleHeight = canvasHeight / scale;
-
-      const maxOffsetX = Math.max(0, gridDimensions.width - visibleWidth);
-      const maxOffsetY = Math.max(0, gridDimensions.height - visibleHeight);
-
-      return { maxOffsetX, maxOffsetY };
-    },
-    [gridDimensions]
-  );
-
-  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
-    const touch = e.touches[0];
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
-
-    touchStartPosRef.current = { x, y };
-    lastTouchPosRef.current = { x: touch.clientX, y: touch.clientY };
-  }, []);
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent<HTMLCanvasElement>) => {
@@ -157,6 +152,10 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       const x = touch.clientX - rect.left;
       const y = touch.clientY - rect.top;
 
+      startTransition(() => {
+        updateCurrentMousePos(x, y);
+      });
+
       const dx = x - touchStartPosRef.current.x;
       const dy = y - touchStartPosRef.current.y;
 
@@ -165,20 +164,15 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       }
 
       if (isDraggingRef.current) {
-        setGridState((prev) => {
-          const newOffsetX = prev.offsetX - dx / prev.scale;
-          const newOffsetY = prev.offsetY - dy / prev.scale;
-          const { maxOffsetX, maxOffsetY } = getMaxOffset(prev.scale, canvas.width, canvas.height);
-          return {
-            ...prev,
-            offsetX: Math.max(0, Math.min(maxOffsetX, newOffsetX)),
-            offsetY: Math.max(0, Math.min(maxOffsetY, newOffsetY)),
-          };
-        });
+        setGridState((prev) => ({
+          ...prev,
+          offsetX: prev.offsetX - dx / prev.scale,
+          offsetY: prev.offsetY - dy / prev.scale,
+        }));
         touchStartPosRef.current = { x, y };
       }
     },
-    [getMaxOffset]
+    [updateCurrentMousePos]
   );
 
   const handleTouchEnd = useCallback(
@@ -230,11 +224,17 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     (e: React.MouseEvent<HTMLCanvasElement>) => {
       e.preventDefault();
       const canvas = canvasRef.current;
-      if (!canvas || !mouseDownPosRef.current) return;
+      if (!canvas) return;
 
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
+
+      startTransition(() => {
+        updateCurrentMousePos(x, y);
+      });
+
+      if (!mouseDownPosRef.current) return;
 
       const dx = x - mouseDownPosRef.current.x;
       const dy = y - mouseDownPosRef.current.y;
@@ -244,21 +244,16 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       }
 
       if (isDraggingRef.current) {
-        setGridState((prev) => {
-          const newOffsetX = prev.offsetX - dx / prev.scale;
-          const newOffsetY = prev.offsetY - dy / prev.scale;
-          const { maxOffsetX, maxOffsetY } = getMaxOffset(prev.scale, canvas.width, canvas.height);
-          return {
-            ...prev,
-            offsetX: Math.max(0, Math.min(maxOffsetX, newOffsetX)),
-            offsetY: Math.max(0, Math.min(maxOffsetY, newOffsetY)),
-          };
-        });
+        setGridState((prev) => ({
+          ...prev,
+          offsetX: Math.max(0, prev.offsetX - dx / prev.scale),
+          offsetY: Math.max(0, prev.offsetY - dy / prev.scale),
+        }));
 
         mouseDownPosRef.current = { x, y };
       }
     },
-    [getMaxOffset]
+    [updateCurrentMousePos]
   );
 
   const handleMouseUp = useCallback(
@@ -306,68 +301,59 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
       setGridState((prev) => {
         const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-        const newScale = Math.max(
-          getMinScale(canvas.width, canvas.height),
-          Math.min(MAX_SCALE, prev.scale * zoomFactor)
-        );
+        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * zoomFactor));
 
         const worldX = prev.offsetX + x / prev.scale;
         const worldY = prev.offsetY + y / prev.scale;
 
-        const newOffsetX = worldX - x / newScale;
-        const newOffsetY = worldY - y / newScale;
-
-        const { maxOffsetX, maxOffsetY } = getMaxOffset(newScale, canvas.width, canvas.height);
+        const newOffsetX = Math.max(0, worldX - x / newScale);
+        const newOffsetY = Math.max(0, worldY - y / newScale);
 
         return {
-          offsetX: Math.max(0, Math.min(maxOffsetX, newOffsetX)),
-          offsetY: Math.max(0, Math.min(maxOffsetY, newOffsetY)),
+          offsetX: newOffsetX,
+          offsetY: newOffsetY,
           scale: newScale,
         };
       });
-    },
-    [getMaxOffset, getMinScale]
-  );
 
-  const handlePinchZoom = useCallback(
-    (e: TouchEvent) => {
-      if (e.touches.length !== 2) return;
-
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
-
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const centerX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-      const centerY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-
-      setGridState((prev) => {
-        const newScale = Math.max(
-          getMinScale(canvas.width, canvas.height),
-          Math.min(MAX_SCALE, prev.scale * (dist / (prev.lastPinchDist || dist)))
-        );
-
-        const worldCenterX = prev.offsetX + centerX / prev.scale;
-        const worldCenterY = prev.offsetY + centerY / prev.scale;
-
-        const newOffsetX = worldCenterX - centerX / newScale;
-        const newOffsetY = worldCenterY - centerY / newScale;
-
-        const { maxOffsetX, maxOffsetY } = getMaxOffset(newScale, canvas.width, canvas.height);
-
-        return {
-          offsetX: Math.max(0, Math.min(maxOffsetX, newOffsetX)),
-          offsetY: Math.max(0, Math.min(maxOffsetY, newOffsetY)),
-          scale: newScale,
-          lastPinchDist: dist,
-        };
+      startTransition(() => {
+        updateCurrentMousePos(x, y);
       });
     },
-    [getMaxOffset, getMinScale]
+    [updateCurrentMousePos]
   );
+
+  const handlePinchZoom = useCallback((e: TouchEvent) => {
+    if (e.touches.length !== 2) return;
+
+    const touch1 = e.touches[0];
+    const touch2 = e.touches[1];
+    const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const centerX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+    const centerY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+
+    setGridState((prev) => {
+      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * (dist / (prev.lastPinchDist || dist))));
+
+      const worldCenterX = prev.offsetX + centerX / prev.scale;
+      const worldCenterY = prev.offsetY + centerY / prev.scale;
+
+      const newOffsetX = worldCenterX - centerX / newScale;
+      const newOffsetY = worldCenterY - centerY / newScale;
+
+      return {
+        offsetX: newOffsetX,
+        offsetY: newOffsetY,
+        scale: newScale,
+        lastPinchDist: dist,
+      };
+    });
+  }, []);
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -383,19 +369,50 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       canvas.width = displayWidth;
       canvas.height = displayHeight;
       gl.viewport(0, 0, canvas.width, canvas.height);
-
-      setGridState((prev) => {
-        const minScale = getMinScale(canvas.width, canvas.height);
-        const newScale = Math.max(minScale, prev.scale);
-        const { maxOffsetX, maxOffsetY } = getMaxOffset(newScale, canvas.width, canvas.height);
-        return {
-          offsetX: Math.min(prev.offsetX, maxOffsetX),
-          offsetY: Math.min(prev.offsetY, maxOffsetY),
-          scale: newScale,
-        };
-      });
     }
-  }, [getMaxOffset, getMinScale]);
+  }, []);
+
+  const animateJumpToCell = useCallback(
+    (x: number, y: number, duration: number = 500) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+
+      const startTime = Date.now();
+      const startOffsetX = gridState.offsetX;
+      const startOffsetY = gridState.offsetY;
+
+      const targetOffsetX = Math.max(0, x * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasWidth / (2 * gridState.scale));
+      const targetOffsetY = Math.max(0, y * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasHeight / (2 * gridState.scale));
+
+      const animateFrame = () => {
+        const elapsedTime = Date.now() - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+
+        // イージング関数（オプション：スムーズな動きにする）
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+        setGridState((prev) => ({
+          ...prev,
+          offsetX: startOffsetX + (targetOffsetX - startOffsetX) * easeProgress,
+          offsetY: startOffsetY + (targetOffsetY - startOffsetY) * easeProgress,
+        }));
+
+        if (progress < 1) {
+          requestAnimationFrame(animateFrame);
+        } else {
+          startTransition(() => {
+            setCurrentMousePos({ x, y });
+          });
+        }
+      };
+
+      requestAnimationFrame(animateFrame);
+    },
+    [gridState, setCurrentMousePos]
+  );
 
   const animate = useCallback(() => {
     resizeCanvas();
@@ -447,11 +464,12 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       window.removeEventListener("resize", resizeCanvas);
       canvas.removeEventListener("touchmove", handlePinchZoom);
     };
-  }, [drawGrid, getMaxOffset, getMinScale, handlePinchZoom, resizeCanvas, animate]);
+  }, [handlePinchZoom, resizeCanvas, animate]);
 
   return {
     canvasRef,
     selectedColor,
+    currentMousePos,
     setSelectedColor,
     handleTouchStart,
     handleTouchMove,
@@ -460,5 +478,6 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     handleMouseMove,
     handleMouseUp,
     handleWheel,
+    animateJumpToCell,
   };
 };

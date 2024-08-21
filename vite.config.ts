@@ -7,14 +7,7 @@ import { viteEnvs } from "vite-envs";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    wasm(),
-    topLevelAwait(),
-    viteEnvs({
-      declarationFile: ".env.dev",
-    }),
-  ],
+  plugins: [react(), wasm(), topLevelAwait(), viteEnvs()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
