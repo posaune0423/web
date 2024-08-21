@@ -26,7 +26,6 @@
     "@radix-ui/react-slot": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "graphql": "^16.9.0",
     "lucide-react": "^0.428.0",
     "next-themes": "^0.3.0",
     "react": "^19.0.0-rc-fb9a90fa48-20240614",
@@ -39,13 +38,7 @@
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {
-    "@0no-co/graphqlsp": "^1.12.13",
     "@eslint/js": "^9.9.0",
-    "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/client-preset": "4.3.3",
-    "@graphql-codegen/schema-ast": "^4.1.0",
-    "@graphql-codegen/typescript-graphql-request": "^6.2.0",
-    "@parcel/watcher": "^2.4.1",
     "@types/node": "^22.4.2",
     "@types/react": "npm:types-react@rc",
     "@types/react-dom": "npm:types-react-dom@rc",
