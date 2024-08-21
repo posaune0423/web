@@ -1,15 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, DEFAULT_GRID_DIMENSIONS, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "./const";
 import { ColoredCell, type Color, type GridDimensions, type GridState, type ProgramInfo } from "./types";
 import { initShaderProgram } from "./webgl";
 import { useDojo } from "@/libs/dojo/useDojo";
-import { hexToRgba, parsePixels, rgbaToHex } from "@/utils";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { request } from "graphql-request";
-import { GetPixelsDocument } from "@/libs/graphql/graphql";
-import { Account } from "starknet";
-import { DefaultParams } from "@/libs/dojo/generated/generated";
-import { dojoConfig } from "../../../dojoConfig";
+import { hexToRgba, rgbaToHex } from "@/utils";
+import { useEntityQuery } from "@dojoengine/react";
+import { getComponentValue, Has } from "@dojoengine/recs";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -24,53 +20,33 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const [gridState, setGridState] = useState<GridState>({ offsetX: 0, offsetY: 0, scale: 1 });
   const [gridDimensions] = useState<GridDimensions>(DEFAULT_GRID_DIMENSIONS);
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
-  const [localPixels, setLocalPixels] = useState<ColoredCell[]>([]);
 
   const {
     setup: {
-      systemCalls,
+      systemCalls: { interact },
       burnerManager: { account: burnerAccount },
+      contractComponents: { Pixel },
     },
   } = useDojo();
 
-  const queryClient = useQueryClient();
-
-  const { data } = useQuery({
-    queryKey: ["getPixels"],
-    queryFn: async () =>
-      request(dojoConfig.toriiUrl + "/graphql", GetPixelsDocument, {
-        first: 50000,
-        where: {
-          xGTE: 0,
-          xLTE: DEFAULT_GRID_DIMENSIONS.width,
-          yGTE: 0,
-          yLTE: DEFAULT_GRID_DIMENSIONS.height,
-        },
-      }),
-    // refetchInterval: 5000,
-  });
-
-  const { mutate: interact } = useMutation({
-    mutationFn: async ({ account, params }: { account: Account; params: Pick<DefaultParams, "x" | "y" | "color"> }) => {
-      await systemCalls.interact(account, params);
-    },
-    onMutate: async ({ params }) => {
-      // Optimistically update the local state
-      setLocalPixels((prev) => [...prev, { x: params.x, y: params.y, color: hexToRgba(params.color) }]);
-    },
-    onSettled: async () => {
-      const INTERVAL_BLOCK_UPDATE = 400;
-      setTimeout(async () => {
-        await queryClient.invalidateQueries({ queryKey: ["getPixels"] });
-      }, INTERVAL_BLOCK_UPDATE);
-    },
-  });
-
+  const pixelEntities = useEntityQuery([Has(Pixel)]);
   const pixels = useMemo(() => {
-    const parsedPixels = parsePixels(data);
-    console.log("update pixels");
-    return [...parsedPixels, ...localPixels];
-  }, [data, localPixels]);
+    return pixelEntities
+      .map((entity) => {
+        const data = getComponentValue(Pixel, entity);
+        if (!data) return;
+        return {
+          x: data.x,
+          y: data.y,
+          color: hexToRgba(data.color),
+        };
+      })
+      .filter((pixel) => pixel !== undefined);
+  }, [pixelEntities, Pixel]);
+
+  const [optimisticPixels, setOptimisticPixels] = useOptimistic(pixels, (pixels, newPixel: ColoredCell) => {
+    return [...pixels, newPixel];
+  });
 
   const drawGrid = useCallback(() => {
     const gl = glRef.current;
@@ -98,11 +74,11 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     const endY = Math.min(gridDimensions.height, startY + visibleHeight + BASE_CELL_SIZE);
 
     // Draw colored cells
-    pixels.forEach((cell) => {
-      const x = cell.x * BASE_CELL_SIZE;
-      const y = cell.y * BASE_CELL_SIZE;
+    optimisticPixels.forEach((pixel) => {
+      const x = pixel.x * BASE_CELL_SIZE;
+      const y = pixel.y * BASE_CELL_SIZE;
       if (x >= startX && x < endX && y >= startY && y < endY) {
-        gl.uniform4f(programInfo.uniformLocations.color, cell.color.r, cell.color.g, cell.color.b, cell.color.a);
+        gl.uniform4f(programInfo.uniformLocations.color, pixel.color.r, pixel.color.g, pixel.color.b, pixel.color.a);
         const positions = [x, y, x + BASE_CELL_SIZE, y, x, y + BASE_CELL_SIZE, x + BASE_CELL_SIZE, y + BASE_CELL_SIZE];
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBufferRef.current);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
@@ -129,7 +105,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     gl.vertexAttribPointer(programInfo.attribLocations.position, 2, gl.FLOAT, false, 0, 0);
 
     gl.drawArrays(gl.LINES, 0, positions.length / 2);
-  }, [gridState, backgroundColor, gridColor, pixels, gridDimensions]);
+  }, [gridState, backgroundColor, gridColor, gridDimensions, optimisticPixels]);
 
   const getMinScale = useCallback(
     (canvasWidth: number, canvasHeight: number): number => {
@@ -221,15 +197,15 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
           return;
         }
 
-        interact({
-          account: burnerAccount,
-          params: { x: cellX, y: cellY, color: rgbaToHex(selectedColor) },
+        startTransition(async () => {
+          setOptimisticPixels({ x: cellX, y: cellY, color: selectedColor });
+          await interact(burnerAccount, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
         });
       }
 
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, burnerAccount, interact]
+    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels]
   );
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -302,16 +278,16 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
           return;
         }
 
-        interact({
-          account: burnerAccount,
-          params: { x: cellX, y: cellY, color: rgbaToHex(selectedColor) },
+        startTransition(async () => {
+          setOptimisticPixels({ x: cellX, y: cellY, color: selectedColor });
+          await interact(burnerAccount, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
         });
       }
 
       mouseDownPosRef.current = null;
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, burnerAccount, interact]
+    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels]
   );
 
   const handleWheel = useCallback(

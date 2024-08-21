@@ -5,7 +5,6 @@ import "./index.css";
 import { setup } from "@/libs/dojo/generated/setup.ts";
 import { DojoProvider } from "@/libs/dojo/DojoContext.tsx";
 import { dojoConfig } from "../dojoConfig.ts";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
 import { Toaster } from "./components/ui/sonner.tsx";
 
@@ -23,17 +22,13 @@ async function init() {
     return;
   }
 
-  const queryClient = new QueryClient();
-
   root.render(
     <React.StrictMode>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <QueryClientProvider client={queryClient}>
-          <DojoProvider value={setupResult}>
-            <App />
-            <Toaster richColors position="bottom-right" />
-          </DojoProvider>
-        </QueryClientProvider>
+        <DojoProvider value={setupResult}>
+          <App />
+          <Toaster richColors position="bottom-right" />
+        </DojoProvider>
       </ThemeProvider>
     </React.StrictMode>
   );
