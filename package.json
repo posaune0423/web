@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "preview": "vite preview",
     "codegen": "graphql-codegen --config codegen.ts",
     "components": "npx @dojoengine/core ../core/contracts/manifests/dev/deployment/manifest.json src/dojo/generated/contractComponents.ts http://localhost:5050 0x10bbde7919b063a353fc2c6148555434cd8a7be8d5cbfdcd06ef63787b58838"
