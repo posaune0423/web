@@ -1,5 +1,5 @@
 import { type Account } from "starknet";
-import { dojoConfig } from "../../dojoConfig";
+import { dojoConfig } from "../../../dojoConfig";
 import { createBurner } from "./createBurner";
 import { setup } from "./generated/setup";
 import { world as recsWorld } from "./world";

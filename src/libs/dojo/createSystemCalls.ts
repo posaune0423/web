@@ -8,8 +8,8 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { client }: { client: IWorld },
-  contractComponents: ContractComponents,
-  clientComponents: ClientComponents,
+  _contractComponents: ContractComponents,
+  _clientComponents: ClientComponents
 ) {
   const initCore = async (account: Account | AccountInterface) => {
     try {
@@ -37,10 +37,7 @@ export function createSystemCalls(
     }
   };
 
-  const interact = async (
-    account: Account | AccountInterface,
-    params: Pick<DefaultParams, "x" | "y" | "color">,
-  ) => {
+  const interact = async (account: Account | AccountInterface, params: Pick<DefaultParams, "x" | "y" | "color">) => {
     console.log("interact", params);
     try {
       await client.actions.interact(account, { ...params });

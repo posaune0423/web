@@ -58,7 +58,7 @@ const Header = ({ account }: { account: Account }) => {
             <DropdownMenuItem
               onClick={(e) => onSelect(e, account.address)}
               key={account.address}
-              className="cursor-pointer flex justify-between"
+              className="cursor-pointer flex justify-between items-center"
             >
               {truncateAddress(account.address)}
               <Trash2 size={16} color="red" onClick={(e) => onDelete(e, account.address)} />

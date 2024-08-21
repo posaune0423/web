@@ -35,7 +35,7 @@ export interface UpdatePixelProps {
 }
 
 const handleError = (action: string, error: unknown) => {
-  // console.error(`Error executing ${action}:`, error);
+  console.error(`Error executing ${action}:`, error);
   const errorMessage = handleTransactionError(error);
   console.info(errorMessage);
   toast.error(errorMessage);
