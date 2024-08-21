@@ -104,6 +104,7 @@ export async function setupWorld(provider: DojoProvider) {
       }
     },
     interact: async (account: Account | AccountInterface, params: DefaultParams) => {
+      console.log("interact", params);
       try {
         return await provider.execute(
           account,

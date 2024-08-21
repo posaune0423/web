@@ -1,11 +1,11 @@
-import React from 'react'
-import { COLOR_PALETTE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR } from './const'
-import { usePixelViewer } from './hooks'
-import { type Color } from './types'
+import React from "react";
+import { COLOR_PALETTE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR } from "./const";
+import { usePixelViewer } from "./hooks";
+import { type Color } from "./types";
 
 interface PixelViewerProps {
-  backgroundColor?: Color
-  gridColor?: Color
+  backgroundColor?: Color;
+  gridColor?: Color;
 }
 
 const PixelViewer: React.FC<PixelViewerProps> = ({
@@ -23,14 +23,14 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
     handleMouseMove,
     handleMouseUp,
     handleWheel,
-  } = usePixelViewer(backgroundColor, gridColor)
+  } = usePixelViewer(backgroundColor, gridColor);
 
   return (
-    <div className='relative h-screen w-full'>
+    <div className="relative h-screen w-full">
       <canvas
         ref={canvasRef}
-        className='fixed inset-x-0 bottom-[50px] top-0'
-        style={{ width: '100%', height: 'calc(100% - 50px)' }}
+        className="fixed inset-x-0 bottom-[50px] top-0"
+        style={{ width: "100%", height: "calc(100% - 50px)" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -39,12 +39,12 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
       />
-      <div className='bg-primary fixed inset-x-0 bottom-0 flex h-[50px] items-center justify-center space-x-8 shadow-md'>
-        <div className='flex items-center space-x-2'>
+      <div className="bg-primary fixed inset-x-0 bottom-0 flex h-[50px] items-center justify-center space-x-8 shadow-md">
+        <div className="flex items-center space-x-2">
           {COLOR_PALETTE.map((color, index) => (
             <button
               key={index}
-              className={`size-8 rounded-full ${selectedColor === color ? 'ring-2 ring-black ring-offset-2' : ''}`}
+              className={`size-8 rounded-full ${selectedColor === color ? "ring-2 ring-black ring-offset-2" : ""}`}
               style={{
                 backgroundColor: `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${color.a})`,
               }}
@@ -54,7 +54,7 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { PixelViewer }
+export { PixelViewer };

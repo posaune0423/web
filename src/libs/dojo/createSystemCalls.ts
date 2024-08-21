@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars -- for now */
-import { type AccountInterface } from "starknet";
+import { Account, type AccountInterface } from "starknet";
 import { type ClientComponents } from "./createClientComponents";
 import { type ContractComponents } from "./generated/contractComponents";
 import type { DefaultParams, IWorld, PixelUpdate } from "./generated/generated";
@@ -11,7 +11,7 @@ export function createSystemCalls(
   contractComponents: ContractComponents,
   clientComponents: ClientComponents
 ) {
-  const initCore = async (account: AccountInterface) => {
+  const initCore = async (account: Account | AccountInterface) => {
     try {
       await client.actions.initCore({
         account,
@@ -21,7 +21,7 @@ export function createSystemCalls(
     }
   };
 
-  const updatePixel = async (account: AccountInterface, pixelUpdate: PixelUpdate) => {
+  const updatePixel = async (account: Account | AccountInterface, pixelUpdate: PixelUpdate) => {
     try {
       await client.actions.updatePixel(account, pixelUpdate);
     } catch (e) {
@@ -29,7 +29,7 @@ export function createSystemCalls(
     }
   };
 
-  const initPaint = async (account: AccountInterface) => {
+  const initPaint = async (account: Account | AccountInterface) => {
     try {
       await client.actions.initPaint(account);
     } catch (e) {
@@ -37,7 +37,8 @@ export function createSystemCalls(
     }
   };
 
-  const interact = async (account: AccountInterface, params: Pick<DefaultParams, "x" | "y" | "color">) => {
+  const interact = async (account: Account | AccountInterface, params: Pick<DefaultParams, "x" | "y" | "color">) => {
+    console.log("interact", params);
     try {
       await client.actions.interact(account, { ...params });
     } catch (e) {

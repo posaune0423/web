@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { type Color } from "@/components/PixelViewer/types";
+import { GetPixelsQuery } from "@/libs/graphql/graphql";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -41,4 +42,14 @@ export const hexToRgba = (hex: number): Color => {
   const a = hex & 0xff;
 
   return { r, g, b, a };
+};
+
+export const parsePixels = (data: GetPixelsQuery | undefined) => {
+  return (
+    data?.pixelawPixelModels?.edges?.map((edge) => ({
+      x: edge?.node?.x,
+      y: edge?.node?.y,
+      color: hexToRgba(edge?.node?.color),
+    })) ?? []
+  );
 };

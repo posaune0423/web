@@ -1,9 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, DEFAULT_GRID_DIMENSIONS, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "./const";
-import { type Color, type ColoredCell, type GridDimensions, type GridState, type ProgramInfo } from "./types";
+import { type Color, type GridDimensions, type GridState, type ProgramInfo } from "./types";
 import { initShaderProgram } from "./webgl";
-import { useDojo } from "@/dojo/useDojo";
-import { rgbaToHex } from "@/utils";
+import { useDojo } from "@/libs/dojo/useDojo";
+import { parsePixels, rgbaToHex } from "@/utils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { request } from "graphql-request";
+import { GetPixelsDocument } from "@/libs/graphql/graphql";
+import { Account } from "starknet";
+import { DefaultParams } from "@/libs/dojo/generated/generated";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -17,15 +22,44 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
   const [gridState, setGridState] = useState<GridState>({ offsetX: 0, offsetY: 0, scale: 1 });
   const [gridDimensions] = useState<GridDimensions>(DEFAULT_GRID_DIMENSIONS);
-  const [coloredCells, setColoredCells] = useState<ColoredCell[]>([]);
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
 
   const {
     setup: {
-      systemCalls: { interact },
+      systemCalls,
       burnerManager: { account: burnerAccount },
     },
   } = useDojo();
+
+  const { data } = useQuery({
+    queryKey: ["getPixels", 0, DEFAULT_GRID_DIMENSIONS.width, 0, DEFAULT_GRID_DIMENSIONS.height],
+    queryFn: async () =>
+      request(`${import.meta.env.TORII_URL}/graphql`, GetPixelsDocument, {
+        first: 50000,
+        where: {
+          xGTE: 0,
+          xLTE: DEFAULT_GRID_DIMENSIONS.width,
+          yGTE: 0,
+          yLTE: DEFAULT_GRID_DIMENSIONS.height,
+        },
+      }),
+  });
+
+  const queryClient = useQueryClient();
+
+  const { mutate: interact } = useMutation({
+    mutationFn: async ({ account, params }: { account: Account; params: Pick<DefaultParams, "x" | "y" | "color"> }) => {
+      await systemCalls.interact(account, params);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getPixels", 0, DEFAULT_GRID_DIMENSIONS.width, 0, DEFAULT_GRID_DIMENSIONS.height],
+      });
+      console.log("invalidated");
+    },
+  });
+
+  const pixels = useMemo(() => parsePixels(data), [data]);
 
   const drawGrid = useCallback(() => {
     const gl = glRef.current;
@@ -53,7 +87,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     const endY = Math.min(gridDimensions.height, startY + visibleHeight + BASE_CELL_SIZE);
 
     // Draw colored cells
-    coloredCells.forEach((cell) => {
+    pixels.forEach((cell) => {
       const x = cell.x * BASE_CELL_SIZE;
       const y = cell.y * BASE_CELL_SIZE;
       if (x >= startX && x < endX && y >= startY && y < endY) {
@@ -84,7 +118,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     gl.vertexAttribPointer(programInfo.attribLocations.position, 2, gl.FLOAT, false, 0, 0);
 
     gl.drawArrays(gl.LINES, 0, positions.length / 2);
-  }, [gridState, backgroundColor, gridColor, coloredCells, gridDimensions]);
+  }, [gridState, backgroundColor, gridColor, pixels, gridDimensions]);
 
   const getMinScale = useCallback(
     (canvasWidth: number, canvasHeight: number): number => {
@@ -171,21 +205,12 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         const cellX = Math.floor(worldX / BASE_CELL_SIZE);
         const cellY = Math.floor(worldY / BASE_CELL_SIZE);
 
-        setColoredCells((prev) => {
-          const existingCellIndex = prev.findIndex((cell) => cell.x === cellX && cell.y === cellY);
-          if (existingCellIndex !== -1) {
-            return prev.filter((_, index) => index !== existingCellIndex);
-          } else {
-            return [...prev, { x: cellX, y: cellY, color: selectedColor }];
-          }
-        });
-
         if (!burnerAccount) {
           console.error("Burner account not found");
           return;
         }
 
-        await interact(burnerAccount, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
+        interact({ account: burnerAccount, params: { x: cellX, y: cellY, color: rgbaToHex(selectedColor) } });
       }
 
       isDraggingRef.current = false;
@@ -258,25 +283,12 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         const cellX = Math.floor(worldX / BASE_CELL_SIZE);
         const cellY = Math.floor(worldY / BASE_CELL_SIZE);
 
-        setColoredCells((prev) => {
-          const existingCellIndex = prev.findIndex((cell) => cell.x === cellX && cell.y === cellY);
-          if (existingCellIndex !== -1) {
-            return prev.filter((_, index) => index !== existingCellIndex);
-          } else {
-            return [...prev, { x: cellX, y: cellY, color: selectedColor }];
-          }
-        });
-
         if (!burnerAccount) {
           console.error("Burner account not found");
           return;
         }
 
-        await interact(burnerAccount, {
-          x: cellX,
-          y: cellY,
-          color: rgbaToHex(selectedColor),
-        });
+        interact({ account: burnerAccount, params: { x: cellX, y: cellY, color: rgbaToHex(selectedColor) } });
       }
 
       mouseDownPosRef.current = null;
