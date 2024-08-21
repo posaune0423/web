@@ -9,6 +9,7 @@ function App() {
     account: { account },
   } = useDojo()
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useQuerySync(toriiClient, contractComponents as any, [])
 
   return (
