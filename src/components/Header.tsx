@@ -37,7 +37,7 @@ const Header = ({ account }: { account: Account }) => {
   };
 
   return (
-    <header className="bg-slate-900 h-[50px] w-full flex items-center justify-between p-4">
+    <header className="bg-slate-900 h-[50px] w-full flex items-center justify-between p-4 fixed top-0 left-0 right-0 z-50">
       <h1 className="text-white text-lg font-bold">
         <img src="logo.png" alt="PixeLAW" className="object-contain h-10" />
       </h1>

@@ -7,6 +7,7 @@ type ImportMetaEnv = {
   VITE_PUBLIC_RPC_URL: string
   VITE_PUBLIC_MASTER_ADDRESS: string
   VITE_PUBLIC_MASTER_PRIVATE_KEY: string
+  VITE_PUBLIC_EXPLORER_URL: string
   BASE_URL: string
   MODE: string
   DEV: boolean

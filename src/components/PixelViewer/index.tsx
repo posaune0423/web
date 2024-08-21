@@ -41,21 +41,23 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
       />
-      <div className="fixed bottom-[10px] right-4 p-3 rounded-lg bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-sm shadow-lg">
+      <div className="fixed top-[60px] right-4 p-2 lg:p-3 rounded-lg bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-sm shadow-lg">
         <div className="flex items-center space-x-2">
-          <label htmlFor="x" className="flex items-center text-white font-semibold">
+          <label htmlFor="x" className="flex items-center text-white lg:font-semibold text-xs lg:text-base">
             X:
             <input
               type="number"
+              id="x"
               value={currentMousePos?.x ?? 0}
               className="p-1 rounded ml-1 bg-transparent w-fit max-w-[4ch] appearance-none border border-white [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               onChange={(e) => animateJumpToCell(Number(e.target.value) || 0, currentMousePos?.y ?? 0)}
             />
           </label>
-          <label htmlFor="y" className="flex items-center text-white font-semibold">
+          <label htmlFor="y" className="flex items-center text-white lg:font-semibold text-xs lg:text-base">
             Y:
             <input
               type="number"
+              id="y"
               value={currentMousePos?.y ?? 0}
               className="rounded p-1 ml-1 bg-transparent w-fit max-w-[4ch] appearance-none border border-white [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               onChange={(e) => animateJumpToCell(currentMousePos?.x ?? 0, Number(e.target.value) || 0)}

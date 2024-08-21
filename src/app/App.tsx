@@ -1,7 +1,7 @@
 import { useEntityQuery, useQuerySync } from "@dojoengine/react";
-import { PixelViewer } from "./components/PixelViewer";
+import { PixelViewer } from "../components/PixelViewer";
 import { useDojo } from "@/libs/dojo/useDojo";
-import { Header } from "./components/Header";
+import { Header } from "../components/Header";
 import { getComponentValue, Has } from "@dojoengine/recs";
 
 function App() {

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App.tsx";
+import App from "./app/App.tsx";
 import { setup } from "@/libs/dojo/generated/setup.ts";
 import { DojoProvider } from "@/libs/dojo/DojoContext.tsx";
 import { dojoConfig } from "../dojoConfig.ts";
