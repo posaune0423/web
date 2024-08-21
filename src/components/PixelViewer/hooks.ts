@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, DEFAULT_GRID_DIMENSIONS, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "./const";
-import { type Color, type GridDimensions, type GridState, type ProgramInfo } from "./types";
+import { ColoredCell, type Color, type GridDimensions, type GridState, type ProgramInfo } from "./types";
 import { initShaderProgram } from "./webgl";
 import { useDojo } from "@/libs/dojo/useDojo";
 import { parsePixels, rgbaToHex } from "@/utils";
@@ -32,7 +32,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   } = useDojo();
 
   const { data } = useQuery({
-    queryKey: ["getPixels", 0, DEFAULT_GRID_DIMENSIONS.width, 0, DEFAULT_GRID_DIMENSIONS.height],
+    queryKey: ["getPixels"],
     queryFn: async () =>
       request(`${import.meta.env.TORII_URL}/graphql`, GetPixelsDocument, {
         first: 50000,
@@ -50,12 +50,26 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const { mutate: interact } = useMutation({
     mutationFn: async ({ account, params }: { account: Account; params: Pick<DefaultParams, "x" | "y" | "color"> }) => {
       await systemCalls.interact(account, params);
+      console.log("before:", data?.pixelawPixelModels?.totalCount);
+      await queryClient.setQueryData(["getPixels"], (old: ColoredCell[]) => [
+        ...old,
+        { x: params.x, y: params.y, color: params.color },
+      ]);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["getPixels", 0, DEFAULT_GRID_DIMENSIONS.width, 0, DEFAULT_GRID_DIMENSIONS.height],
       });
-      console.log("invalidated");
+      const data = await request(`${import.meta.env.TORII_URL}/graphql`, GetPixelsDocument, {
+        first: 50000,
+        where: {
+          xGTE: 0,
+          xLTE: DEFAULT_GRID_DIMENSIONS.width,
+          yGTE: 0,
+          yLTE: DEFAULT_GRID_DIMENSIONS.height,
+        },
+      });
+      console.log("after:", data.pixelawPixelModels?.totalCount);
     },
   });
 
@@ -215,7 +229,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, burnerAccount]
+    [gridState, selectedColor, burnerAccount, interact]
   );
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -294,7 +308,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       mouseDownPosRef.current = null;
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, burnerAccount]
+    [gridState, selectedColor, burnerAccount, interact]
   );
 
   const handleWheel = useCallback(
@@ -371,6 +385,34 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     [getMaxOffset, getMinScale]
   );
 
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gl = glRef.current;
+    if (!gl) return;
+
+    const displayWidth = canvas.clientWidth;
+    const displayHeight = canvas.clientHeight;
+
+    if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+      canvas.width = displayWidth;
+      canvas.height = displayHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+
+      setGridState((prev) => {
+        const minScale = getMinScale(canvas.width, canvas.height);
+        const newScale = Math.max(minScale, prev.scale);
+        const { maxOffsetX, maxOffsetY } = getMaxOffset(newScale, canvas.width, canvas.height);
+        return {
+          offsetX: Math.min(prev.offsetX, maxOffsetX),
+          offsetY: Math.min(prev.offsetY, maxOffsetY),
+          scale: newScale,
+        };
+      });
+    }
+  }, [getMaxOffset, getMinScale]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -405,28 +447,6 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
     canvas.addEventListener("touchmove", handlePinchZoom);
 
-    const resizeCanvas = () => {
-      const displayWidth = canvas.clientWidth;
-      const displayHeight = canvas.clientHeight;
-
-      if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-        canvas.width = displayWidth;
-        canvas.height = displayHeight;
-        gl.viewport(0, 0, canvas.width, canvas.height);
-
-        setGridState((prev) => {
-          const minScale = getMinScale(canvas.width, canvas.height);
-          const newScale = Math.max(minScale, prev.scale);
-          const { maxOffsetX, maxOffsetY } = getMaxOffset(newScale, canvas.width, canvas.height);
-          return {
-            offsetX: Math.min(prev.offsetX, maxOffsetX),
-            offsetY: Math.min(prev.offsetY, maxOffsetY),
-            scale: newScale,
-          };
-        });
-      }
-    };
-
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
@@ -442,7 +462,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       window.removeEventListener("resize", resizeCanvas);
       canvas.removeEventListener("touchmove", handlePinchZoom);
     };
-  }, [drawGrid, getMaxOffset, getMinScale, handlePinchZoom]);
+  }, [drawGrid, getMaxOffset, getMinScale, handlePinchZoom, resizeCanvas]);
 
   return {
     canvasRef,

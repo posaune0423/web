@@ -26,10 +26,10 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
   } = usePixelViewer(backgroundColor, gridColor);
 
   return (
-    <div className="relative h-screen w-full">
+    <div className="relative h-full w-full">
       <canvas
         ref={canvasRef}
-        className="fixed inset-x-0 bottom-[50px] top-0"
+        className="fixed inset-x-0 bottom top-[50px]"
         style={{ width: "100%", height: "calc(100% - 50px)" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -39,7 +39,7 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
       />
-      <div className="bg-primary fixed inset-x-0 bottom-0 flex h-[50px] items-center justify-center space-x-8 shadow-md">
+      <div className="rounded-md px-4 bg-primary max-w-fit fixed mx-auto bottom-1 left-0 right-0 flex h-[50px] items-center justify-center space-x-8 shadow-md">
         <div className="flex items-center space-x-2">
           {COLOR_PALETTE.map((color, index) => (
             <button

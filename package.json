@@ -20,6 +20,8 @@
     "@dojoengine/state": "1.0.0-alpha.5",
     "@dojoengine/torii-client": "1.0.0-alpha.5",
     "@dojoengine/utils": "1.0.0-alpha.5",
+    "@radix-ui/react-dropdown-menu": "^2.1.1",
+    "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^5.51.24",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
