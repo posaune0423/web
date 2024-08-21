@@ -26,6 +26,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "idle-task": "^4.3.0",
     "lucide-react": "^0.428.0",
     "next-themes": "^0.3.0",
     "react": "^19.0.0-rc-fb9a90fa48-20240614",

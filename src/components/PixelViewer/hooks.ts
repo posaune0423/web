@@ -7,6 +7,8 @@ import { hexToRgba, rgbaToHex } from "@/utils";
 import { useEntityQuery } from "@dojoengine/react";
 import { getComponentValue, Has } from "@dojoengine/recs";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { setIdleTask } from "idle-task";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   // Refs
@@ -26,9 +28,15 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     gestureStartTime: null as number | null,
   });
 
+  const [storedLastPosition, setStoredLastPosition] = useLocalStorage("lastPosition", { x: 0, y: 0 });
+
   // States
-  const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number } | null>(null);
-  const [gridState, setGridState] = useState<GridState>({ offsetX: 0, offsetY: 0, scale: 1 });
+  const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number }>(storedLastPosition);
+  const [gridState, setGridState] = useState<GridState>({
+    offsetX: storedLastPosition.x,
+    offsetY: storedLastPosition.y,
+    scale: 1,
+  });
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
 
   const {
@@ -531,6 +539,10 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       canvas.removeEventListener("touchmove", handlePinchZoom);
     };
   }, [handlePinchZoom, resizeCanvas, animate]);
+
+  setIdleTask(() => {
+    setStoredLastPosition(currentMousePos);
+  });
 
   return {
     canvasRef,
