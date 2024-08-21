@@ -29,7 +29,7 @@ async function init() {
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <DojoProvider value={setupResult}>
           <App />
-          <Toaster richColors position="bottom-right" />
+          <Toaster richColors position="bottom-right" closeButton />
         </DojoProvider>
       </ThemeProvider>
     </React.StrictMode>,
