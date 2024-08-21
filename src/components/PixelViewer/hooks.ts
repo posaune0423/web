@@ -6,7 +6,7 @@ import {
   useOptimistic,
   useRef,
   useState,
-} from 'react'
+} from "react"
 import {
   BASE_CELL_SIZE,
   COLOR_PALETTE,
@@ -14,19 +14,19 @@ import {
   MAX_SCALE,
   MIN_SCALE,
   SWIPE_THRESHOLD,
-} from './const'
+} from "./const"
 import {
   ColoredCell,
   type Color,
   type GridDimensions,
   type GridState,
   type ProgramInfo,
-} from './types'
-import { initShaderProgram } from './webgl'
-import { useDojo } from '@/libs/dojo/useDojo'
-import { hexToRgba, rgbaToHex } from '@/utils'
-import { useEntityQuery } from '@dojoengine/react'
-import { getComponentValue, Has } from '@dojoengine/recs'
+} from "./types"
+import { initShaderProgram } from "./webgl"
+import { useDojo } from "@/libs/dojo/useDojo"
+import { hexToRgba, rgbaToHex } from "@/utils"
+import { useEntityQuery } from "@dojoengine/react"
+import { getComponentValue, Has } from "@dojoengine/recs"
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -242,7 +242,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         const cellY = Math.floor(worldY / BASE_CELL_SIZE)
 
         if (!burnerAccount) {
-          console.error('Burner account not found')
+          console.error("Burner account not found")
           return
         }
 
@@ -326,7 +326,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         const cellY = Math.floor(worldY / BASE_CELL_SIZE)
 
         if (!burnerAccount) {
-          console.error('Burner account not found')
+          console.error("Burner account not found")
           return
         }
 
@@ -453,13 +453,13 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) {
-      console.error('Canvas not found')
+      console.error("Canvas not found")
       return
     }
 
-    const gl = canvas.getContext('webgl')
+    const gl = canvas.getContext("webgl")
     if (!gl) {
-      console.error('WebGL not supported')
+      console.error("WebGL not supported")
       return
     }
     glRef.current = gl
@@ -470,28 +470,28 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     programInfoRef.current = {
       program: shaderProgram,
       attribLocations: {
-        position: gl.getAttribLocation(shaderProgram, 'aPosition'),
+        position: gl.getAttribLocation(shaderProgram, "aPosition"),
       },
       uniformLocations: {
-        resolution: gl.getUniformLocation(shaderProgram, 'uResolution'),
-        offset: gl.getUniformLocation(shaderProgram, 'uOffset'),
-        scale: gl.getUniformLocation(shaderProgram, 'uScale'),
-        color: gl.getUniformLocation(shaderProgram, 'uColor'),
+        resolution: gl.getUniformLocation(shaderProgram, "uResolution"),
+        offset: gl.getUniformLocation(shaderProgram, "uOffset"),
+        scale: gl.getUniformLocation(shaderProgram, "uScale"),
+        color: gl.getUniformLocation(shaderProgram, "uColor"),
       },
     }
 
     positionBufferRef.current = gl.createBuffer()
 
-    canvas.addEventListener('touchmove', handlePinchZoom)
+    canvas.addEventListener("touchmove", handlePinchZoom)
 
-    window.addEventListener('resize', resizeCanvas)
+    window.addEventListener("resize", resizeCanvas)
     resizeCanvas()
 
     animate()
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas)
-      canvas.removeEventListener('touchmove', handlePinchZoom)
+      window.removeEventListener("resize", resizeCanvas)
+      canvas.removeEventListener("touchmove", handlePinchZoom)
     }
   }, [drawGrid, getMaxOffset, getMinScale, handlePinchZoom, resizeCanvas, animate])
 

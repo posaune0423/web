@@ -36,10 +36,10 @@ export interface ColoredCell {
   color: Color
 }
 
-export type Mode = 'color' | 'drag'
+export type Mode = "color" | "drag"
 
 export interface GridAction {
-  type: 'add' | 'remove'
+  type: "add" | "remove"
   cell: ColoredCell
 }
 

@@ -1,7 +1,7 @@
-import { useQuerySync } from '@dojoengine/react'
-import { PixelViewer } from './components/PixelViewer'
-import { useDojo } from '@/libs/dojo/useDojo'
-import { Header } from './components/Header'
+import { useQuerySync } from "@dojoengine/react"
+import { PixelViewer } from "./components/PixelViewer"
+import { useDojo } from "@/libs/dojo/useDojo"
+import { Header } from "./components/Header"
 
 function App() {
   const {

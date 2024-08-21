@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars -- for now */
-import { Account, type AccountInterface } from 'starknet'
-import { type ClientComponents } from './createClientComponents'
-import { type ContractComponents } from './generated/contractComponents'
-import type { DefaultParams, IWorld, PixelUpdate } from './generated/generated'
+import { Account, type AccountInterface } from "starknet"
+import { type ClientComponents } from "./createClientComponents"
+import { type ContractComponents } from "./generated/contractComponents"
+import type { DefaultParams, IWorld, PixelUpdate } from "./generated/generated"
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>
 
@@ -39,9 +39,9 @@ export function createSystemCalls(
 
   const interact = async (
     account: Account | AccountInterface,
-    params: Pick<DefaultParams, 'x' | 'y' | 'color'>,
+    params: Pick<DefaultParams, "x" | "y" | "color">,
   ) => {
-    console.log('interact', params)
+    console.log("interact", params)
     try {
       await client.actions.interact(account, { ...params })
     } catch (e) {

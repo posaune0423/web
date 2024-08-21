@@ -1,7 +1,7 @@
-import { type BurnerAccount, useBurnerManager } from '@dojoengine/create-burner'
-import { type ReactNode, createContext, useContext, useMemo } from 'react'
-import { Account } from 'starknet'
-import { type SetupResult } from './generated/setup'
+import { type BurnerAccount, useBurnerManager } from "@dojoengine/create-burner"
+import { type ReactNode, createContext, useContext, useMemo } from "react"
+import { Account } from "starknet"
+import { type SetupResult } from "./generated/setup"
 
 interface DojoContextType extends SetupResult {
   masterAccount: Account
@@ -12,7 +12,7 @@ export const DojoContext = createContext<DojoContextType | null>(null)
 
 export const DojoProvider = ({ children, value }: { children: ReactNode; value: SetupResult }) => {
   const currentValue = useContext(DojoContext)
-  if (currentValue) throw new Error('DojoProvider can only be used once')
+  if (currentValue) throw new Error("DojoProvider can only be used once")
 
   const {
     config: { masterAddress, masterPrivateKey },
@@ -21,7 +21,7 @@ export const DojoProvider = ({ children, value }: { children: ReactNode; value: 
   } = value
 
   const masterAccount = useMemo(
-    () => new Account(dojoProvider.provider, masterAddress, masterPrivateKey, '1'),
+    () => new Account(dojoProvider.provider, masterAddress, masterPrivateKey, "1"),
     [masterAddress, masterPrivateKey, dojoProvider.provider],
   )
 

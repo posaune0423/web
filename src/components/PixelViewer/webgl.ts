@@ -25,7 +25,7 @@ const loadShader = (
 ): WebGLShader | null => {
   const shader = gl.createShader(type)
   if (!shader) {
-    console.error('Unable to create shader')
+    console.error("Unable to create shader")
     return null
   }
 
@@ -33,7 +33,7 @@ const loadShader = (
   gl.compileShader(shader)
 
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader))
+    console.error("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader))
     gl.deleteShader(shader)
     return null
   }
@@ -59,7 +59,7 @@ export const initShaderProgram = (gl: WebGLRenderingContext): WebGLProgram | nul
   gl.linkProgram(shaderProgram)
 
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-    console.error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram))
+    console.error("Unable to initialize the shader program: " + gl.getProgramInfoLog(shaderProgram))
     return null
   }
 

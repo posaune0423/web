@@ -1,6 +1,6 @@
-import { type DojoConfig } from '@dojoengine/core'
-import { BurnerManager } from '@dojoengine/create-burner'
-import { Account, RpcProvider } from 'starknet'
+import { type DojoConfig } from "@dojoengine/core"
+import { BurnerManager } from "@dojoengine/create-burner"
+import { Account, RpcProvider } from "starknet"
 
 export type CreateBurner = Awaited<ReturnType<typeof createBurner>>
 

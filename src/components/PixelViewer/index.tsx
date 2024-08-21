@@ -1,7 +1,7 @@
-import React from 'react'
-import { COLOR_PALETTE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR } from './const'
-import { usePixelViewer } from './hooks'
-import { type Color } from './types'
+import React from "react"
+import { COLOR_PALETTE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR } from "./const"
+import { usePixelViewer } from "./hooks"
+import { type Color } from "./types"
 
 interface PixelViewerProps {
   backgroundColor?: Color
@@ -26,11 +26,11 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
   } = usePixelViewer(backgroundColor, gridColor)
 
   return (
-    <div className='relative h-full w-full'>
+    <div className="relative h-full w-full">
       <canvas
         ref={canvasRef}
-        className='fixed inset-x-0 bottom top-[50px]'
-        style={{ width: '100%', height: 'calc(100% - 50px)' }}
+        className="fixed inset-x-0 bottom top-[50px]"
+        style={{ width: "100%", height: "calc(100% - 50px)" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -39,13 +39,13 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
       />
-      <div className='rounded-md px-4 bg-primary max-w-fit fixed mx-auto bottom-1 left-0 right-0 flex h-[50px] items-center justify-center space-x-8 shadow-md'>
-        <div className='flex items-center space-x-2'>
+      <div className="rounded-md px-4 bg-primary max-w-fit fixed mx-auto bottom-1 left-0 right-0 flex h-[50px] items-center justify-center space-x-8 shadow-md">
+        <div className="flex items-center space-x-2">
           {COLOR_PALETTE.map((color, index) => (
             <button
               key={index}
               className={`size-8 rounded-full ${
-                selectedColor === color ? 'ring-2 ring-black ring-offset-2' : ''
+                selectedColor === color ? "ring-2 ring-black ring-offset-2" : ""
               }`}
               style={{
                 backgroundColor: `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${

@@ -1,12 +1,12 @@
-import { type DojoConfig, DojoProvider } from '@dojoengine/core'
-import * as torii from '@dojoengine/torii-client'
-import { BurnerManager } from '@dojoengine/create-burner'
-import { Account, type ArraySignatureType } from 'starknet'
-import { createClientComponents } from '../createClientComponents'
-import { createSystemCalls } from '../createSystemCalls'
-import { defineContractComponents } from './contractComponents'
-import { setupWorld } from './generated'
-import { world } from './world'
+import { type DojoConfig, DojoProvider } from "@dojoengine/core"
+import * as torii from "@dojoengine/torii-client"
+import { BurnerManager } from "@dojoengine/create-burner"
+import { Account, type ArraySignatureType } from "starknet"
+import { createClientComponents } from "../createClientComponents"
+import { createSystemCalls } from "../createSystemCalls"
+import { defineContractComponents } from "./contractComponents"
+import { setupWorld } from "./generated"
+import { world } from "./world"
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
@@ -15,8 +15,8 @@ export async function setup({ ...config }: DojoConfig) {
   const toriiClient = await torii.createClient({
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
-    relayUrl: '',
-    worldAddress: config.manifest.world.address || '',
+    relayUrl: "",
+    worldAddress: config.manifest.world.address || "",
   })
 
   // create contract components

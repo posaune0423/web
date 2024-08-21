@@ -1,8 +1,8 @@
-import { type Account } from 'starknet'
-import { dojoConfig } from '../../dojoConfig'
-import { createBurner } from './createBurner'
-import { setup } from './generated/setup'
-import { world as recsWorld } from './world'
+import { type Account } from "starknet"
+import { dojoConfig } from "../../dojoConfig"
+import { createBurner } from "./createBurner"
+import { setup } from "./generated/setup"
+import { world as recsWorld } from "./world"
 
 export type NetworkLayer = Awaited<ReturnType<typeof createNetworkLayer>>
 

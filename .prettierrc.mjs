@@ -1,8 +1,8 @@
 export default {
-  trailingComma: 'all',
+  trailingComma: "all",
   tabWidth: 2,
   semi: false,
-  singleQuote: true,
-  jsxSingleQuote: true,
+  singleQuote: false,
+  jsxSingleQuote: false,
   printWidth: 100,
 }
