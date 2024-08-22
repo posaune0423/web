@@ -92,7 +92,9 @@ export const felt252ToUnicode = (felt252: string | number) => {
   return string;
 };
 
-export const fromComponent = (appComponent: ReturnType<typeof getComponentValue>): App | undefined => {
+export const fromComponent = (
+  appComponent: ReturnType<typeof getComponentValue>,
+): App | undefined => {
   if (!appComponent) return undefined;
   console.log(appComponent);
   return {

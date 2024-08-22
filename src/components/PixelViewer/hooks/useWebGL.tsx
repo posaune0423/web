@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
-import { Color, ColoredCell, GridState, ProgramInfo } from "../types";
+import { type Color, type Pixel, type GridState, type ProgramInfo } from "../types";
 import { initShaderProgram } from "../webgl";
-import { BASE_CELL_SIZE } from "../const";
+import { BASE_CELL_SIZE, MIN_SCALE } from "../const";
 
 export const useWebGL = ({
   canvasRef,
@@ -40,6 +40,7 @@ export const useWebGL = ({
         offset: gl.getUniformLocation(shaderProgram, "uOffset"),
         scale: gl.getUniformLocation(shaderProgram, "uScale"),
         color: gl.getUniformLocation(shaderProgram, "uColor"),
+        lineWidth: gl.getUniformLocation(shaderProgram, "uLineWidth"), //
       },
     };
 
@@ -47,7 +48,7 @@ export const useWebGL = ({
   }, [canvasRef]);
 
   const drawGrid = useCallback(
-    (gridState: GridState, optimisticPixels: ColoredCell[]) => {
+    (gridState: GridState, optimisticPixels: Pixel[]) => {
       const gl = glRef.current;
       const programInfo = programInfoRef.current;
       if (!gl || !programInfo) return;
@@ -72,12 +73,29 @@ export const useWebGL = ({
       const endX = startX + visibleWidth + BASE_CELL_SIZE;
       const endY = startY + visibleHeight + BASE_CELL_SIZE;
 
-      // Draw colored cells
+      const centerX = gridState.offsetX + canvasWidth / (2 * gridState.scale);
+      const centerY = gridState.offsetY + canvasHeight / (2 * gridState.scale);
+
+      const getDrawOrder = (x: number, y: number): number => {
+        const dx = x - centerX;
+        const dy = y - centerY;
+        return dx * dx + dy * dy; // 中心からの距離の二乗
+      };
+
+      optimisticPixels.sort((a, b) => getDrawOrder(a.x, a.y) - getDrawOrder(b.x, b.y));
+
+      // Draw colored cells in visible area
       optimisticPixels.forEach((pixel) => {
         const x = pixel.x * BASE_CELL_SIZE;
         const y = pixel.y * BASE_CELL_SIZE;
         if (x >= startX && x < endX && y >= startY && y < endY) {
-          gl.uniform4f(programInfo.uniformLocations.color, pixel.color.r, pixel.color.g, pixel.color.b, pixel.color.a);
+          gl.uniform4f(
+            programInfo.uniformLocations.color,
+            pixel.color.r,
+            pixel.color.g,
+            pixel.color.b,
+            pixel.color.a,
+          );
           const positions = [
             x,
             y,
@@ -95,7 +113,21 @@ export const useWebGL = ({
       });
 
       // Draw grid lines
-      gl.uniform4f(programInfo.uniformLocations.color, gridColor.r, gridColor.g, gridColor.b, gridColor.a);
+      const BUFFER_RATIO = 1.5;
+      const darker = gridState.scale > MIN_SCALE * BUFFER_RATIO ? 1.0 : 0.5;
+
+      gl.uniform4f(
+        programInfo.uniformLocations.color,
+        gridColor.r * darker,
+        gridColor.g * darker,
+        gridColor.b * darker,
+        gridColor.a,
+      );
+
+      const baseLineWidth = 1.0;
+      const lineWidth = baseLineWidth * gridState.scale;
+      gl.uniform1f(programInfo.uniformLocations.lineWidth, lineWidth);
+
       const positions: number[] = [];
 
       for (let x = startX; x <= endX; x += BASE_CELL_SIZE) {
@@ -114,7 +146,7 @@ export const useWebGL = ({
 
       gl.drawArrays(gl.LINES, 0, positions.length / 2);
     },
-    [backgroundColor, gridColor, programInfoRef, positionBufferRef]
+    [backgroundColor, gridColor, programInfoRef, positionBufferRef],
   );
 
   return { drawGrid };

@@ -19,7 +19,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   } = useDojo();
 
   const appEntities = useEntityQuery([Has(contractComponents.App)]);
-  const values = [...appEntities].map((entityId) => getComponentValue(contractComponents.App, entityId));
+  const values = [...appEntities].map((entityId) =>
+    getComponentValue(contractComponents.App, entityId),
+  );
   const apps = useMemo(
     () =>
       values.reduce((acc: App[], appComponent: ComponentValue<Schema, unknown> | undefined) => {
@@ -27,10 +29,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         if (app) acc.push(app);
         return acc;
       }, []),
-    [values]
+    [values],
   );
 
-  const [selectedApp, setSelectedApp] = useState<App>(apps[0] ?? { name: "", system: "", icon: "" });
+  const [selectedApp, setSelectedApp] = useState<App>(
+    apps[0] ?? { name: "", system: "", icon: "" },
+  );
 
-  return <AppContext.Provider value={{ apps, selectedApp, setSelectedApp }}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ apps, selectedApp, setSelectedApp }}>
+      {children}
+    </AppContext.Provider>
+  );
 };

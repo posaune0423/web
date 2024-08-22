@@ -1,7 +1,7 @@
 export const convertClientPosToCanvasPos = (
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   clientX: number,
-  clientY: number
+  clientY: number,
 ) => {
   const canvas = canvasRef.current;
   if (!canvas) return { x: 0, y: 0 };

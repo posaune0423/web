@@ -2576,7 +2576,15 @@
       "writes": [],
       "init_calldata": [],
       "tag": "pixelaw-paint_actions",
-      "systems": ["on_pre_update", "on_post_update", "init", "interact", "put_color", "pixel_row", "fade"],
+      "systems": [
+        "on_pre_update",
+        "on_post_update",
+        "init",
+        "interact",
+        "put_color",
+        "pixel_row",
+        "fade"
+      ],
       "manifest_name": "pixelaw-paint_actions-2afb94fe"
     },
     {

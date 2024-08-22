@@ -21,7 +21,10 @@ const Header = ({ account }: { account: Account }) => {
     account: { select, list, create, remove, isDeploying },
   } = useDojo();
 
-  const otherBurnerAccounts = useMemo(() => list().filter((a) => a.address !== account.address), [account, list]);
+  const otherBurnerAccounts = useMemo(
+    () => list().filter((a) => a.address !== account.address),
+    [account, list],
+  );
 
   const onSelect = (e: React.MouseEvent<HTMLDivElement>, address: string) => {
     e.preventDefault();

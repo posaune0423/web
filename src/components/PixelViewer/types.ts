@@ -27,10 +27,11 @@ export interface ProgramInfo {
     offset: WebGLUniformLocation | null;
     scale: WebGLUniformLocation | null;
     color: WebGLUniformLocation | null;
+    lineWidth: WebGLUniformLocation | null;
   };
 }
 
-export interface ColoredCell {
+export interface Pixel {
   x: number;
   y: number;
   color: Color;
@@ -38,11 +39,11 @@ export interface ColoredCell {
 
 export interface GridAction {
   type: "add" | "remove";
-  cell: ColoredCell;
+  pixel: Pixel;
 }
 
 export interface GridHistory {
-  past: ColoredCell[][];
-  present: ColoredCell[];
-  future: ColoredCell[][];
+  past: Pixel[][];
+  present: Pixel[];
+  future: Pixel[][];
 }

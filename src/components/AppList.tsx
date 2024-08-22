@@ -16,7 +16,9 @@ const AppList = () => {
       {apps.map((app, index) => (
         <div
           key={index}
-          className={`${selectedApp.name === app.name ? "bg-white/10" : ""} py-2 px-3 rounded-md cursor-pointer`}
+          className={`${
+            selectedApp.name === app.name ? "bg-white/10" : ""
+          } py-2 px-3 rounded-md cursor-pointer`}
           onClick={() => onSelect(app)}
         >
           {app.icon}

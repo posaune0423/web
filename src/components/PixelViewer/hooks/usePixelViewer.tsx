@@ -1,27 +1,27 @@
-import { startTransition, useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useOptimistic,
+  useRef,
+  useState,
+} from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../const";
-import { ColoredCell, type Color, type GridState, type ProgramInfo } from "../types";
+import { type Pixel, type Color, type ProgramInfo } from "../types";
 import { initShaderProgram } from "../webgl";
 import { useDojo } from "@/hooks/useDojo";
 import { hexToRgba, rgbaToHex } from "@/utils";
 import { useEntityQuery } from "@dojoengine/react";
 import { getComponentValue, Has } from "@dojoengine/recs";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { setIdleTask } from "idle-task";
 import { useWebGL } from "./useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { sounds } from "@/constants";
 import { useSound } from "use-sound";
+import { useGridState } from "./useGridState";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
-  // LocalStorage
-  const [storedLastGridState, setStoredLastGridState] = useLocalStorage("lastGridState", {
-    offsetX: 0,
-    offsetY: 0,
-    scale: 1,
-  });
-
   // Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDraggingRef = useRef<boolean>(false);
@@ -41,7 +41,6 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
   // States
   const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [gridState, setGridState] = useState<GridState>(storedLastGridState);
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
 
   //Other Hooks
@@ -58,25 +57,29 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     () =>
       pixelEntities
         .map((entity) => {
-          const data = getComponentValue(Pixel, entity);
-          if (!data) return;
+          const value = getComponentValue(Pixel, entity);
+          if (!value) return;
           return {
-            x: data.x,
-            y: data.y,
-            color: hexToRgba(data.color),
+            x: value.x,
+            y: value.y,
+            color: hexToRgba(value.color),
           };
         })
-        .filter((pixel): pixel is ColoredCell => pixel !== undefined),
-    [pixelEntities, Pixel]
+        .filter((pixel): pixel is Pixel => pixel !== undefined),
+    [pixelEntities, Pixel],
   );
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
-  const [optimisticPixels, setOptimisticPixels] = useOptimistic(pixels, (pixels, newPixel: ColoredCell) => {
-    return [...pixels, newPixel];
-  });
+  const [optimisticPixels, setOptimisticPixels] = useOptimistic(
+    pixels,
+    (pixels, newPixel: Pixel) => {
+      return [...pixels, newPixel];
+    },
+  );
 
   const { drawGrid } = useWebGL({ canvasRef, backgroundColor, gridColor });
+  const { gridState, setGridState } = useGridState();
 
   // Handlers
   const updateCurrentMousePos = useCallback(
@@ -89,7 +92,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
       setCurrentMousePos({ x: cellX, y: cellY });
     },
-    [gridState]
+    [gridState],
   );
 
   const handleTouchStart = useCallback(
@@ -115,7 +118,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         lastTouchPosRef.current = { x: touch.clientX, y: touch.clientY };
       }
     },
-    [updateCurrentMousePos]
+    [updateCurrentMousePos],
   );
 
   const handleTouchMove = useCallback(
@@ -138,7 +141,10 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         };
 
         if (!gestureRef.current.gestureType) {
-          if (Math.abs(pinchDelta) > Math.abs(moveDelta.x) && Math.abs(pinchDelta) > Math.abs(moveDelta.y)) {
+          if (
+            Math.abs(pinchDelta) > Math.abs(moveDelta.x) &&
+            Math.abs(pinchDelta) > Math.abs(moveDelta.y)
+          ) {
             gestureRef.current.gestureType = "pinch";
           } else {
             gestureRef.current.gestureType = "swipe";
@@ -147,7 +153,8 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
         if (gestureRef.current.gestureType === "pinch") {
           setGridState((prev) => {
-            const zoomFactor = currentDistance / (gestureRef.current.lastPinchDistance || currentDistance);
+            const zoomFactor =
+              currentDistance / (gestureRef.current.lastPinchDistance || currentDistance);
             const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * zoomFactor));
             return { ...prev, scale: newScale };
           });
@@ -172,7 +179,10 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         const dx = x - touchStartPosRef.current.x;
         const dy = y - touchStartPosRef.current.y;
 
-        if (!isDraggingRef.current && (Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD)) {
+        if (
+          !isDraggingRef.current &&
+          (Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD)
+        ) {
           isDraggingRef.current = true;
         }
 
@@ -186,7 +196,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         }
       }
     },
-    [updateCurrentMousePos]
+    [updateCurrentMousePos],
   );
 
   const handleTouchEnd = useCallback(
@@ -222,7 +232,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels, play]
+    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels, play],
   );
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -248,7 +258,10 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       const dx = x - mouseDownPosRef.current.x;
       const dy = y - mouseDownPosRef.current.y;
 
-      if (!isDraggingRef.current && (Math.abs(dx) > SWIPE_THRESHOLD / 2 || Math.abs(dy) > SWIPE_THRESHOLD / 2)) {
+      if (
+        !isDraggingRef.current &&
+        (Math.abs(dx) > SWIPE_THRESHOLD / 2 || Math.abs(dy) > SWIPE_THRESHOLD / 2)
+      ) {
         isDraggingRef.current = true;
       }
 
@@ -262,7 +275,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         mouseDownPosRef.current = { x, y };
       }
     },
-    [updateCurrentMousePos]
+    [updateCurrentMousePos],
   );
 
   const handleMouseUp = useCallback(
@@ -293,7 +306,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       mouseDownPosRef.current = null;
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels, play]
+    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels, play],
   );
 
   const handleWheel = useCallback(
@@ -324,7 +337,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         updateCurrentMousePos(x, y);
       });
     },
-    [updateCurrentMousePos]
+    [updateCurrentMousePos],
   );
 
   const handlePinchZoom = useCallback((e: TouchEvent) => {
@@ -337,11 +350,14 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     const { x: centerX, y: centerY } = convertClientPosToCanvasPos(
       canvasRef,
       (touch1.clientX + touch2.clientX) / 2,
-      touch1.clientY + touch2.clientY
+      touch1.clientY + touch2.clientY,
     );
 
     setGridState((prev) => {
-      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * (dist / (prev.lastPinchDist || dist))));
+      const newScale = Math.max(
+        MIN_SCALE,
+        Math.min(MAX_SCALE, prev.scale * (dist / (prev.lastPinchDist || dist))),
+      );
 
       const worldCenterX = prev.offsetX + centerX / prev.scale;
       const worldCenterY = prev.offsetY + centerY / prev.scale;
@@ -370,8 +386,14 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       const startOffsetX = gridState.offsetX;
       const startOffsetY = gridState.offsetY;
 
-      const targetOffsetX = Math.max(0, x * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasWidth / (2 * gridState.scale));
-      const targetOffsetY = Math.max(0, y * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasHeight / (2 * gridState.scale));
+      const targetOffsetX = Math.max(
+        0,
+        x * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasWidth / (2 * gridState.scale),
+      );
+      const targetOffsetY = Math.max(
+        0,
+        y * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasHeight / (2 * gridState.scale),
+      );
 
       const animateFrame = () => {
         const elapsedTime = performance.now() - startTime;
@@ -397,7 +419,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
       requestAnimationFrame(animateFrame);
     },
-    [gridState, setCurrentMousePos]
+    [gridState, setCurrentMousePos],
   );
 
   const animate = useCallback(() => {
@@ -432,23 +454,14 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         offset: gl.getUniformLocation(shaderProgram, "uOffset"),
         scale: gl.getUniformLocation(shaderProgram, "uScale"),
         color: gl.getUniformLocation(shaderProgram, "uColor"),
+        lineWidth: gl.getUniformLocation(shaderProgram, "uLineWidth"),
       },
     };
 
     positionBufferRef.current = gl.createBuffer();
 
-    canvas.addEventListener("touchmove", handlePinchZoom);
-
     animate();
-
-    return () => {
-      canvas.removeEventListener("touchmove", handlePinchZoom);
-    };
-  }, [handlePinchZoom, animate]);
-
-  setIdleTask(() => {
-    setStoredLastGridState(gridState);
-  });
+  }, [animate]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -464,17 +477,15 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       animate();
     });
 
+    canvas.addEventListener("touchmove", handlePinchZoom);
+
     resizeObserver.observe(canvas);
 
     return () => {
       resizeObserver.disconnect();
+      canvas.removeEventListener("touchmove", handlePinchZoom);
     };
-  }, []);
-
-  useEffect(() => {
-    // Initialize the position of the canvas
-    setGridState(storedLastGridState);
-  }, []);
+  }, [handlePinchZoom]);
 
   return {
     canvasRef,

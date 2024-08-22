@@ -32,17 +32,17 @@ const ColorPalette = ({
       console.log(
         "hex",
         rgbaToHex({
-          a: pickedColor.a,
-          b: pickedColor.b,
-          g: pickedColor.g,
           r: pickedColor.r,
-        })
+          g: pickedColor.g,
+          b: pickedColor.b,
+          a: pickedColor.a,
+        }),
       );
       setSelectedColor(pickedColor);
       setCustomColors([...customColors, pickedColor]);
       setPickedColor(null);
     },
-    [pickedColor, customColors, setSelectedColor]
+    [pickedColor, customColors, setSelectedColor],
   );
 
   return (
@@ -51,9 +51,13 @@ const ColorPalette = ({
         {[...COLOR_PALETTE, ...customColors].map((color, index) => (
           <button
             key={index}
-            className={`size-8 rounded-full ${selectedColor === color ? "ring-2 ring-black ring-offset-2" : ""}`}
+            className={`size-8 rounded-full ${
+              selectedColor === color ? "ring-2 ring-black ring-offset-2" : ""
+            }`}
             style={{
-              backgroundColor: `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${color.a})`,
+              backgroundColor: `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${
+                color.a
+              })`,
             }}
             onClick={() => setSelectedColor(color)}
           />
