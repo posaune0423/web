@@ -11,6 +11,8 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { setIdleTask } from "idle-task";
 import { useWebGL } from "./useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
+import { sounds } from "@/constants";
+import { useSound } from "use-sound";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   // LocalStorage
@@ -42,6 +44,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   });
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
 
+  //Other Hooks
   const {
     setup: {
       systemCalls: { interact },
@@ -66,6 +69,8 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         .filter((pixel): pixel is ColoredCell => pixel !== undefined),
     [pixelEntities, Pixel]
   );
+
+  const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
   const [optimisticPixels, setOptimisticPixels] = useOptimistic(pixels, (pixels, newPixel: ColoredCell) => {
     return [...pixels, newPixel];
@@ -210,13 +215,14 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
         startTransition(async () => {
           setOptimisticPixels({ x: cellX, y: cellY, color: selectedColor });
+          play();
           await interact(burnerAccount, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
         });
       }
 
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels]
+    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels, play]
   );
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -279,6 +285,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
         startTransition(async () => {
           setOptimisticPixels({ x: cellX, y: cellY, color: selectedColor });
+          play();
           await interact(burnerAccount, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
         });
       }
@@ -286,7 +293,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       mouseDownPosRef.current = null;
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels]
+    [gridState, selectedColor, burnerAccount, interact, setOptimisticPixels, play]
   );
 
   const handleWheel = useCallback(

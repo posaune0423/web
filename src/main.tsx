@@ -19,7 +19,7 @@ const init = async () => {
 
   if (!setupResult) {
     root.render(
-      <div className="bg-black/90 flex h-screen items-center justify-center text-xl text-white">Loading...</div>
+      <div className="bg-[#010101cc] flex h-screen items-center justify-center text-xl text-white">Loading...</div>
     );
     return;
   }

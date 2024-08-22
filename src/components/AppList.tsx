@@ -13,7 +13,7 @@ const AppList = ({ apps }: { apps: App[] }) => {
       {apps.map((app) => (
         <div
           key={app.system}
-          className={`${selectedApp?.system === app.system ? "bg-white/10" : ""} py-2 px-3 rounded-md`}
+          className={`${selectedApp?.system === app.system ? "bg-white/10" : ""} py-2 px-3 rounded-md cursor-pointer`}
           onClick={() => onSelect(app)}
         >
           {app.icon}
