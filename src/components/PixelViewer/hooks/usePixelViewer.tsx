@@ -16,14 +16,18 @@ import { useSound } from "use-sound";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   // LocalStorage
-  const [storedLastPosition, setStoredLastPosition] = useLocalStorage("lastPosition", { x: 0, y: 0 });
+  const [storedLastGridState, setStoredLastGridState] = useLocalStorage("lastGridState", {
+    offsetX: 0,
+    offsetY: 0,
+    scale: 1,
+  });
 
   // Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDraggingRef = useRef<boolean>(false);
-  const lastTouchPosRef = useRef<{ x: number; y: number }>({ x: storedLastPosition.x, y: storedLastPosition.y });
+  const lastTouchPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
-  const touchStartPosRef = useRef<{ x: number; y: number }>({ x: storedLastPosition.x, y: storedLastPosition.y });
+  const touchStartPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const glRef = useRef<WebGLRenderingContext | null>(null);
   const programInfoRef = useRef<ProgramInfo | null>(null);
   const positionBufferRef = useRef<WebGLBuffer | null>(null);
@@ -36,12 +40,8 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   });
 
   // States
-  const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number }>(storedLastPosition);
-  const [gridState, setGridState] = useState<GridState>({
-    offsetX: 0,
-    offsetY: 0,
-    scale: 1,
-  });
+  const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [gridState, setGridState] = useState<GridState>(storedLastGridState);
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
 
   //Other Hooks
@@ -301,7 +301,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       const { x, y } = convertClientPosToCanvasPos(canvasRef, e.clientX, e.clientY);
 
       if (e.ctrlKey) {
-        // Trackpad pinch gesture
+        // TrackPad pinch gesture
         const delta = -e.deltaY * 0.01;
         setGridState((prev) => {
           const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * (1 + delta)));
@@ -447,7 +447,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   }, [handlePinchZoom, animate]);
 
   setIdleTask(() => {
-    setStoredLastPosition(currentMousePos);
+    setStoredLastGridState(gridState);
   });
 
   useEffect(() => {
@@ -472,30 +472,8 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   }, []);
 
   useEffect(() => {
-    const initPosition = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-
-      const targetOffsetX = Math.max(
-        0,
-        storedLastPosition.x * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasWidth / (2 * gridState.scale)
-      );
-      const targetOffsetY = Math.max(
-        0,
-        storedLastPosition.y * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasHeight / (2 * gridState.scale)
-      );
-
-      setGridState((prev) => ({
-        ...prev,
-        offsetX: targetOffsetX,
-        offsetY: targetOffsetY,
-      }));
-    };
-
-    initPosition();
+    // Initialize the position of the canvas
+    setGridState(storedLastGridState);
   }, []);
 
   return {

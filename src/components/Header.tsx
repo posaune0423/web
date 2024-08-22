@@ -9,15 +9,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/DropDownMenu";
 import { useDojo } from "@/hooks/useDojo";
 import { useMemo } from "react";
 import Spinner from "./Spinner";
-import { App } from "@/types";
 import { toast } from "sonner";
-import AppList from "./AppList";
+import { AppList } from "./AppList";
 
-const Header = ({ account, apps }: { account: Account; apps: App[] }) => {
+const Header = ({ account }: { account: Account }) => {
   const {
     account: { select, list, create, remove, isDeploying },
   } = useDojo();
@@ -52,7 +51,7 @@ const Header = ({ account, apps }: { account: Account; apps: App[] }) => {
         <h1 className="text-white text-lg font-bold">
           <img src="logo.png" alt="PixeLAW" className="object-contain h-10" />
         </h1>
-        <AppList apps={apps} />
+        <AppList />
       </div>
       <div className="flex items-center space-x-4 border-2 border-slate-600 rounded-sm p-1 px-3">
         <div className="text-white cursor-pointer" onClick={(e) => onCopy(e, account.address)}>
