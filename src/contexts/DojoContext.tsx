@@ -1,7 +1,7 @@
 import { type BurnerAccount, useBurnerManager } from "@dojoengine/create-burner";
 import { type ReactNode, createContext, useContext, useMemo } from "react";
 import { Account } from "starknet";
-import { type SetupResult } from "./generated/setup";
+import { type SetupResult } from "../libs/dojo/generated/setup";
 
 interface DojoContextType extends SetupResult {
   masterAccount: Account;

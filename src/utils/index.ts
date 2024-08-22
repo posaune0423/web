@@ -1,6 +1,9 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { type Color } from "@/components/PixelViewer/types";
+import { getComponentValue } from "@dojoengine/recs";
+import { App } from "@/types";
+import { shortString } from "starknet";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -61,4 +64,42 @@ export const handleTransactionError = (error: unknown) => {
   }
 
   return errorMessage;
+};
+
+export const felt252ToString = (felt252: string | number | bigint) => {
+  if (typeof felt252 === "bigint" || typeof felt252 === "object") {
+    felt252 = `0x${felt252.toString(16)}`;
+  }
+  if (felt252 === "0x0" || felt252 === "0") return "";
+  if (typeof felt252 === "string") {
+    try {
+      return shortString.decodeShortString(felt252);
+    } catch (e) {
+      console.error("Error decoding short string:", e);
+      return felt252;
+    }
+  }
+  return felt252.toString();
+};
+
+export const felt252ToUnicode = (felt252: string | number) => {
+  const string = felt252ToString(felt252);
+  if (string.includes("U+")) {
+    const text = string.replace("U+", "");
+    const codePoint = Number.parseInt(text, 16);
+    return String.fromCodePoint(codePoint);
+  }
+  return string;
+};
+
+export const fromComponent = (appComponent: ReturnType<typeof getComponentValue>): App | undefined => {
+  if (!appComponent) return undefined;
+  console.log(appComponent);
+  return {
+    name: shortString.decodeShortString(appComponent.name),
+    icon: felt252ToUnicode(appComponent.icon),
+    action: shortString.decodeShortString(appComponent.action),
+    system: appComponent.system,
+    manifest: appComponent.manifest,
+  };
 };

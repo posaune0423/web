@@ -1,22 +1,27 @@
 import { startTransition, useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
-import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "./const";
-import { ColoredCell, type Color, type GridState, type ProgramInfo } from "./types";
-import { initShaderProgram } from "./webgl";
-import { useDojo } from "@/libs/dojo/useDojo";
+import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../const";
+import { ColoredCell, type Color, type GridState, type ProgramInfo } from "../types";
+import { initShaderProgram } from "../webgl";
+import { useDojo } from "@/hooks/useDojo";
 import { hexToRgba, rgbaToHex } from "@/utils";
 import { useEntityQuery } from "@dojoengine/react";
 import { getComponentValue, Has } from "@dojoengine/recs";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { setIdleTask } from "idle-task";
+import { useWebGL } from "./useWebGL";
+import { convertClientPosToCanvasPos } from "@/utils/canvas";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
+  // LocalStorage
+  const [storedLastPosition, setStoredLastPosition] = useLocalStorage("lastPosition", { x: 0, y: 0 });
+
   // Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDraggingRef = useRef<boolean>(false);
-  const lastTouchPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const lastTouchPosRef = useRef<{ x: number; y: number }>({ x: storedLastPosition.x, y: storedLastPosition.y });
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
-  const touchStartPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const touchStartPosRef = useRef<{ x: number; y: number }>({ x: storedLastPosition.x, y: storedLastPosition.y });
   const glRef = useRef<WebGLRenderingContext | null>(null);
   const programInfoRef = useRef<ProgramInfo | null>(null);
   const positionBufferRef = useRef<WebGLBuffer | null>(null);
@@ -28,13 +33,11 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     gestureStartTime: null as number | null,
   });
 
-  const [storedLastPosition, setStoredLastPosition] = useLocalStorage("lastPosition", { x: 0, y: 0 });
-
   // States
   const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number }>(storedLastPosition);
   const [gridState, setGridState] = useState<GridState>({
-    offsetX: storedLastPosition.x,
-    offsetY: storedLastPosition.y,
+    offsetX: 0,
+    offsetY: 0,
     scale: 1,
   });
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
@@ -68,6 +71,8 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     return [...pixels, newPixel];
   });
 
+  const { drawGrid } = useWebGL({ canvasRef, backgroundColor, gridColor });
+
   // Handlers
   const updateCurrentMousePos = useCallback(
     (canvasX: number, canvasY: number) => {
@@ -82,70 +87,11 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     [gridState]
   );
 
-  const drawGrid = useCallback(() => {
-    const gl = glRef.current;
-    const programInfo = programInfoRef.current;
-    if (!gl || !programInfo) return;
-
-    gl.clearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    gl.useProgram(programInfo.program);
-
-    const canvasWidth = gl.canvas.width;
-    const canvasHeight = gl.canvas.height;
-
-    gl.uniform2f(programInfo.uniformLocations.resolution, canvasWidth, canvasHeight);
-    gl.uniform2f(programInfo.uniformLocations.offset, gridState.offsetX, gridState.offsetY);
-    gl.uniform1f(programInfo.uniformLocations.scale, gridState.scale);
-
-    const visibleWidth = canvasWidth / gridState.scale;
-    const visibleHeight = canvasHeight / gridState.scale;
-
-    const startX = Math.max(0, Math.floor(gridState.offsetX / BASE_CELL_SIZE) * BASE_CELL_SIZE);
-    const startY = Math.max(0, Math.floor(gridState.offsetY / BASE_CELL_SIZE) * BASE_CELL_SIZE);
-    const endX = startX + visibleWidth + BASE_CELL_SIZE;
-    const endY = startY + visibleHeight + BASE_CELL_SIZE;
-
-    // Draw colored cells
-    optimisticPixels.forEach((pixel) => {
-      const x = pixel.x * BASE_CELL_SIZE;
-      const y = pixel.y * BASE_CELL_SIZE;
-      if (x >= startX && x < endX && y >= startY && y < endY) {
-        gl.uniform4f(programInfo.uniformLocations.color, pixel.color.r, pixel.color.g, pixel.color.b, pixel.color.a);
-        const positions = [x, y, x + BASE_CELL_SIZE, y, x, y + BASE_CELL_SIZE, x + BASE_CELL_SIZE, y + BASE_CELL_SIZE];
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBufferRef.current);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      }
-    });
-
-    // Draw grid lines
-    gl.uniform4f(programInfo.uniformLocations.color, gridColor.r, gridColor.g, gridColor.b, gridColor.a);
-    const positions: number[] = [];
-
-    for (let x = startX; x <= endX; x += BASE_CELL_SIZE) {
-      positions.push(x, startY, x, endY);
-    }
-
-    for (let y = startY; y <= endY; y += BASE_CELL_SIZE) {
-      positions.push(startX, y, endX, y);
-    }
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBufferRef.current);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-
-    gl.enableVertexAttribArray(programInfo.attribLocations.position);
-    gl.vertexAttribPointer(programInfo.attribLocations.position, 2, gl.FLOAT, false, 0, 0);
-
-    gl.drawArrays(gl.LINES, 0, positions.length / 2);
-  }, [gridState, backgroundColor, gridColor, optimisticPixels]);
-
   const handleTouchStart = useCallback(
     (e: React.TouchEvent<HTMLCanvasElement>) => {
       if (e.touches.length === 2) {
         gestureRef.current.isGesture = true;
-        gestureRef.current.gestureStartTime = Date.now();
+        gestureRef.current.gestureStartTime = performance.now();
         gestureRef.current.lastPinchDistance = getPinchDistance(e.touches);
         gestureRef.current.lastTouchPositions = getTouchPositions(e.touches);
         gestureRef.current.gestureType = null;
@@ -212,12 +158,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
         gestureRef.current.lastTouchPositions = currentPositions;
       } else if (e.touches.length === 1) {
         const touch = e.touches[0];
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
+        const { x, y } = convertClientPosToCanvasPos(canvasRef, touch.clientX, touch.clientY);
 
         startTransition(() => {
           updateCurrentMousePos(x, y);
@@ -280,12 +221,8 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     e.preventDefault();
-    const canvas = canvasRef.current;
-    if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const { x, y } = convertClientPosToCanvasPos(canvasRef, e.clientX, e.clientY);
 
     mouseDownPosRef.current = { x, y };
     isDraggingRef.current = false;
@@ -294,12 +231,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
       e.preventDefault();
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const { x, y } = convertClientPosToCanvasPos(canvasRef, e.clientX, e.clientY);
 
       startTransition(() => {
         updateCurrentMousePos(x, y);
@@ -330,13 +262,9 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const handleMouseUp = useCallback(
     async (e: React.MouseEvent<HTMLCanvasElement>) => {
       e.preventDefault();
-      const canvas = canvasRef.current;
-      if (!canvas) return;
 
       if (!isDraggingRef.current && mouseDownPosRef.current) {
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const { x, y } = convertClientPosToCanvasPos(canvasRef, e.clientX, e.clientY);
 
         const worldX = gridState.offsetX + x / gridState.scale;
         const worldY = gridState.offsetY + y / gridState.scale;
@@ -363,12 +291,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
   const handleWheel = useCallback(
     (e: React.WheelEvent<HTMLCanvasElement>) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const { x, y } = convertClientPosToCanvasPos(canvasRef, e.clientX, e.clientY);
 
       if (e.ctrlKey) {
         // Trackpad pinch gesture
@@ -404,12 +327,11 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     const touch2 = e.touches[1];
     const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const centerX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-    const centerY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+    const { x: centerX, y: centerY } = convertClientPosToCanvasPos(
+      canvasRef,
+      (touch1.clientX + touch2.clientX) / 2,
+      touch1.clientY + touch2.clientY
+    );
 
     setGridState((prev) => {
       const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * (dist / (prev.lastPinchDist || dist))));
@@ -429,23 +351,6 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     });
   }, []);
 
-  const resizeCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const gl = glRef.current;
-    if (!gl) return;
-
-    const displayWidth = canvas.clientWidth;
-    const displayHeight = canvas.clientHeight;
-
-    if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-      canvas.width = displayWidth;
-      canvas.height = displayHeight;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-    }
-  }, []);
-
   const animateJumpToCell = useCallback(
     (x: number, y: number, duration: number = 500) => {
       const canvas = canvasRef.current;
@@ -454,7 +359,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
 
-      const startTime = Date.now();
+      const startTime = performance.now();
       const startOffsetX = gridState.offsetX;
       const startOffsetY = gridState.offsetY;
 
@@ -462,10 +367,10 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       const targetOffsetY = Math.max(0, y * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasHeight / (2 * gridState.scale));
 
       const animateFrame = () => {
-        const elapsedTime = Date.now() - startTime;
+        const elapsedTime = performance.now() - startTime;
         const progress = Math.min(elapsedTime / duration, 1);
 
-        // イージング関数（オプション：スムーズな動きにする）
+        // easing function (optional: smooth movement)
         const easeProgress = 1 - Math.pow(1 - progress, 3);
 
         setGridState((prev) => ({
@@ -489,10 +394,8 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   );
 
   const animate = useCallback(() => {
-    resizeCanvas();
-    drawGrid();
-    requestAnimationFrame(animate);
-  }, [resizeCanvas, drawGrid]);
+    drawGrid(gridState, optimisticPixels);
+  }, [drawGrid, gridState, optimisticPixels]);
 
   // Effects
   useEffect(() => {
@@ -529,20 +432,64 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
     canvas.addEventListener("touchmove", handlePinchZoom);
 
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
     animate();
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
       canvas.removeEventListener("touchmove", handlePinchZoom);
     };
-  }, [handlePinchZoom, resizeCanvas, animate]);
+  }, [handlePinchZoom, animate]);
 
   setIdleTask(() => {
     setStoredLastPosition(currentMousePos);
   });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gl = glRef.current;
+    if (!gl) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      animate();
+    });
+
+    resizeObserver.observe(canvas);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const initPosition = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+
+      const targetOffsetX = Math.max(
+        0,
+        storedLastPosition.x * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasWidth / (2 * gridState.scale)
+      );
+      const targetOffsetY = Math.max(
+        0,
+        storedLastPosition.y * BASE_CELL_SIZE + BASE_CELL_SIZE / 2 - canvasHeight / (2 * gridState.scale)
+      );
+
+      setGridState((prev) => ({
+        ...prev,
+        offsetX: targetOffsetX,
+        offsetY: targetOffsetY,
+      }));
+    };
+
+    initPosition();
+  }, []);
 
   return {
     canvasRef,
