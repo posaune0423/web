@@ -1,6 +1,6 @@
 import { useApp } from "@/hooks/useApp";
 import { App } from "@/types";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/Skelton";
 
 const AppList = () => {
   const { apps, selectedApp, setSelectedApp } = useApp();
