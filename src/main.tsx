@@ -6,7 +6,7 @@ import { setup } from "@/libs/dojo/generated/setup.ts";
 import { DojoProvider } from "@/contexts/DojoContext.tsx";
 import { dojoConfig } from "../dojoConfig.ts";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
-import { Toaster } from "./components/ui/sonner.tsx";
+import { Toaster } from "./components/ui/Sonner.tsx";
 import SwipeControl from "./components/SwipeControl.tsx";
 import { AppProvider } from "./contexts/AppContext.tsx";
 
