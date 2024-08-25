@@ -3,7 +3,7 @@ import { ContractComponents } from "@/libs/dojo/generated/contractComponents";
 import { hexToRgba } from "@/utils";
 import { useEntityQuery } from "@dojoengine/react";
 import { getComponentValue, Has } from "@dojoengine/recs";
-import { useMemo } from "react";
+import { useMemo, useOptimistic } from "react";
 
 export const usePixels = (PixelComponent: ContractComponents["Pixel"]) => {
   const pixelEntities = useEntityQuery([Has(PixelComponent)]);
@@ -20,8 +20,12 @@ export const usePixels = (PixelComponent: ContractComponents["Pixel"]) => {
           };
         })
         .filter((pixel): pixel is Pixel => pixel !== undefined),
-    [pixelEntities, PixelComponent],
+    [pixelEntities, PixelComponent]
   );
 
-  return { pixels };
+  const [optimisticPixels, setOptimisticPixels] = useOptimistic(pixels, (pixels, newPixel: Pixel) => {
+    return [...pixels, newPixel];
+  });
+
+  return { pixels, optimisticPixels, setOptimisticPixels };
 };
