@@ -1,25 +1,16 @@
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useOptimistic,
-  useRef,
-  useState,
-} from "react";
+import { startTransition, useCallback, useEffect, useOptimistic, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../const";
 import { type Pixel, type Color, type ProgramInfo } from "../types";
 import { initShaderProgram } from "../webgl";
 import { useDojo } from "@/hooks/useDojo";
-import { hexToRgba, rgbaToHex } from "@/utils";
-import { useEntityQuery } from "@dojoengine/react";
-import { getComponentValue, Has } from "@dojoengine/recs";
+import { rgbaToHex } from "@/utils";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
 import { useWebGL } from "./useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { sounds } from "@/constants";
 import { useSound } from "use-sound";
 import { useGridState } from "./useGridState";
+import { usePixels } from "@/hooks/usePixels";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   // Refs
@@ -52,22 +43,9 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     },
   } = useDojo();
 
-  const pixelEntities = useEntityQuery([Has(Pixel)]);
-  const pixels = useMemo(
-    () =>
-      pixelEntities
-        .map((entity) => {
-          const value = getComponentValue(Pixel, entity);
-          if (!value) return;
-          return {
-            x: value.x,
-            y: value.y,
-            color: hexToRgba(value.color),
-          };
-        })
-        .filter((pixel): pixel is Pixel => pixel !== undefined),
-    [pixelEntities, Pixel],
-  );
+  const { drawGrid } = useWebGL({ canvasRef, backgroundColor, gridColor });
+  const { gridState, setGridState } = useGridState();
+  const { pixels } = usePixels(Pixel);
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
@@ -77,9 +55,6 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
       return [...pixels, newPixel];
     },
   );
-
-  const { drawGrid } = useWebGL({ canvasRef, backgroundColor, gridColor });
-  const { gridState, setGridState } = useGridState();
 
   // Handlers
   const updateCurrentMousePos = useCallback(
