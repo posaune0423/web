@@ -11,7 +11,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
 
   const [visiblePixels, setVisiblePixels] = useState<Pixel[]>([]);
   const lastFetchedRange = useRef({ upperLeftX: 0, upperLeftY: 0, lowerRightX: 0, lowerRightY: 0 });
-  const fetchThreshold = 0.2; // 20%の変化で再フェッチ
+  const fetchThreshold = 0.2;
 
   const getVisiblePixelRange = useCallback(() => {
     const canvas = canvasRef.current;
@@ -44,7 +44,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         Math.abs(lowerRightY - lastRange.lowerRightY) > (lowerRightY - upperLeftY) * fetchThreshold;
       if (!shouldFetch) return;
 
-      const data = await toriiClient.getEntities({
+      const entities = await toriiClient.getEntities({
         limit: 50000,
         offset: 0,
         clause: {
@@ -60,7 +60,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         },
       });
 
-      const pixels = Object.values(data).map((entity) => {
+      const pixels = Object.values(entities).map((entity) => {
         return {
           x: entity["pixelaw-Pixel"].x.value as number,
           y: entity["pixelaw-Pixel"].y.value as number,

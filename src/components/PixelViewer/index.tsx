@@ -1,7 +1,7 @@
 import React from "react";
 import { DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR } from "./const";
 import { usePixelViewer } from "./hooks/usePixelViewer";
-import { type Color } from "./types";
+import { type Color } from "@/types";
 import { CoordinateFinder } from "../CoordinateFinder";
 import { ColorPalette } from "../ColorPallette";
 

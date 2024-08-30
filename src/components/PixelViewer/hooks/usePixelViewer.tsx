@@ -1,6 +1,5 @@
 import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../const";
-import { type ProgramInfo } from "../types";
 import { initShaderProgram } from "../webgl";
 import { useDojo } from "@/hooks/useDojo";
 import { rgbaToHex } from "@/utils";
@@ -11,7 +10,7 @@ import { sounds } from "@/constants";
 import { useSound } from "use-sound";
 import { useGridState } from "@/hooks/useGridState";
 import { usePixels } from "@/hooks/usePixels";
-import { type Color } from "@/types";
+import { type Color, type ProgramInfo } from "@/types";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   // Refs
@@ -50,7 +49,6 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
   // Handlers
-
   const updateCurrentMousePos = useCallback(
     (canvasX: number, canvasY: number) => {
       const worldX = gridState.offsetX + canvasX / gridState.scale;

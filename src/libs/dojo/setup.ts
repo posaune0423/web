@@ -28,8 +28,7 @@ export async function setup({ ...config }: DojoConfig) {
 
   // fetch all existing entities from torii
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const entities = getSyncEntities(toriiClient, clientComponents as any, []);
-  console.log("entities", entities);
+  const syncs = getSyncEntities(toriiClient, clientComponents as any, []);
 
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl);
@@ -72,5 +71,6 @@ export async function setup({ ...config }: DojoConfig) {
     dojoProvider,
     burnerManager,
     toriiClient,
+    syncs,
   };
 }

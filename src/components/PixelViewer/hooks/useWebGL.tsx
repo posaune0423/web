@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
-import { type Color, type Pixel, type GridState, type ProgramInfo } from "../types";
-import { initShaderProgram } from "../webgl";
 import { BASE_CELL_SIZE, MIN_SCALE } from "../const";
+import { initShaderProgram } from "../webgl";
+import { Color, GridState, Pixel, ProgramInfo } from "@/types";
 
 export const useWebGL = ({
   canvasRef,
@@ -89,13 +89,7 @@ export const useWebGL = ({
         const x = pixel.x * BASE_CELL_SIZE;
         const y = pixel.y * BASE_CELL_SIZE;
         if (x >= startX && x < endX && y >= startY && y < endY) {
-          gl.uniform4f(
-            programInfo.uniformLocations.color,
-            pixel.color.r,
-            pixel.color.g,
-            pixel.color.b,
-            pixel.color.a,
-          );
+          gl.uniform4f(programInfo.uniformLocations.color, pixel.color.r, pixel.color.g, pixel.color.b, pixel.color.a);
           const positions = [
             x,
             y,
@@ -121,7 +115,7 @@ export const useWebGL = ({
         gridColor.r * darker,
         gridColor.g * darker,
         gridColor.b * darker,
-        gridColor.a,
+        gridColor.a
       );
 
       const baseLineWidth = 1.0;
@@ -146,7 +140,7 @@ export const useWebGL = ({
 
       gl.drawArrays(gl.LINES, 0, positions.length / 2);
     },
-    [backgroundColor, gridColor, programInfoRef, positionBufferRef],
+    [backgroundColor, gridColor, programInfoRef, positionBufferRef]
   );
 
   return { drawGrid };
