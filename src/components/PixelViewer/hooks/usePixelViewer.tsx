@@ -1,6 +1,6 @@
 import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../const";
-import { type Color, type ProgramInfo } from "../types";
+import { type ProgramInfo } from "../types";
 import { initShaderProgram } from "../webgl";
 import { useDojo } from "@/hooks/useDojo";
 import { rgbaToHex } from "@/utils";
@@ -11,6 +11,7 @@ import { sounds } from "@/constants";
 import { useSound } from "use-sound";
 import { useGridState } from "@/hooks/useGridState";
 import { usePixels } from "@/hooks/usePixels";
+import { type Color } from "@/types";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
   // Refs
@@ -44,7 +45,7 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
   const { drawGrid } = useWebGL({ canvasRef, backgroundColor, gridColor });
   const { gridState, setGridState } = useGridState();
-  const { optimisticPixels, setOptimisticPixels } = usePixels();
+  const { optimisticPixels, setOptimisticPixels } = usePixels(canvasRef, gridState);
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
