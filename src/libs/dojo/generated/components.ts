@@ -22,7 +22,7 @@ export function defineContractComponents(world: World) {
             types: ["contractaddress", "felt252", "felt252", "felt252", "felt252"],
             customTypes: [],
           },
-        }
+        },
       );
     })(),
     AppName: (() => {
@@ -35,7 +35,7 @@ export function defineContractComponents(world: World) {
             types: ["felt252", "contractaddress"],
             customTypes: [],
           },
-        }
+        },
       );
     })(),
     AppUser: (() => {
@@ -48,7 +48,7 @@ export function defineContractComponents(world: World) {
             types: ["contractaddress", "contractaddress", "felt252"],
             customTypes: [],
           },
-        }
+        },
       );
     })(),
     CoreActionsAddress: (() => {
@@ -61,7 +61,7 @@ export function defineContractComponents(world: World) {
             types: ["felt252", "contractaddress"],
             customTypes: [],
           },
-        }
+        },
       );
     })(),
     Instruction: (() => {
@@ -74,7 +74,7 @@ export function defineContractComponents(world: World) {
             types: ["contractaddress", "felt252", "felt252"],
             customTypes: [],
           },
-        }
+        },
       );
     })(),
     Permissions: (() => {
@@ -95,10 +95,19 @@ export function defineContractComponents(world: World) {
         {
           metadata: {
             name: "pixelaw-Permissions",
-            types: ["contractaddress", "contractaddress", "bool", "bool", "bool", "bool", "bool", "bool"],
+            types: [
+              "contractaddress",
+              "contractaddress",
+              "bool",
+              "bool",
+              "bool",
+              "bool",
+              "bool",
+              "bool",
+            ],
             customTypes: ["Permission"],
           },
-        }
+        },
       );
     })(),
     Pixel: (() => {
@@ -133,7 +142,7 @@ export function defineContractComponents(world: World) {
             ],
             customTypes: [],
           },
-        }
+        },
       );
     })(),
     QueueItem: (() => {
@@ -146,7 +155,7 @@ export function defineContractComponents(world: World) {
             types: ["felt252", "bool"],
             customTypes: [],
           },
-        }
+        },
       );
     })(),
     Snake: (() => {
@@ -168,7 +177,7 @@ export function defineContractComponents(world: World) {
             types: ["contractaddress", "u8", "u32", "u32", "enum", "u32", "felt252", "bool"],
             customTypes: ["Direction"],
           },
-        }
+        },
       );
     })(),
     SnakeSegment: (() => {
@@ -190,7 +199,7 @@ export function defineContractComponents(world: World) {
             types: ["u32", "u32", "u32", "u32", "u32", "u32", "felt252", "contractaddress"],
             customTypes: [],
           },
-        }
+        },
       );
     })(),
   };

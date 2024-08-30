@@ -22,7 +22,7 @@ export const DojoProvider = ({ children, value }: { children: ReactNode; value: 
 
   const masterAccount = useMemo(
     () => new Account(dojoProvider.provider, masterAddress, masterPrivateKey, "1"),
-    [masterAddress, masterPrivateKey, dojoProvider.provider]
+    [masterAddress, masterPrivateKey, dojoProvider.provider],
   );
 
   const {

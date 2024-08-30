@@ -4,7 +4,10 @@ import { GridState, Pixel } from "../types";
 import { BASE_CELL_SIZE } from "@/components/PixelViewer/const";
 import { useDojo } from "./useDojo";
 
-export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, gridState: GridState) => {
+export const usePixels = (
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
+  gridState: GridState,
+) => {
   const {
     setup: { toriiClient },
   } = useDojo();
@@ -40,7 +43,8 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       const shouldFetch =
         Math.abs(upperLeftX - lastRange.upperLeftX) > (lowerRightX - upperLeftX) * fetchThreshold ||
         Math.abs(upperLeftY - lastRange.upperLeftY) > (lowerRightY - upperLeftY) * fetchThreshold ||
-        Math.abs(lowerRightX - lastRange.lowerRightX) > (lowerRightX - upperLeftX) * fetchThreshold ||
+        Math.abs(lowerRightX - lastRange.lowerRightX) >
+          (lowerRightX - upperLeftX) * fetchThreshold ||
         Math.abs(lowerRightY - lastRange.lowerRightY) > (lowerRightY - upperLeftY) * fetchThreshold;
       if (!shouldFetch) return;
 
@@ -51,10 +55,38 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
           Composite: {
             operator: "And",
             clauses: [
-              { Member: { model: "pixelaw-Pixel", member: "x", operator: "Gte", value: { U32: upperLeftX } } },
-              { Member: { model: "pixelaw-Pixel", member: "x", operator: "Lte", value: { U32: lowerRightX } } },
-              { Member: { model: "pixelaw-Pixel", member: "y", operator: "Gte", value: { U32: upperLeftY } } },
-              { Member: { model: "pixelaw-Pixel", member: "y", operator: "Lte", value: { U32: lowerRightY } } },
+              {
+                Member: {
+                  model: "pixelaw-Pixel",
+                  member: "x",
+                  operator: "Gte",
+                  value: { U32: upperLeftX },
+                },
+              },
+              {
+                Member: {
+                  model: "pixelaw-Pixel",
+                  member: "x",
+                  operator: "Lte",
+                  value: { U32: lowerRightX },
+                },
+              },
+              {
+                Member: {
+                  model: "pixelaw-Pixel",
+                  member: "y",
+                  operator: "Gte",
+                  value: { U32: upperLeftY },
+                },
+              },
+              {
+                Member: {
+                  model: "pixelaw-Pixel",
+                  member: "y",
+                  operator: "Lte",
+                  value: { U32: lowerRightY },
+                },
+              },
             ],
           },
         },
@@ -75,9 +107,12 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     fetchPixels();
   }, [toriiClient, getVisiblePixelRange]);
 
-  const [optimisticPixels, setOptimisticPixels] = useOptimistic(visiblePixels, (pixels, newPixel: Pixel) => {
-    return [...pixels, newPixel];
-  });
+  const [optimisticPixels, setOptimisticPixels] = useOptimistic(
+    visiblePixels,
+    (pixels, newPixel: Pixel) => {
+      return [...pixels, newPixel];
+    },
+  );
 
   return { optimisticPixels, setOptimisticPixels };
 };
