@@ -1,27 +1,56 @@
 import { Pixel } from "@/components/PixelViewer/types";
-import { ContractComponents } from "@/libs/dojo/generated/contractComponents";
-import { hexToRgba } from "@/utils";
-import { useEntityQuery } from "@dojoengine/react";
-import { getComponentValue, Has } from "@dojoengine/recs";
-import { useMemo, useOptimistic } from "react";
+import { useEffect, useOptimistic, useState } from "react";
+import { useDojo } from "./useDojo";
+import { useGridState } from "./useGridState";
 
-export const usePixels = (PixelComponent: ContractComponents["Pixel"]) => {
-  const pixelEntities = useEntityQuery([Has(PixelComponent)]);
-  const pixels = useMemo(
-    () =>
-      pixelEntities
-        .map((entity) => {
-          const value = getComponentValue(PixelComponent, entity);
-          if (!value) return;
-          return {
-            x: value.x,
-            y: value.y,
-            color: hexToRgba(value.color),
-          };
-        })
-        .filter((pixel): pixel is Pixel => pixel !== undefined),
-    [pixelEntities, PixelComponent]
-  );
+export const usePixels = () => {
+  const {
+    setup: { toriiClient },
+  } = useDojo();
+
+  const { gridState } = useGridState();
+
+  const [pixels, setPixels] = useState<Pixel[]>([]);
+
+  useEffect(() => {
+    const fetchPixels = async () => {
+      const pixelEntities = await toriiClient.getEntities({
+        limit: 1000,
+        offset: 0,
+        clause: {
+          Composite: {
+            operator: "And",
+            clauses: [
+              { Member: { model: "pixelaw-Pixel", member: "x", operator: "Gt", value: { U32: gridState.offsetX } } },
+              {
+                Member: {
+                  model: "pixelaw-Pixel",
+                  member: "x",
+                  operator: "Lt",
+                  value: { U32: gridState.offsetX + gridState.scale },
+                },
+              },
+              { Member: { model: "pixelaw-Pixel", member: "y", operator: "Gt", value: { U32: gridState.offsetY } } },
+              {
+                Member: {
+                  model: "pixelaw-Pixel",
+                  member: "y",
+                  operator: "Lt",
+                  value: { U32: gridState.offsetY + gridState.scale },
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      Object.values(pixelEntities).forEach((pixelEntity) => {
+        console.log({pixelEntity});
+      });
+    };
+
+    fetchPixels();
+  }, [toriiClient, gridState]);
 
   const [optimisticPixels, setOptimisticPixels] = useOptimistic(pixels, (pixels, newPixel: Pixel) => {
     return [...pixels, newPixel];

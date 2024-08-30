@@ -9,7 +9,7 @@ import { useWebGL } from "./useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { sounds } from "@/constants";
 import { useSound } from "use-sound";
-import { useGridState } from "./useGridState";
+import { useGridState } from "@/hooks/useGridState";
 import { usePixels } from "@/hooks/usePixels";
 
 export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
@@ -39,13 +39,12 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     setup: {
       systemCalls: { interact },
       account: { account },
-      contractComponents: { Pixel },
     },
   } = useDojo();
 
   const { drawGrid } = useWebGL({ canvasRef, backgroundColor, gridColor });
   const { gridState, setGridState } = useGridState();
-  const { optimisticPixels, setOptimisticPixels } = usePixels(Pixel);
+  const { optimisticPixels, setOptimisticPixels } = usePixels();
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 

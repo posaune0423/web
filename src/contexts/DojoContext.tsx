@@ -1,7 +1,7 @@
 import { type BurnerAccount, useBurnerManager } from "@dojoengine/create-burner";
 import { type ReactNode, createContext, useContext, useMemo } from "react";
 import { Account } from "starknet";
-import { type SetupResult } from "../libs/dojo/generated/setup";
+import { type SetupResult } from "@/libs/dojo/setup";
 
 interface DojoContextType extends SetupResult {
   masterAccount: Account;
@@ -22,7 +22,7 @@ export const DojoProvider = ({ children, value }: { children: ReactNode; value: 
 
   const masterAccount = useMemo(
     () => new Account(dojoProvider.provider, masterAddress, masterPrivateKey, "1"),
-    [masterAddress, masterPrivateKey, dojoProvider.provider],
+    [masterAddress, masterPrivateKey, dojoProvider.provider]
   );
 
   const {

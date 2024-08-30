@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GridState } from "../types";
+import { GridState } from "../components/PixelViewer/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { setIdleTask } from "idle-task";
 

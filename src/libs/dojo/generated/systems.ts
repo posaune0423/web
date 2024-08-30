@@ -54,7 +54,7 @@ export async function setupWorld(provider: DojoProvider) {
             entrypoint: "init",
             calldata: [],
           },
-          NAMESPACE,
+          NAMESPACE
         );
       } catch (error) {
         handleError("initCore", error);
@@ -71,7 +71,7 @@ export async function setupWorld(provider: DojoProvider) {
             entrypoint: "update_pixel",
             calldata: [ZERO_ADDRESS, ZERO_ADDRESS, pixelUpdate],
           },
-          NAMESPACE,
+          NAMESPACE
         );
       } catch (error) {
         handleError("updatePixel", error);
@@ -88,7 +88,7 @@ export async function setupWorld(provider: DojoProvider) {
             entrypoint: "init",
             calldata: [],
           },
-          NAMESPACE,
+          NAMESPACE
         );
       } catch (error) {
         handleError("initPaint", error);
@@ -104,7 +104,7 @@ export async function setupWorld(provider: DojoProvider) {
             entrypoint: "interact",
             calldata: [{ forPlayer: ZERO_ADDRESS, forSystem: ZERO_ADDRESS, ...params }],
           },
-          NAMESPACE,
+          NAMESPACE
         );
       } catch (error) {
         handleError("putColor", error);
