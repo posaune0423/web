@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { type Color } from "@/components/PixelViewer/types";
+import { type Color } from "@/types";
 import { getComponentValue } from "@dojoengine/recs";
 import { App } from "@/types";
 import { shortString } from "starknet";
@@ -92,11 +92,9 @@ export const felt252ToUnicode = (felt252: string | number) => {
   return string;
 };
 
-export const fromComponent = (
-  appComponent: ReturnType<typeof getComponentValue>,
-): App | undefined => {
+export const fromComponent = (appComponent: ReturnType<typeof getComponentValue>): App | undefined => {
   if (!appComponent) return undefined;
-  console.log(appComponent);
+
   return {
     name: shortString.decodeShortString(appComponent.name),
     icon: felt252ToUnicode(appComponent.icon),

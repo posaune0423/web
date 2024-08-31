@@ -1,17 +1,28 @@
-import { Pixel } from "@/components/PixelViewer/types";
-import { ContractComponents } from "@/libs/dojo/generated/contractComponents";
+import { Pixel } from "@/types";
 import { hexToRgba } from "@/utils";
-import { useEntityQuery } from "@dojoengine/react";
+import { useEntityQuery, useQuerySync } from "@dojoengine/react";
 import { getComponentValue, Has } from "@dojoengine/recs";
 import { useMemo, useOptimistic } from "react";
+import { useDojo } from "./useDojo";
 
-export const usePixels = (PixelComponent: ContractComponents["Pixel"]) => {
-  const pixelEntities = useEntityQuery([Has(PixelComponent)]);
+export const usePixels = () => {
+  const {
+    setup: {
+      contractComponents,
+      clientComponents: { Pixel },
+      toriiClient,
+    },
+  } = useDojo();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useQuerySync(toriiClient, contractComponents as any, []);
+
+  const pixelEntities = useEntityQuery([Has(Pixel)]);
   const pixels = useMemo(
     () =>
       pixelEntities
         .map((entity) => {
-          const value = getComponentValue(PixelComponent, entity);
+          const value = getComponentValue(Pixel, entity);
           if (!value) return;
           return {
             x: value.x,
@@ -20,12 +31,12 @@ export const usePixels = (PixelComponent: ContractComponents["Pixel"]) => {
           };
         })
         .filter((pixel): pixel is Pixel => pixel !== undefined),
-    [pixelEntities, PixelComponent]
+    [pixelEntities]
   );
 
   const [optimisticPixels, setOptimisticPixels] = useOptimistic(pixels, (pixels, newPixel: Pixel) => {
     return [...pixels, newPixel];
   });
 
-  return { pixels, optimisticPixels, setOptimisticPixels };
+  return { optimisticPixels, setOptimisticPixels };
 };

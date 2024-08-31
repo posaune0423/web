@@ -1,7 +1,7 @@
 import React, { createContext, useState, ReactNode, useMemo } from "react";
 import { App } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
-import { useEntityQuery } from "@dojoengine/react";
+import { useEntityQuery, useQuerySync } from "@dojoengine/react";
 import { ComponentValue, getComponentValue, Has, Schema } from "@dojoengine/recs";
 import { fromComponent } from "@/utils";
 
@@ -15,13 +15,19 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const {
-    setup: { contractComponents },
+    setup: {
+      clientComponents: { App },
+      contractComponents,
+      toriiClient,
+    },
   } = useDojo();
 
-  const appEntities = useEntityQuery([Has(contractComponents.App)]);
-  const values = [...appEntities].map((entityId) =>
-    getComponentValue(contractComponents.App, entityId),
-  );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useQuerySync(toriiClient, contractComponents as any, []);
+
+  const appEntities = useEntityQuery([Has(App)]);
+
+  const values = appEntities.map((entityId) => getComponentValue(App, entityId));
   const apps = useMemo(
     () =>
       values.reduce((acc: App[], appComponent: ComponentValue<Schema, unknown> | undefined) => {
@@ -29,16 +35,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         if (app) acc.push(app);
         return acc;
       }, []),
-    [values],
+    [values]
   );
 
-  const [selectedApp, setSelectedApp] = useState<App>(
-    apps[0] ?? { name: "", system: "", icon: "" },
-  );
+  const [selectedApp, setSelectedApp] = useState<App>(apps[0] ?? { name: "", system: "", icon: "" });
 
-  return (
-    <AppContext.Provider value={{ apps, selectedApp, setSelectedApp }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={{ apps, selectedApp, setSelectedApp }}>{children}</AppContext.Provider>;
 };

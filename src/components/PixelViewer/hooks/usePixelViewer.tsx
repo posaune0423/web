@@ -1,7 +1,6 @@
 import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../const";
-import { type Color, type ProgramInfo } from "../types";
-import { initShaderProgram } from "../webgl";
+import { type Color } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
 import { rgbaToHex } from "@/utils";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
@@ -9,19 +8,16 @@ import { useWebGL } from "./useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { sounds } from "@/constants";
 import { useSound } from "use-sound";
-import { useGridState } from "./useGridState";
+import { useGridState } from "@/hooks/useGridState";
 import { usePixels } from "@/hooks/usePixels";
 
-export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
+export const usePixelViewer = () => {
   // Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDraggingRef = useRef<boolean>(false);
   const lastTouchPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
   const touchStartPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const glRef = useRef<WebGLRenderingContext | null>(null);
-  const programInfoRef = useRef<ProgramInfo | null>(null);
-  const positionBufferRef = useRef<WebGLBuffer | null>(null);
   const gestureRef = useRef({
     lastPinchDistance: null as number | null,
     lastTouchPositions: null as { x: number; y: number }[] | null,
@@ -39,18 +35,15 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
     setup: {
       systemCalls: { interact },
       account: { account },
-      contractComponents: { Pixel },
     },
   } = useDojo();
-
-  const { drawGrid } = useWebGL({ canvasRef, backgroundColor, gridColor });
+  const { glRef, drawGrid } = useWebGL(canvasRef);
   const { gridState, setGridState } = useGridState();
-  const { optimisticPixels, setOptimisticPixels } = usePixels(Pixel);
+  const { optimisticPixels, setOptimisticPixels } = usePixels();
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
   // Handlers
-
   const updateCurrentMousePos = useCallback(
     (canvasX: number, canvasY: number) => {
       const worldX = gridState.offsetX + canvasX / gridState.scale;
@@ -368,38 +361,6 @@ export const usePixelViewer = (backgroundColor: Color, gridColor: Color) => {
 
   // Effects
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      console.error("Canvas not found");
-      return;
-    }
-
-    const gl = canvas.getContext("webgl");
-    if (!gl) {
-      console.error("WebGL not supported");
-      return;
-    }
-    glRef.current = gl;
-
-    const shaderProgram = initShaderProgram(gl);
-    if (!shaderProgram) return;
-
-    programInfoRef.current = {
-      program: shaderProgram,
-      attribLocations: {
-        position: gl.getAttribLocation(shaderProgram, "aPosition"),
-      },
-      uniformLocations: {
-        resolution: gl.getUniformLocation(shaderProgram, "uResolution"),
-        offset: gl.getUniformLocation(shaderProgram, "uOffset"),
-        scale: gl.getUniformLocation(shaderProgram, "uScale"),
-        color: gl.getUniformLocation(shaderProgram, "uColor"),
-        lineWidth: gl.getUniformLocation(shaderProgram, "uLineWidth"),
-      },
-    };
-
-    positionBufferRef.current = gl.createBuffer();
-
     animate();
   }, [animate]);
 

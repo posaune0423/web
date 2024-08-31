@@ -1,17 +1,9 @@
 import { useCallback, useEffect, useRef } from "react";
-import { type Color, type Pixel, type GridState, type ProgramInfo } from "../types";
+import { type Pixel, type GridState, type ProgramInfo } from "@/types";
 import { initShaderProgram } from "../webgl";
-import { BASE_CELL_SIZE, MIN_SCALE } from "../const";
+import { BASE_CELL_SIZE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR, MIN_SCALE } from "../const";
 
-export const useWebGL = ({
-  canvasRef,
-  backgroundColor,
-  gridColor,
-}: {
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  backgroundColor: Color;
-  gridColor: Color;
-}) => {
+export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => {
   const glRef = useRef<WebGLRenderingContext | null>(null);
   const programInfoRef = useRef<ProgramInfo | null>(null);
   const positionBufferRef = useRef<WebGLBuffer | null>(null);
@@ -53,7 +45,12 @@ export const useWebGL = ({
       const programInfo = programInfoRef.current;
       if (!gl || !programInfo) return;
 
-      gl.clearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+      gl.clearColor(
+        DEFAULT_BACKGROUND_COLOR.r,
+        DEFAULT_BACKGROUND_COLOR.g,
+        DEFAULT_BACKGROUND_COLOR.b,
+        DEFAULT_BACKGROUND_COLOR.a
+      );
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       gl.useProgram(programInfo.program);
@@ -89,13 +86,7 @@ export const useWebGL = ({
         const x = pixel.x * BASE_CELL_SIZE;
         const y = pixel.y * BASE_CELL_SIZE;
         if (x >= startX && x < endX && y >= startY && y < endY) {
-          gl.uniform4f(
-            programInfo.uniformLocations.color,
-            pixel.color.r,
-            pixel.color.g,
-            pixel.color.b,
-            pixel.color.a,
-          );
+          gl.uniform4f(programInfo.uniformLocations.color, pixel.color.r, pixel.color.g, pixel.color.b, pixel.color.a);
           const positions = [
             x,
             y,
@@ -118,10 +109,10 @@ export const useWebGL = ({
 
       gl.uniform4f(
         programInfo.uniformLocations.color,
-        gridColor.r * darker,
-        gridColor.g * darker,
-        gridColor.b * darker,
-        gridColor.a,
+        DEFAULT_GRID_COLOR.r * darker,
+        DEFAULT_GRID_COLOR.g * darker,
+        DEFAULT_GRID_COLOR.b * darker,
+        DEFAULT_GRID_COLOR.a
       );
 
       const baseLineWidth = 1.0;
@@ -146,8 +137,8 @@ export const useWebGL = ({
 
       gl.drawArrays(gl.LINES, 0, positions.length / 2);
     },
-    [backgroundColor, gridColor, programInfoRef, positionBufferRef],
+    [programInfoRef, positionBufferRef]
   );
 
-  return { drawGrid };
+  return { glRef, programInfoRef, positionBufferRef, drawGrid };
 };

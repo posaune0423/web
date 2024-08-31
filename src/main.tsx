@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.scss";
-import App from "./app/App.tsx";
-import { setup } from "@/libs/dojo/generated/setup.ts";
-import { DojoProvider } from "@/contexts/DojoContext.tsx";
-import { dojoConfig } from "../dojoConfig.ts";
-import { ThemeProvider } from "./components/ThemeProvider.tsx";
-import { Toaster } from "./components/ui/Sonner.tsx";
-import SwipeControl from "./components/SwipeControl.tsx";
-import { AppProvider } from "./contexts/AppContext.tsx";
+import App from "./app/App";
+import { setup } from "@/libs/dojo/setup";
+import { DojoProvider } from "@/contexts/DojoContext";
+import { dojoConfig } from "../dojoConfig";
+import { ThemeProvider } from "./components/ThemeProvider";
+import { Toaster } from "./components/ui/Sonner";
+import SwipeControl from "./components/SwipeControl";
+import { AppProvider } from "./contexts/AppContext";
 
 const init = async () => {
   const rootElement = document.getElementById("root");
@@ -19,9 +19,7 @@ const init = async () => {
 
   if (!setupResult) {
     root.render(
-      <div className="bg-[#010101cc] flex h-screen items-center justify-center text-xl text-white">
-        Loading...
-      </div>,
+      <div className="bg-[#010101cc] flex h-screen items-center justify-center text-xl text-white">Loading...</div>
     );
     return;
   }
@@ -38,7 +36,7 @@ const init = async () => {
           </DojoProvider>
         </ThemeProvider>
       </SwipeControl>
-    </React.StrictMode>,
+    </React.StrictMode>
   );
 };
 

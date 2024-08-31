@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars -- for now */
 import { Account, type AccountInterface } from "starknet";
 import { type ClientComponents } from "./createClientComponents";
-import { type ContractComponents } from "./generated/contractComponents";
-import type { DefaultParams, IWorld, PixelUpdate } from "./generated/generated";
+import { type ContractComponents } from "./generated/components";
+import type { DefaultParams, IWorld, PixelUpdate } from "./generated/systems";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 

@@ -1,4 +1,4 @@
-import { type Color, type GridDimensions } from "./types";
+import { type Color, type GridDimensions } from "@/types";
 
 export const DEFAULT_BACKGROUND_COLOR: Color = { r: 0.01, g: 0.01, b: 0.01, a: 0.8 };
 export const DEFAULT_GRID_COLOR: Color = { r: 0.8, g: 0.8, b: 0.8, a: 0.8 };

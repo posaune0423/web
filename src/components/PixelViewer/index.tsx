@@ -1,7 +1,6 @@
 import React from "react";
-import { DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR } from "./const";
 import { usePixelViewer } from "./hooks/usePixelViewer";
-import { type Color } from "./types";
+import { type Color } from "@/types";
 import { CoordinateFinder } from "../CoordinateFinder";
 import { ColorPalette } from "../ColorPallette";
 
@@ -10,10 +9,7 @@ interface PixelViewerProps {
   gridColor?: Color;
 }
 
-const PixelViewer: React.FC<PixelViewerProps> = ({
-  backgroundColor = DEFAULT_BACKGROUND_COLOR,
-  gridColor = DEFAULT_GRID_COLOR,
-}) => {
+const PixelViewer: React.FC<PixelViewerProps> = () => {
   const {
     canvasRef,
     currentMousePos,
@@ -27,7 +23,7 @@ const PixelViewer: React.FC<PixelViewerProps> = ({
     handleMouseUp,
     handleWheel,
     animateJumpToCell,
-  } = usePixelViewer(backgroundColor, gridColor);
+  } = usePixelViewer();
 
   return (
     <section className="relative h-full w-full">

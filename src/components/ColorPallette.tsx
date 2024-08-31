@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
-import { COLOR_PALETTE } from "./PixelViewer/const";
-import { Color } from "./PixelViewer/types";
+import { COLOR_PALETTE } from "@/components/PixelViewer/const";
+import { type Color } from "@/types";
 import { rgbaToHex } from "@/utils";
 
 const ColorPalette = ({

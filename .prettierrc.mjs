@@ -4,5 +4,5 @@ export default {
   semi: true,
   singleQuote: false,
   jsxSingleQuote: false,
-  printWidth: 100,
+  printWidth: 120,
 };
