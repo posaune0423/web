@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { type Pixel, type GridState, type ProgramInfo } from "@/types";
-import { initShaderProgram } from "../webgl";
-import { BASE_CELL_SIZE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR, MIN_SCALE } from "../const";
+import { initShaderProgram } from "@/libs/webgl/helper";
+import { BASE_CELL_SIZE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR, MIN_SCALE } from "@/constants/webgl";
 
 export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => {
   const glRef = useRef<WebGLRenderingContext | null>(null);

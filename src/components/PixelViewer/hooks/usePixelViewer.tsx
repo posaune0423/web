@@ -1,10 +1,10 @@
 import { startTransition, useCallback, useEffect, useRef, useState } from "react";
-import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../const";
+import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "@/constants/webgl";
 import { type Color } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
 import { rgbaToHex } from "@/utils";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
-import { useWebGL } from "./useWebGL";
+import { useWebGL } from "../../../hooks/useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { sounds } from "@/constants";
 import { useSound } from "use-sound";

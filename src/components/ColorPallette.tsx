@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { COLOR_PALETTE } from "@/components/PixelViewer/const";
+import { COLOR_PALETTE } from "@/constants/webgl";
 import { type Color } from "@/types";
 import { rgbaToHex } from "@/utils";
 
