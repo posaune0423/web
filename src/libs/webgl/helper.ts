@@ -1,5 +1,6 @@
-import fsSource from "@/libs/webgl/glsl/main.fs";
-import vsSource from "@/libs/webgl/glsl/main.vs";
+import fsSource from "@/libs/webgl/shaders/main.fs";
+import vsSource from "@/libs/webgl/shaders/main.vs";
+import { ProgramInfo } from "@/types";
 
 const loadShader = (gl: WebGLRenderingContext, type: number, source: string): WebGLShader | null => {
   const shader = gl.createShader(type);
@@ -43,4 +44,27 @@ export const initShaderProgram = (gl: WebGLRenderingContext): WebGLProgram | nul
   }
 
   return shaderProgram;
+};
+
+export const createProgramInfo = (gl: WebGLRenderingContext): ProgramInfo => {
+  const shaderProgram = initShaderProgram(gl);
+  if (!shaderProgram) {
+    throw new Error("Unable to initialize the shader program");
+  }
+
+  const programInfo = {
+    program: shaderProgram,
+    attribLocations: {
+      position: gl.getAttribLocation(shaderProgram, "aPosition"),
+    },
+    uniformLocations: {
+      resolution: gl.getUniformLocation(shaderProgram, "uResolution"),
+      offset: gl.getUniformLocation(shaderProgram, "uOffset"),
+      scale: gl.getUniformLocation(shaderProgram, "uScale"),
+      color: gl.getUniformLocation(shaderProgram, "uColor"),
+      lineWidth: gl.getUniformLocation(shaderProgram, "uLineWidth"), //
+    },
+  };
+
+  return programInfo;
 };

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { type Pixel, type GridState, type ProgramInfo } from "@/types";
-import { initShaderProgram } from "@/libs/webgl/helper";
+import { createProgramInfo } from "@/libs/webgl/helper";
 import { BASE_CELL_SIZE, DEFAULT_BACKGROUND_COLOR, DEFAULT_GRID_COLOR, MIN_SCALE } from "@/constants/webgl";
 
 export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => {
@@ -17,25 +17,9 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>) =
       console.error("WebGL not supported");
       return;
     }
+
     glRef.current = gl;
-
-    const shaderProgram = initShaderProgram(gl);
-    if (!shaderProgram) return;
-
-    programInfoRef.current = {
-      program: shaderProgram,
-      attribLocations: {
-        position: gl.getAttribLocation(shaderProgram, "aPosition"),
-      },
-      uniformLocations: {
-        resolution: gl.getUniformLocation(shaderProgram, "uResolution"),
-        offset: gl.getUniformLocation(shaderProgram, "uOffset"),
-        scale: gl.getUniformLocation(shaderProgram, "uScale"),
-        color: gl.getUniformLocation(shaderProgram, "uColor"),
-        lineWidth: gl.getUniformLocation(shaderProgram, "uLineWidth"), //
-      },
-    };
-
+    programInfoRef.current = createProgramInfo(gl);
     positionBufferRef.current = gl.createBuffer();
   }, [canvasRef]);
 
@@ -69,17 +53,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>) =
       const startY = Math.max(0, Math.floor(gridState.offsetY / BASE_CELL_SIZE) * BASE_CELL_SIZE);
       const endX = startX + visibleWidth + BASE_CELL_SIZE;
       const endY = startY + visibleHeight + BASE_CELL_SIZE;
-
-      const centerX = gridState.offsetX + canvasWidth / (2 * gridState.scale);
-      const centerY = gridState.offsetY + canvasHeight / (2 * gridState.scale);
-
-      const getDrawOrder = (x: number, y: number): number => {
-        const dx = x - centerX;
-        const dy = y - centerY;
-        return dx * dx + dy * dy; // 中心からの距離の二乗
-      };
-
-      optimisticPixels.sort((a, b) => getDrawOrder(a.x, a.y) - getDrawOrder(b.x, b.y));
 
       // Draw colored cells in visible area
       optimisticPixels.forEach((pixel) => {
