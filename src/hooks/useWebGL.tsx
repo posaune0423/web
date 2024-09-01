@@ -39,7 +39,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>) =
     positionBufferRef.current = gl.createBuffer();
   }, [canvasRef]);
 
-  const drawGrid = useCallback(
+  const drawPixels = useCallback(
     (gridState: GridState, optimisticPixels: Pixel[]) => {
       const gl = glRef.current;
       const programInfo = programInfoRef.current;
@@ -140,5 +140,5 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>) =
     [programInfoRef, positionBufferRef]
   );
 
-  return { glRef, programInfoRef, positionBufferRef, drawGrid };
+  return { glRef, drawPixels };
 };

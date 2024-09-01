@@ -4,7 +4,7 @@ import { type Color } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
 import { rgbaToHex } from "@/utils";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
-import { useWebGL } from "../../../hooks/useWebGL";
+import { useWebGL } from "@/hooks/useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { sounds } from "@/constants";
 import { useSound } from "use-sound";
@@ -37,7 +37,7 @@ export const usePixelViewer = () => {
       account: { account },
     },
   } = useDojo();
-  const { glRef, drawGrid } = useWebGL(canvasRef);
+  const { glRef, drawPixels } = useWebGL(canvasRef);
   const { gridState, setGridState } = useGridState();
   const { optimisticPixels, setOptimisticPixels } = usePixels();
 
@@ -356,8 +356,8 @@ export const usePixelViewer = () => {
   );
 
   const animate = useCallback(() => {
-    drawGrid(gridState, optimisticPixels);
-  }, [drawGrid, gridState, optimisticPixels]);
+    drawPixels(gridState, optimisticPixels);
+  }, [drawPixels, gridState, optimisticPixels]);
 
   // Effects
   useEffect(() => {

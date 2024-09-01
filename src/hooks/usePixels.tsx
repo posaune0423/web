@@ -20,15 +20,17 @@ export const usePixels = () => {
   const pixelEntities = useEntityQuery([Has(Pixel)]);
   const pixels = useMemo(
     () =>
-      pixelEntities.map((entity) => {
+      pixelEntities.reduce<Pixel[]>((acc, entity) => {
         const value = getComponentValue(Pixel, entity);
-        if (!value) return;
-        return {
-          x: value.x,
-          y: value.y,
-          color: hexToRgba(value.color),
-        } as Pixel;
-      }),
+        if (value) {
+          acc.push({
+            x: value.x,
+            y: value.y,
+            color: hexToRgba(value.color),
+          });
+        }
+        return acc;
+      }, []),
     [pixelEntities]
   );
 
