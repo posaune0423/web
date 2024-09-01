@@ -1,5 +1,4 @@
 import { Trash2 } from "lucide-react";
-import { Account } from "starknet";
 import Avatar from "./Avatar";
 import { truncateAddress } from "@/utils";
 import {
@@ -16,15 +15,12 @@ import Spinner from "./Spinner";
 import { toast } from "sonner";
 import { AppList } from "./AppList";
 
-const Header = ({ account }: { account: Account }) => {
+const Header = () => {
   const {
-    account: { select, list, create, remove, isDeploying },
+    account: { select, list, create, remove, isDeploying, account },
   } = useDojo();
 
-  const otherBurnerAccounts = useMemo(
-    () => list().filter((a) => a.address !== account.address),
-    [account, list],
-  );
+  const otherBurnerAccounts = useMemo(() => list().filter((a) => a.address !== account.address), [account, list]);
 
   const onSelect = (e: React.MouseEvent<HTMLDivElement>, address: string) => {
     e.preventDefault();

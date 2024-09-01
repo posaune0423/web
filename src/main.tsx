@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.scss";
-import App from "./app/App";
+import { App } from "./app/App";
 import { setup } from "@/libs/dojo/setup";
 import { DojoProvider } from "@/contexts/DojoContext";
 import { dojoConfig } from "../dojoConfig";
@@ -10,7 +10,7 @@ import { Toaster } from "./components/ui/Sonner";
 import SwipeControl from "./components/SwipeControl";
 import { AppProvider } from "./contexts/AppContext";
 
-const init = async () => {
+const main = async () => {
   const rootElement = document.getElementById("root");
   if (!rootElement) throw new Error("React root not found");
   const root = ReactDOM.createRoot(rootElement as HTMLElement);
@@ -40,4 +40,4 @@ const init = async () => {
   );
 };
 
-init();
+main();

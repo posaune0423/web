@@ -1,19 +1,11 @@
-import { PixelViewer } from "../components/PixelViewer";
-import { useDojo } from "@/hooks/useDojo";
-import { Header } from "../components/Header";
-import { type App } from "@/types";
+import { PixelViewer } from "@/components/PixelViewer";
+import { Header } from "@/components/Header";
 
-const App = () => {
-  const {
-    account: { account },
-  } = useDojo();
-
+export const App = () => {
   return (
     <main>
-      <Header account={account} />
+      <Header />
       <PixelViewer />
     </main>
   );
 };
-
-export default App;
