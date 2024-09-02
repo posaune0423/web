@@ -1,5 +1,5 @@
 import React from "react";
-import { usePixelViewer } from "./hooks/usePixelViewer";
+import { usePixelViewer } from "./usePixelViewer";
 import { type Color } from "@/types";
 import { CoordinateFinder } from "../CoordinateFinder";
 import { ColorPalette } from "../ColorPallette";

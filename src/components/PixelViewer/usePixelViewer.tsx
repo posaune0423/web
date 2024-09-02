@@ -196,7 +196,7 @@ export const usePixelViewer = () => {
   );
 
   const animate = useCallback(() => {
-    drawGrid();
+    drawGrid()
     drawPixels(optimisticPixels);
   }, [drawGrid, drawPixels, optimisticPixels]);
 

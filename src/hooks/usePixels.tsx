@@ -5,7 +5,7 @@ import { BASE_CELL_SIZE } from "@/constants/webgl";
 import { useDojo } from "./useDojo";
 import { BUFFER_PIXEL_RANGE, MAX_UINT32 } from "@/constants";
 import { consoleBlue, consoleGreen, consoleRed, consoleYellow } from "@/utils/console";
-import { getPixelEntities } from "@/libs/dojo/helper";
+import { getPixelComponentFromEntities, getPixelEntities } from "@/libs/dojo/helper";
 
 export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, gridState: GridState) => {
   const {
@@ -43,69 +43,62 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     return { upperLeftX, upperLeftY, lowerRightX, lowerRightY };
   }, [gridState, canvasRef]);
 
-  const fetchPixels = useCallback(
-    async (force = false) => {
-      if (isFetching && !force) {
-        consoleGreen("skipping fetch: Loading...");
-        return;
-      }
-      const currentRange = getVisiblePixelRange();
-      const lastRange = lastFetchedRangeRef.current;
+  const fetchPixels = useCallback(async () => {
+    if (isFetching) {
+      consoleGreen("skipping fetch: Loading...");
+      return;
+    }
+    const currentRange = getVisiblePixelRange();
+    const lastRange = lastFetchedRangeRef.current;
 
-      const shouldFetch =
-        Math.abs(currentRange.upperLeftX - lastRange.upperLeftX) > BUFFER_PIXEL_RANGE / 4 ||
-        Math.abs(currentRange.upperLeftY - lastRange.upperLeftY) > BUFFER_PIXEL_RANGE / 4 ||
-        Math.abs(currentRange.lowerRightX - lastRange.lowerRightX) > BUFFER_PIXEL_RANGE / 4 ||
-        Math.abs(currentRange.lowerRightY - lastRange.lowerRightY) > BUFFER_PIXEL_RANGE / 4;
+    const shouldFetch =
+      Math.abs(currentRange.upperLeftX - lastRange.upperLeftX) > BUFFER_PIXEL_RANGE / 4 ||
+      Math.abs(currentRange.upperLeftY - lastRange.upperLeftY) > BUFFER_PIXEL_RANGE / 4 ||
+      Math.abs(currentRange.lowerRightX - lastRange.lowerRightX) > BUFFER_PIXEL_RANGE / 4 ||
+      Math.abs(currentRange.lowerRightY - lastRange.lowerRightY) > BUFFER_PIXEL_RANGE / 4;
 
-      if (!shouldFetch && !force) {
-        consoleGreen("skipping fetch: Not enough change");
-        return;
-      }
+    if (!shouldFetch) {
+      consoleGreen("skipping fetch: Not enough change");
+      return;
+    }
 
-      const { upperLeftX, upperLeftY, lowerRightX, lowerRightY } = currentRange;
-      // Calculate scroll direction
-      const scrollDirectionX = currentRange.upperLeftX - lastRange.upperLeftX;
-      const scrollDirectionY = currentRange.upperLeftY - lastRange.upperLeftY;
+    const { upperLeftX, upperLeftY, lowerRightX, lowerRightY } = currentRange;
+    // Calculate scroll direction
+    const scrollDirectionX = currentRange.upperLeftX - lastRange.upperLeftX;
+    const scrollDirectionY = currentRange.upperLeftY - lastRange.upperLeftY;
 
-      // Adjust BUFFER based on scroll direction
-      const dynamicBufferX = scrollDirectionX > 0 ? BUFFER_PIXEL_RANGE * 1.5 : BUFFER_PIXEL_RANGE * 0.5;
-      const dynamicBufferY = scrollDirectionY > 0 ? BUFFER_PIXEL_RANGE * 1.5 : BUFFER_PIXEL_RANGE * 0.5;
+    // Adjust BUFFER based on scroll direction
+    const dynamicBufferX = scrollDirectionX > 0 ? BUFFER_PIXEL_RANGE * 1.5 : BUFFER_PIXEL_RANGE * 0.5;
+    const dynamicBufferY = scrollDirectionY > 0 ? BUFFER_PIXEL_RANGE * 1.5 : BUFFER_PIXEL_RANGE * 0.5;
 
-      setIsFetching(true);
-      try {
-        const entities = await getPixelEntities(toriiClient, pixelLimit, {
-          upperLeftX: Math.max(0, upperLeftX - dynamicBufferX),
-          upperLeftY: Math.max(0, upperLeftY - dynamicBufferY),
-          lowerRightX: Math.min(MAX_UINT32, lowerRightX + dynamicBufferX),
-          lowerRightY: Math.min(MAX_UINT32, lowerRightY + dynamicBufferY),
+    setIsFetching(true);
+    try {
+      const entities = await getPixelEntities(toriiClient, pixelLimit, {
+        upperLeftX: Math.max(0, upperLeftX - dynamicBufferX),
+        upperLeftY: Math.max(0, upperLeftY - dynamicBufferY),
+        lowerRightX: Math.min(MAX_UINT32, lowerRightX + dynamicBufferX),
+        lowerRightY: Math.min(MAX_UINT32, lowerRightY + dynamicBufferY),
+      });
+
+      const newPixels = getPixelComponentFromEntities(entities);
+
+      // Update pixels in hacky way
+      setVisiblePixels((prevPixels) => {
+        const updatedPixels = new Map(prevPixels.map((p) => [`${p.x},${p.y}`, p]));
+        newPixels.forEach((newPixel) => {
+          updatedPixels.set(`${newPixel.x},${newPixel.y}`, newPixel);
         });
+        return Array.from(updatedPixels.values());
+      });
 
-        const newPixels = Object.values(entities).map((entity) => ({
-          x: entity["pixelaw-Pixel"].x.value as number,
-          y: entity["pixelaw-Pixel"].y.value as number,
-          color: hexToRgba(entity["pixelaw-Pixel"].color.value as number),
-        }));
-
-        // Update pixels in hacky way
-        setVisiblePixels((prevPixels) => {
-          const updatedPixels = new Map(prevPixels.map((p) => [`${p.x},${p.y}`, p]));
-          newPixels.forEach((newPixel) => {
-            updatedPixels.set(`${newPixel.x},${newPixel.y}`, newPixel);
-          });
-          return Array.from(updatedPixels.values());
-        });
-
-        consoleBlue(`update visible pixels: ${newPixels.length}`);
-      } catch (error) {
-        consoleRed(`Error fetching pixels: ${error}`);
-      } finally {
-        setIsFetching(false);
-        lastFetchedRangeRef.current = currentRange;
-      }
-    },
-    [getVisiblePixelRange, pixelLimit, toriiClient, isFetching]
-  );
+      consoleBlue(`update visible pixels: ${newPixels.length}`);
+    } catch (error) {
+      consoleRed(`Error fetching pixels: ${error}`);
+    } finally {
+      setIsFetching(false);
+      lastFetchedRangeRef.current = currentRange;
+    }
+  }, [getVisiblePixelRange, pixelLimit, toriiClient, isFetching]);
 
   const forceFetch = useCallback(async () => {
     consoleYellow("forceFetch");
@@ -131,6 +124,8 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       });
       return Array.from(updatedPixels.values());
     });
+
+    consoleBlue(`update visible pixels: ${newPixels.length}`);
   }, [pixelLimit, toriiClient, getVisiblePixelRange]);
 
   useEffect(() => {
