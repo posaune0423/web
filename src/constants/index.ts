@@ -15,3 +15,6 @@ export const sounds = {
   success: "/assets/sounds/effects/success.mp3",
   error: "/assets/sounds/effects/error.mp3",
 };
+
+export const BUFFER_PIXEL_RANGE = 10;
+export const MAX_UINT32 = 4294967295;

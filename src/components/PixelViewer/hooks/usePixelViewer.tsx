@@ -29,7 +29,7 @@ export const usePixelViewer = () => {
   } = useDojo();
   const { gridState, setGridState } = useGridState();
   const { drawGrid, drawPixels } = useWebGL(canvasRef, gridState);
-  const { optimisticPixels, setOptimisticPixels } = usePixels();
+  const { optimisticPixels, setOptimisticPixels, fetchPixels } = usePixels(canvasRef, gridState);
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
@@ -128,6 +128,10 @@ export const usePixelViewer = () => {
           const newOffsetY = Math.max(0, worldY - y / newScale);
           return { ...prev, scale: newScale, offsetX: newOffsetX, offsetY: newOffsetY };
         });
+        if (Math.abs(e.deltaY) < 2) {
+          console.log("fetching pixels");
+          fetchPixels();
+        }
       } else {
         // Regular mouse wheel
         setGridState((prev) => ({
@@ -135,13 +139,18 @@ export const usePixelViewer = () => {
           offsetX: Math.max(0, prev.offsetX + e.deltaX / prev.scale),
           offsetY: Math.max(0, prev.offsetY + e.deltaY / prev.scale),
         }));
+
+        if (Math.abs(e.deltaX) < 2 && Math.abs(e.deltaY) < 2) {
+          console.log("fetching pixels");
+          fetchPixels();
+        }
       }
 
       startTransition(() => {
         updateCurrentMousePos(x, y);
       });
     },
-    [updateCurrentMousePos]
+    [updateCurrentMousePos, fetchPixels, setGridState]
   );
 
   const animateJumpToCell = useCallback(
@@ -195,6 +204,11 @@ export const usePixelViewer = () => {
   useEffect(() => {
     animate();
   }, [animate]);
+
+  // initial fetch
+  useEffect(() => {
+    fetchPixels();
+  }, []);
 
   return {
     canvasRef,

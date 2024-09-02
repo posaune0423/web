@@ -16,6 +16,7 @@ import {
   ProgramInfo,
 } from "twgl.js";
 import { BASE_CELL_SIZE, BASE_LINE_WIDTH, BUFFER_RATIO, DEFAULT_GRID_COLOR, MIN_SCALE } from "@/constants/webgl";
+import { getVisibleArea } from "@/utils/canvas";
 
 export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, gridState: GridState) => {
   const glRef = useRef<WebGLRenderingContext | null>(null);
@@ -43,24 +44,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
     initWebGL();
   }, [initWebGL]);
 
-  const getVisibleArea = useCallback(() => {
-    const gl = glRef.current;
-    if (!gl) {
-      return { startX: 0, startY: 0, endX: 1000, endY: 1000 };
-    }
-
-    const canvasWidth = gl.canvas.width;
-    const canvasHeight = gl.canvas.height;
-    const visibleWidth = canvasWidth / gridState.scale;
-    const visibleHeight = canvasHeight / gridState.scale;
-    const startX = Math.floor(gridState.offsetX / BASE_CELL_SIZE) * BASE_CELL_SIZE;
-    const startY = Math.floor(gridState.offsetY / BASE_CELL_SIZE) * BASE_CELL_SIZE;
-    const endX = startX + visibleWidth + BASE_CELL_SIZE;
-    const endY = startY + visibleHeight + BASE_CELL_SIZE;
-
-    return { startX, startY, endX, endY };
-  }, [gridState]);
-
   const drawGrid = useCallback(() => {
     const gl = glRef.current;
     if (!gl) {
@@ -80,7 +63,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       return;
     }
 
-    const { startX, startY, endX, endY } = getVisibleArea();
+    const { startX, startY, endX, endY } = getVisibleArea(gl.canvas as HTMLCanvasElement, gridState);
     const darker = gridState.scale > MIN_SCALE * BUFFER_RATIO ? 1.0 : 0.5;
 
     // グリッドの描画
@@ -179,7 +162,11 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       setBuffersAndAttributes(gl, pixelProgramInfo, pixelBufferInfo);
       setUniforms(pixelProgramInfo, pixelUniforms);
       drawBufferInfo(gl, pixelBufferInfo, gl.TRIANGLES, pixelPositions.length / 2);
-      console.log("drawPixels", pixels.length);
+
+      const error = gl.getError();
+      if (error) {
+        console.error("WebGL error", error);
+      }
     },
     [gridState]
   );

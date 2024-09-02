@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type DojoConfig, DojoProvider } from "@dojoengine/core";
 import * as torii from "@dojoengine/torii-client";
 import { BurnerManager } from "@dojoengine/create-burner";
@@ -7,7 +8,7 @@ import { createSystemCalls } from "./createSystemCalls";
 import { defineContractComponents } from "./generated/components";
 import { setupWorld } from "./generated/systems";
 import { world } from "./world";
-// import { getSyncEntities } from "@dojoengine/state";
+import { getSyncEntities, getSyncEvents } from "@dojoengine/state";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -29,8 +30,11 @@ export async function setup({ ...config }: DojoConfig) {
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl);
 
-  // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const sync = getSyncEntities(toriiClient, contractComponents as any, []);
+  // Sync all events
+  const eventSync = getSyncEvents(toriiClient, contractComponents as any, undefined, []);
+
+  // Sync all entities
+  const sync = await getSyncEntities(toriiClient, contractComponents as any, []);
 
   // setup world
   const client = await setupWorld(dojoProvider);
@@ -70,5 +74,7 @@ export async function setup({ ...config }: DojoConfig) {
     dojoProvider,
     burnerManager,
     toriiClient,
+    sync,
+    eventSync,
   };
 }
