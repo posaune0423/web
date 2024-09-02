@@ -1,7 +1,10 @@
 import React, { createContext, useState, ReactNode, useMemo } from "react";
 import { App } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
-import { useEntityQuery, useQuerySync } from "@dojoengine/react";
+import {
+  useEntityQuery,
+  // useQuerySync
+} from "@dojoengine/react";
 import { ComponentValue, getComponentValue, Has, Schema } from "@dojoengine/recs";
 import { fromComponent } from "@/utils";
 
@@ -17,12 +20,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const {
     setup: {
       clientComponents: { App },
-      contractComponents,
-      toriiClient,
+      // contractComponents,
+      // toriiClient,
     },
   } = useDojo();
 
-  useQuerySync(toriiClient, [contractComponents.App], []);
+  // useQuerySync(toriiClient, [contractComponents.App], []);
 
   const appEntities = useEntityQuery([Has(App)]);
 
