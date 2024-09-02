@@ -15,9 +15,6 @@ const PixelViewer: React.FC<PixelViewerProps> = () => {
     currentMousePos,
     selectedColor,
     setSelectedColor,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
@@ -29,10 +26,7 @@ const PixelViewer: React.FC<PixelViewerProps> = () => {
     <section className="relative h-full w-full">
       <canvas
         ref={canvasRef}
-        className="fixed inset-x-0 bottom top-[50px] h-[calc(100%-50px)] w-full"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        className="fixed inset-x-0 bottom top-[50px] h-[calc(100%-50px)] w-full bg-black/80"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
