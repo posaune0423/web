@@ -3,7 +3,6 @@ import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } 
 import { type Color } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
 import { rgbaToHex } from "@/utils";
-import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
 import { useWebGL } from "@/hooks/useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { sounds } from "@/constants";
@@ -15,16 +14,7 @@ export const usePixelViewer = () => {
   // Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDraggingRef = useRef<boolean>(false);
-  const lastTouchPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
-  const touchStartPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const gestureRef = useRef({
-    lastPinchDistance: null as number | null,
-    lastTouchPositions: null as { x: number; y: number }[] | null,
-    isGesture: false,
-    gestureType: null as string | null,
-    gestureStartTime: null as number | null,
-  });
 
   // States
   const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -37,8 +27,8 @@ export const usePixelViewer = () => {
       account: { account },
     },
   } = useDojo();
-  const { glRef, drawPixels } = useWebGL(canvasRef);
   const { gridState, setGridState } = useGridState();
+  const { drawGrid, drawPixels } = useWebGL(canvasRef, gridState);
   const { optimisticPixels, setOptimisticPixels } = usePixels();
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
@@ -55,134 +45,6 @@ export const usePixelViewer = () => {
       setCurrentMousePos({ x: cellX, y: cellY });
     },
     [gridState]
-  );
-
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent<HTMLCanvasElement>) => {
-      if (e.touches.length === 2) {
-        gestureRef.current.isGesture = true;
-        gestureRef.current.gestureStartTime = performance.now();
-        gestureRef.current.lastPinchDistance = getPinchDistance(e.touches);
-        gestureRef.current.lastTouchPositions = getTouchPositions(e.touches);
-        gestureRef.current.gestureType = null;
-      } else {
-        isDraggingRef.current = false;
-        const touch = e.touches[0];
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-
-        updateCurrentMousePos(x, y);
-        touchStartPosRef.current = { x, y };
-        lastTouchPosRef.current = { x: touch.clientX, y: touch.clientY };
-      }
-    },
-    [updateCurrentMousePos]
-  );
-
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent<HTMLCanvasElement>) => {
-      if (e.touches.length === 2 && gestureRef.current.isGesture) {
-        const currentDistance = getPinchDistance(e.touches);
-        const currentPositions = getTouchPositions(e.touches);
-        const pinchDelta = currentDistance - (gestureRef.current.lastPinchDistance || 0);
-        const moveDelta = {
-          x:
-            (currentPositions[0].x + currentPositions[1].x) / 2 -
-            ((gestureRef.current.lastTouchPositions?.[0].x || 0) +
-              (gestureRef.current.lastTouchPositions?.[1].x || 0)) /
-              2,
-          y:
-            (currentPositions[0].y + currentPositions[1].y) / 2 -
-            ((gestureRef.current.lastTouchPositions?.[0].y || 0) +
-              (gestureRef.current.lastTouchPositions?.[1].y || 0)) /
-              2,
-        };
-
-        if (!gestureRef.current.gestureType) {
-          if (Math.abs(pinchDelta) > Math.abs(moveDelta.x) && Math.abs(pinchDelta) > Math.abs(moveDelta.y)) {
-            gestureRef.current.gestureType = "pinch";
-          } else {
-            gestureRef.current.gestureType = "swipe";
-          }
-        }
-
-        if (gestureRef.current.gestureType === "pinch") {
-          setGridState((prev) => {
-            const zoomFactor = currentDistance / (gestureRef.current.lastPinchDistance || currentDistance);
-            const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * zoomFactor));
-            return { ...prev, scale: newScale };
-          });
-        } else {
-          setGridState((prev) => ({
-            ...prev,
-            offsetX: Math.max(0, prev.offsetX - moveDelta.x / prev.scale),
-            offsetY: Math.max(0, prev.offsetY - moveDelta.y / prev.scale),
-          }));
-        }
-
-        gestureRef.current.lastPinchDistance = currentDistance;
-        gestureRef.current.lastTouchPositions = currentPositions;
-      } else if (e.touches.length === 1) {
-        const touch = e.touches[0];
-        const { x, y } = convertClientPosToCanvasPos(canvasRef, touch.clientX, touch.clientY);
-
-        startTransition(() => {
-          updateCurrentMousePos(x, y);
-        });
-
-        const dx = x - touchStartPosRef.current.x;
-        const dy = y - touchStartPosRef.current.y;
-
-        if (!isDraggingRef.current && (Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD)) {
-          isDraggingRef.current = true;
-        }
-
-        if (isDraggingRef.current) {
-          setGridState((prev) => ({
-            ...prev,
-            offsetX: Math.max(0, prev.offsetX - dx / prev.scale),
-            offsetY: Math.max(0, prev.offsetY - dy / prev.scale),
-          }));
-          touchStartPosRef.current = { x, y };
-        }
-      }
-    },
-    [updateCurrentMousePos]
-  );
-
-  const handleTouchEnd = useCallback(
-    async (e: React.TouchEvent<HTMLCanvasElement>) => {
-      e.preventDefault();
-      gestureRef.current.isGesture = false;
-      gestureRef.current.gestureType = null;
-
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      if (!isDraggingRef.current) {
-        const x = touchStartPosRef.current.x;
-        const y = touchStartPosRef.current.y;
-
-        const worldX = gridState.offsetX + x / gridState.scale;
-        const worldY = gridState.offsetY + y / gridState.scale;
-
-        const cellX = Math.floor(worldX / BASE_CELL_SIZE);
-        const cellY = Math.floor(worldY / BASE_CELL_SIZE);
-
-        startTransition(async () => {
-          setOptimisticPixels({ x: cellX, y: cellY, color: selectedColor });
-          play();
-          await interact(account, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
-        });
-      }
-
-      isDraggingRef.current = false;
-    },
-    [gridState, selectedColor, account, interact, setOptimisticPixels, play]
   );
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -282,37 +144,6 @@ export const usePixelViewer = () => {
     [updateCurrentMousePos]
   );
 
-  const handlePinchZoom = useCallback((e: TouchEvent) => {
-    if (e.touches.length !== 2) return;
-
-    const touch1 = e.touches[0];
-    const touch2 = e.touches[1];
-    const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
-
-    const { x: centerX, y: centerY } = convertClientPosToCanvasPos(
-      canvasRef,
-      (touch1.clientX + touch2.clientX) / 2,
-      touch1.clientY + touch2.clientY
-    );
-
-    setGridState((prev) => {
-      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * (dist / (prev.lastPinchDist || dist))));
-
-      const worldCenterX = prev.offsetX + centerX / prev.scale;
-      const worldCenterY = prev.offsetY + centerY / prev.scale;
-
-      const newOffsetX = worldCenterX - centerX / newScale;
-      const newOffsetY = worldCenterY - centerY / newScale;
-
-      return {
-        offsetX: newOffsetX,
-        offsetY: newOffsetY,
-        scale: newScale,
-        lastPinchDist: dist,
-      };
-    });
-  }, []);
-
   const animateJumpToCell = useCallback(
     (x: number, y: number, duration: number = 500) => {
       const canvas = canvasRef.current;
@@ -356,46 +187,20 @@ export const usePixelViewer = () => {
   );
 
   const animate = useCallback(() => {
-    drawPixels(gridState, optimisticPixels);
-  }, [drawPixels, gridState, optimisticPixels]);
+    drawGrid();
+    drawPixels(optimisticPixels);
+  }, [drawGrid, drawPixels, optimisticPixels]);
 
   // Effects
   useEffect(() => {
     animate();
   }, [animate]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const gl = glRef.current;
-    if (!gl) return;
-
-    const resizeObserver = new ResizeObserver(() => {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      animate();
-    });
-
-    canvas.addEventListener("touchmove", handlePinchZoom);
-
-    resizeObserver.observe(canvas);
-
-    return () => {
-      resizeObserver.disconnect();
-      canvas.removeEventListener("touchmove", handlePinchZoom);
-    };
-  }, [handlePinchZoom]);
-
   return {
     canvasRef,
     selectedColor,
     currentMousePos,
     setSelectedColor,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
