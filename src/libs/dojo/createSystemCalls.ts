@@ -9,7 +9,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 export function createSystemCalls(
   { client }: { client: IWorld },
   _contractComponents: ContractComponents,
-  _clientComponents: ClientComponents,
+  _clientComponents: ClientComponents
 ) {
   const initCore = async (account: Account | AccountInterface) => {
     try {
@@ -37,13 +37,13 @@ export function createSystemCalls(
     }
   };
 
-  const interact = async (
-    account: Account | AccountInterface,
-    params: Pick<DefaultParams, "x" | "y" | "color">,
-  ) => {
+  const interact = async (account: Account | AccountInterface, params: Pick<DefaultParams, "x" | "y" | "color">) => {
     console.log("interact", params);
     try {
-      await client.actions.interact(account, { ...params });
+      const tx = await client.actions.interact(account, { ...params });
+      console.log(import.meta.env.VITE_PUBLIC_EXPLORER_URL + "/tx/" + tx?.transaction_hash);
+
+      return tx;
     } catch (e) {
       console.error(e);
     }
