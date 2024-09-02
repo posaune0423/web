@@ -179,6 +179,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       setBuffersAndAttributes(gl, pixelProgramInfo, pixelBufferInfo);
       setUniforms(pixelProgramInfo, pixelUniforms);
       drawBufferInfo(gl, pixelBufferInfo, gl.TRIANGLES, pixelPositions.length / 2);
+      console.log("drawPixels", pixels.length);
     },
     [gridState]
   );
