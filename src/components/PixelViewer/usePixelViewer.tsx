@@ -39,7 +39,7 @@ export const usePixelViewer = () => {
     },
   } = useDojo();
   const { gridState, setGridState } = useGridState();
-  const { drawGrid, drawPixels } = useWebGL(canvasRef, gridState);
+  const { glRef, drawGrid, drawPixels } = useWebGL(canvasRef, gridState);
   const { optimisticPixels, setOptimisticPixels, fetchPixels } = usePixels(canvasRef, gridState);
   const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
 
@@ -343,36 +343,39 @@ export const usePixelViewer = () => {
     [gridState, selectedColor, account, interact, setOptimisticPixels, play, fetchPixels]
   );
 
-  const handlePinchZoom = useCallback((e: TouchEvent) => {
-    if (e.touches.length !== 2) return;
+  const handlePinchZoom = useCallback(
+    (e: TouchEvent) => {
+      if (e.touches.length !== 2) return;
 
-    const touch1 = e.touches[0];
-    const touch2 = e.touches[1];
-    const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
 
-    const { x: centerX, y: centerY } = convertClientPosToCanvasPos(
-      canvasRef,
-      (touch1.clientX + touch2.clientX) / 2,
-      touch1.clientY + touch2.clientY
-    );
+      const { x: centerX, y: centerY } = convertClientPosToCanvasPos(
+        canvasRef,
+        (touch1.clientX + touch2.clientX) / 2,
+        touch1.clientY + touch2.clientY
+      );
 
-    setGridState((prev) => {
-      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * (dist / (prev.lastPinchDist || dist))));
+      setGridState((prev) => {
+        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev.scale * (dist / (prev.lastPinchDist || dist))));
 
-      const worldCenterX = prev.offsetX + centerX / prev.scale;
-      const worldCenterY = prev.offsetY + centerY / prev.scale;
+        const worldCenterX = prev.offsetX + centerX / prev.scale;
+        const worldCenterY = prev.offsetY + centerY / prev.scale;
 
-      const newOffsetX = worldCenterX - centerX / newScale;
-      const newOffsetY = worldCenterY - centerY / newScale;
+        const newOffsetX = worldCenterX - centerX / newScale;
+        const newOffsetY = worldCenterY - centerY / newScale;
 
-      return {
-        offsetX: newOffsetX,
-        offsetY: newOffsetY,
-        scale: newScale,
-        lastPinchDist: dist,
-      };
-    });
-  }, [setGridState]);
+        return {
+          offsetX: newOffsetX,
+          offsetY: newOffsetY,
+          scale: newScale,
+          lastPinchDist: dist,
+        };
+      });
+    },
+    [setGridState]
+  );
 
   const animate = useCallback(() => {
     drawGrid();
@@ -388,6 +391,28 @@ export const usePixelViewer = () => {
   useEffect(() => {
     fetchPixels();
   }, []);
+
+  // resize observer
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gl = glRef.current;
+    if (!gl) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      animate();
+    });
+
+    resizeObserver.observe(canvas);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [glRef, animate]);
 
   return {
     canvasRef,
