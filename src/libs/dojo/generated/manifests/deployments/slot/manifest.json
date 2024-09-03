@@ -1,8 +1,8 @@
 {
   "world": {
     "kind": "WorldContract",
-    "class_hash": "0x458d0ce5b14a4844092bdb62050f462d53362304a13febbac6d973691d61be2",
-    "original_class_hash": "0x458d0ce5b14a4844092bdb62050f462d53362304a13febbac6d973691d61be2",
+    "class_hash": "0xa349b743d361ce4567361475a89b84a386bb383448c6926954e5fe0b525597",
+    "original_class_hash": "0xa349b743d361ce4567361475a89b84a386bb383448c6926954e5fe0b525597",
     "abi": [
       {
         "type": "impl",
@@ -1229,8 +1229,8 @@
         ]
       }
     ],
-    "address": "0x2c130238b73abf493f1876d26cd52e0f45f318f99accac1d28f0ca6a3d7800f",
-    "transaction_hash": "0x7120fcbcafd517cbe40888dd3619e9615e98f6d9430ecc67cb0740b448a7be4",
+    "address": "0x99b8dbc71926673405f5dfff9e4900ee4d9249798cc5e7ac6f3c3a07907399",
+    "transaction_hash": "0x35f5e7fa0bdbdbb031a662f1330cea66b8129beedcc77fe3cab4cf77b5739fb",
     "block_number": 3,
     "seed": "pixelaw",
     "metadata": {
@@ -1250,9 +1250,9 @@
   "contracts": [
     {
       "kind": "DojoContract",
-      "address": "0x1024d318b89629c92b933f334d2144ddf4bd100214ad47ba663fd124745744",
-      "class_hash": "0x680cb51f2ba01608b7ea6b2c1f7d3f4927e1f34601266c44adf3e66ebb7586f",
-      "original_class_hash": "0x680cb51f2ba01608b7ea6b2c1f7d3f4927e1f34601266c44adf3e66ebb7586f",
+      "address": "0x11ec5bc4a60e3e989499f539da855af4be11b59c366692e32431695e0ba5c3c",
+      "class_hash": "0x1e3f8788f0bce2ddb5949ed71f9f15c3111c18064f6d5a72105d2e1f661f938",
+      "original_class_hash": "0x1e3f8788f0bce2ddb5949ed71f9f15c3111c18064f6d5a72105d2e1f661f938",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2075,9 +2075,9 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x3fd61abd2e16cdb70c29a20b5b3d15408e5f6fa22d871cf4e44fcb9a205001a",
-      "class_hash": "0x232f778c46bacca2889393771210a929e53feac7650ea2bd2bb77bce6f62394",
-      "original_class_hash": "0x232f778c46bacca2889393771210a929e53feac7650ea2bd2bb77bce6f62394",
+      "address": "0x242b049a376eb129e57e860c6646fd80f2b06747b42bb3821064a70c0a76a36",
+      "class_hash": "0x36aa9f769c7b79280ee0f6c85b660b4b113b60d79cdcd79a12d47faec8555aa",
+      "original_class_hash": "0x36aa9f769c7b79280ee0f6c85b660b4b113b60d79cdcd79a12d47faec8555aa",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2576,22 +2576,14 @@
       "writes": [],
       "init_calldata": [],
       "tag": "pixelaw-paint_actions",
-      "systems": [
-        "on_pre_update",
-        "on_post_update",
-        "init",
-        "interact",
-        "put_color",
-        "pixel_row",
-        "fade"
-      ],
+      "systems": ["on_pre_update", "on_post_update", "init", "interact", "put_color", "pixel_row", "fade"],
       "manifest_name": "pixelaw-paint_actions-2afb94fe"
     },
     {
       "kind": "DojoContract",
-      "address": "0x10c143bb947b1746c14da9bda9700b5b3e8061132193a57d385574706601781",
-      "class_hash": "0x5199cdcdf811d790d1eaea07eb457468901bdca721f13324cca2488dd492f19",
-      "original_class_hash": "0x5199cdcdf811d790d1eaea07eb457468901bdca721f13324cca2488dd492f19",
+      "address": "0x79fe3be0c6f1e92617ee26754ec6a8a24a043e83107960dbe99c110f671f0f8",
+      "class_hash": "0x566a961335e1183fe83b156d6349a0320f401b4f0b4b20485e2b709e748dcd0",
+      "original_class_hash": "0x566a961335e1183fe83b156d6349a0320f401b4f0b4b20485e2b709e748dcd0",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -3591,6 +3583,7 @@
         }
       ],
       "tag": "pixelaw-App",
+      "qualified_path": "pixelaw::core::models::registry::app",
       "manifest_name": "pixelaw-App-36504565"
     },
     {
@@ -4017,6 +4010,7 @@
         }
       ],
       "tag": "pixelaw-AppName",
+      "qualified_path": "pixelaw::core::models::registry::app_name",
       "manifest_name": "pixelaw-AppName-3b816829"
     },
     {
@@ -4452,6 +4446,7 @@
         }
       ],
       "tag": "pixelaw-AppUser",
+      "qualified_path": "pixelaw::core::models::registry::app_user",
       "manifest_name": "pixelaw-AppUser-4eda3c52"
     },
     {
@@ -4878,6 +4873,7 @@
         }
       ],
       "tag": "pixelaw-CoreActionsAddress",
+      "qualified_path": "pixelaw::core::models::registry::core_actions_address",
       "manifest_name": "pixelaw-CoreActionsAddress-5379e1ce"
     },
     {
@@ -5313,6 +5309,7 @@
         }
       ],
       "tag": "pixelaw-Instruction",
+      "qualified_path": "pixelaw::core::models::registry::instruction",
       "manifest_name": "pixelaw-Instruction-4c7c4844"
     },
     {
@@ -5792,6 +5789,7 @@
         }
       ],
       "tag": "pixelaw-Permissions",
+      "qualified_path": "pixelaw::core::models::permissions::permissions",
       "manifest_name": "pixelaw-Permissions-72b77307"
     },
     {
@@ -6290,6 +6288,7 @@
         }
       ],
       "tag": "pixelaw-Pixel",
+      "qualified_path": "pixelaw::core::models::pixel::pixel",
       "manifest_name": "pixelaw-Pixel-7e607b2f"
     },
     {
@@ -6730,6 +6729,7 @@
         }
       ],
       "tag": "pixelaw-QueueItem",
+      "qualified_path": "pixelaw::core::models::queue::queue_item",
       "manifest_name": "pixelaw-QueueItem-549a17f2"
     },
     {
@@ -7250,6 +7250,7 @@
         }
       ],
       "tag": "pixelaw-Snake",
+      "qualified_path": "pixelaw::apps::snake::app::snake",
       "manifest_name": "pixelaw-Snake-62b876d4"
     },
     {
@@ -7730,6 +7731,7 @@
         }
       ],
       "tag": "pixelaw-SnakeSegment",
+      "qualified_path": "pixelaw::apps::snake::app::snake_segment",
       "manifest_name": "pixelaw-SnakeSegment-302de0d8"
     }
   ]
