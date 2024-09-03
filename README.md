@@ -11,7 +11,7 @@ This project is the client application for PixeLAW, a decentralized pixel-based 
 - React 19
 - TypeScript
 - Vite
-- [Dojo JS](https://github.com/dojoengine/dojo.js)
+- [Dojo JS v1.0.0-alpha.12](https://github.com/dojoengine/dojo.js)
 - [Starknet](https://www.starknet.io/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [twgl.js](https://twgljs.org/)
@@ -46,6 +46,13 @@ This project is the client application for PixeLAW, a decentralized pixel-based 
 │   ├── utils
 │   └── vite-env.d.ts
 ```
+
+## Slot
+Version 1.0.0-alpha.9:
+
+- Katana: https://api.cartridge.gg/x/pixelaw-dev/katana
+- Torii: https://api.cartridge.gg/x/pixelaw-dev/torii
+
 
 ## Contributing
 
