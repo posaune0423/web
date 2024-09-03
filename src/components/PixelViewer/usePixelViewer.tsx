@@ -86,7 +86,7 @@ export const usePixelViewer = () => {
         mouseDownPosRef.current = { x, y };
       }
     },
-    [updateCurrentMousePos]
+    [updateCurrentMousePos, setGridState]
   );
 
   const handleMouseUp = useCallback(
@@ -113,7 +113,7 @@ export const usePixelViewer = () => {
       mouseDownPosRef.current = null;
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, activeAccount, interact, setOptimisticPixels, play]
+    [gridState, selectedColor, activeAccount, optimisticPixels, interact, setOptimisticPixels, play]
   );
 
   const handleWheel = useCallback(
@@ -136,7 +136,7 @@ export const usePixelViewer = () => {
           fetchPixels();
         }
       } else {
-        // Regular mouse wheel
+        // Regular mouse wheel or swipe
         setGridState((prev) => ({
           ...prev,
           offsetX: Math.max(0, prev.offsetX + e.deltaX / prev.scale),
@@ -195,7 +195,7 @@ export const usePixelViewer = () => {
 
       requestAnimationFrame(animateFrame);
     },
-    [gridState, setCurrentMousePos]
+    [gridState, setGridState, setCurrentMousePos]
   );
 
   const animate = useCallback(() => {

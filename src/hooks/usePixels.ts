@@ -11,7 +11,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   const {
     setup: { toriiClient },
   } = useDojo();
-  const lastFetchedRangeRef = useRef({ upperLeftX: 0, upperLeftY: 0, lowerRightX: 0, lowerRightY: 0 });
+  const lastFetchedRangeRef = useRef({ upperLeftX: 0, upperLeftY: 0, lowerRightX: 100, lowerRightY: 100 });
   const [visiblePixels, setVisiblePixels] = useState<Pixel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [refresh, setRefresh] = useState(false);
