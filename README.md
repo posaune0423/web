@@ -48,7 +48,7 @@ This project is the client application for PixeLAW, a decentralized pixel-based 
 ```
 
 ## Slot
-Version 1.0.0-alpha.9:
+Currently Version `1.0.0-alpha.9` is live!
 
 - Katana: https://api.cartridge.gg/x/pixelaw-dev/katana
 - Torii: https://api.cartridge.gg/x/pixelaw-dev/torii
@@ -56,10 +56,10 @@ Version 1.0.0-alpha.9:
 
 ## Contributing
 
-Contributions are welcome! Please follow the existing code style and add unit tests for any new or changed functionality.
+Contributions are welcome! Please follow the existing code style and create a new PR.
 
 ## License
 
-[Add your license information here]
+[LICENSE](https://github.com/pixelaw/core/blob/main/LICENSE)
 
 For more information on the underlying smart contracts, please refer to the [pixelaw/core repository](https://github.com/pixelaw/core).
