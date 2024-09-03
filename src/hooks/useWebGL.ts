@@ -96,7 +96,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
     setBuffersAndAttributes(gl, gridProgramInfo, gridBufferInfo);
     setUniforms(gridProgramInfo, gridUniforms);
     drawBufferInfo(gl, gridBufferInfo, gl.LINES, gridPositions.length / 2);
-  }, [getVisibleArea, gridState]);
+  }, [gridState]);
 
   const drawPixels = useCallback(
     (pixels: Pixel[]) => {

@@ -30,19 +30,18 @@ export const formatDate = (date: Date | string): string => {
 };
 
 export const rgbaToHex = (color: Color): number => {
-  const r = Math.round(color.r * 0x1000000);
-  const g = Math.round(color.g * 0x10000);
-  const b = Math.round(color.b * 0x100);
-  const a = Math.round(color.a);
-  return r + g + b + a;
+  const r = Math.round(color.r * 255);
+  const g = Math.round(color.g * 255);
+  const b = Math.round(color.b * 255);
+  const a = Math.round(color.a * 255);
+  return ((r << 24) | (g << 16) | (b << 8) | a) >>> 0; // Convert to unsigned 32-bit integer
 };
 
 export const hexToRgba = (hex: number): Color => {
-  const r = (hex >> 24) & 0xff;
-  const g = (hex >> 16) & 0xff;
-  const b = (hex >> 8) & 0xff;
-  const a = hex & 0xff;
-
+  const r = ((hex >>> 24) & 0xff) / 255;
+  const g = ((hex >>> 16) & 0xff) / 255;
+  const b = ((hex >>> 8) & 0xff) / 255;
+  const a = (hex & 0xff) / 255;
   return { r, g, b, a };
 };
 
