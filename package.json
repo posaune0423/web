@@ -10,10 +10,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
-    "codegen": "graphql-codegen --config codegen.ts",
     "components": "npx @dojoengine/core ../core/contracts/manifests/dev/deployment/manifest.json src/dojo/generated/contractComponents.ts http://localhost:5050 0x10bbde7919b063a353fc2c6148555434cd8a7be8d5cbfdcd06ef63787b58838"
   },
-  "packageManager": "bun@1.1.24",
+  "packageManager": "bun@1.1.26",
   "dependencies": {
     "@cartridge/connector": "^0.3.43",
     "@cartridge/controller": "^0.3.43",
@@ -53,7 +52,7 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-react": "^7.35.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc-fb9a90fa48-20240614",
     "eslint-plugin-react-refresh": "^0.4.11",
     "globals": "^15.9.0",
