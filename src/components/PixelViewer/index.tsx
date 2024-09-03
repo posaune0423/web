@@ -19,6 +19,9 @@ const PixelViewer: React.FC<PixelViewerProps> = () => {
     handleMouseMove,
     handleMouseUp,
     handleWheel,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
     animateJumpToCell,
   } = usePixelViewer();
 
@@ -31,6 +34,9 @@ const PixelViewer: React.FC<PixelViewerProps> = () => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       />
       <CoordinateFinder currentMousePos={currentMousePos} animateJumpToCell={animateJumpToCell} />
       <ColorPalette selectedColor={selectedColor} setSelectedColor={setSelectedColor} />

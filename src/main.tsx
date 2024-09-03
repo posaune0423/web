@@ -31,7 +31,7 @@ const Main = () => {
   if (!setupResult) {
     return (
       <div className="bg-[#262C38] flex flex-col h-screen items-center justify-center">
-        <video src="/assets/loading.mp4" autoPlay loop muted className="w-1/4" />
+        <video src="/assets/loading.mp4" autoPlay loop muted playsInline className="w-1/4" />
         <p className="text-xl text-white">Setup World...</p>
       </div>
     );
