@@ -1,4 +1,4 @@
-import { startTransition, useCallback, useEffect, useRef, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "@/constants/webgl";
 import { type Color } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
@@ -25,11 +25,13 @@ export const usePixelViewer = () => {
     setup: {
       systemCalls: { interact },
       account: { account },
+      connectedAccount,
     },
   } = useDojo();
   const { gridState, setGridState } = useGridState();
   const { drawGrid, drawPixels } = useWebGL(canvasRef, gridState);
   const { optimisticPixels, setOptimisticPixels, fetchPixels } = usePixels(canvasRef, gridState);
+  const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
@@ -84,7 +86,7 @@ export const usePixelViewer = () => {
         mouseDownPosRef.current = { x, y };
       }
     },
-    [updateCurrentMousePos]
+    [updateCurrentMousePos, setGridState]
   );
 
   const handleMouseUp = useCallback(
@@ -103,14 +105,15 @@ export const usePixelViewer = () => {
         startTransition(async () => {
           setOptimisticPixels({ x: cellX, y: cellY, color: selectedColor });
           play();
-          await interact(account, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
+          await interact(activeAccount, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
+          console.log(optimisticPixels[optimisticPixels.length - 1]);
         });
       }
 
       mouseDownPosRef.current = null;
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, account, interact, setOptimisticPixels, play]
+    [gridState, selectedColor, activeAccount, optimisticPixels, interact, setOptimisticPixels, play]
   );
 
   const handleWheel = useCallback(
@@ -133,7 +136,7 @@ export const usePixelViewer = () => {
           fetchPixels();
         }
       } else {
-        // Regular mouse wheel
+        // Regular mouse wheel or swipe
         setGridState((prev) => ({
           ...prev,
           offsetX: Math.max(0, prev.offsetX + e.deltaX / prev.scale),
@@ -192,11 +195,11 @@ export const usePixelViewer = () => {
 
       requestAnimationFrame(animateFrame);
     },
-    [gridState, setCurrentMousePos]
+    [gridState, setGridState, setCurrentMousePos]
   );
 
   const animate = useCallback(() => {
-    drawGrid()
+    drawGrid();
     drawPixels(optimisticPixels);
   }, [drawGrid, drawPixels, optimisticPixels]);
 

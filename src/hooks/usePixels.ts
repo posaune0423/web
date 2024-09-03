@@ -11,9 +11,10 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   const {
     setup: { toriiClient },
   } = useDojo();
-  const lastFetchedRangeRef = useRef({ upperLeftX: 0, upperLeftY: 0, lowerRightX: 0, lowerRightY: 0 });
+  const lastFetchedRangeRef = useRef({ upperLeftX: 0, upperLeftY: 0, lowerRightX: 100, lowerRightY: 100 });
   const [visiblePixels, setVisiblePixels] = useState<Pixel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [optimisticPixels, setOptimisticPixels] = useOptimistic(visiblePixels, (pixels, newPixel: Pixel) => {
     return [...pixels, newPixel];
   });
@@ -103,6 +104,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   const forceFetch = useCallback(async () => {
     consoleYellow("forceFetch");
     const { upperLeftX, upperLeftY, lowerRightX, lowerRightY } = getVisiblePixelRange();
+    console.log(upperLeftX, upperLeftY, lowerRightX, lowerRightY);
     const entities = await getPixelEntities(toriiClient, pixelLimit, {
       upperLeftX: upperLeftX,
       upperLeftY: upperLeftY,
@@ -124,6 +126,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       });
       return Array.from(updatedPixels.values());
     });
+    console.log(newPixels.length);
 
     consoleBlue(`update visible pixels: ${newPixels.length}`);
   }, [pixelLimit, toriiClient, getVisiblePixelRange]);
@@ -133,7 +136,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sub = await toriiClient.onEntityUpdated([], (entity: any) => {
         consoleYellow(entity);
-        forceFetch();
+        setRefresh(true);
       });
 
       return sub;
@@ -144,6 +147,13 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       sub.then((sub) => sub.cancel());
     };
   }, [toriiClient]);
+
+  useEffect(() => {
+    if (refresh) {
+      forceFetch();
+      setRefresh(false);
+    }
+  }, [forceFetch, refresh]);
 
   return { optimisticPixels, setOptimisticPixels, fetchPixels };
 };

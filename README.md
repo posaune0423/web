@@ -1,50 +1,65 @@
-# React + TypeScript + Vite
+# PixeLAW Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![PixeLAW](https://pixelaw.github.io/book/images/PixeLAW.jpeg)
 
-Currently, two official plugins are available:
+[![CI](https://github.com/posaune0423/web/actions/workflows/ci.yml/badge.svg)](https://github.com/posaune0423/web/actions/workflows/ci.yml)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project is the client application for PixeLAW, a decentralized pixel-based game platform built on the Dojo engine.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React 19
+- TypeScript
+- Vite
+- [Dojo JS v1.0.0-alpha.12](https://github.com/dojoengine/dojo.js)
+- [Starknet](https://www.starknet.io/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [twgl.js](https://twgljs.org/)
+- [shadcn/ui](https://ui.shadcn.com/)
 
-- Configure the top-level `parserOptions` property like this:
+## How to Run
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+1. Clone the repository
+2. Install dependencies:
+   ```
+   bun i
+   ```
+3. Start the development server:
+   ```
+   bun run dev
+   ```
+4. Open your browser and navigate to `http://localhost:5173`
+
+## Directory Structure
+
+```
+├── src
+│   ├── app
+│   ├── components
+│   ├── constants
+│   ├── contexts
+│   ├── hooks
+│   ├── index.scss
+│   ├── libs
+│   ├── main.tsx
+│   ├── types
+│   ├── utils
+│   └── vite-env.d.ts
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Slot
+Currently Version `1.0.0-alpha.9` is live!
 
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
+- Katana: https://api.cartridge.gg/x/pixelaw-dev/katana
+- Torii: https://api.cartridge.gg/x/pixelaw-dev/torii
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
+
+## Contributing
+
+Contributions are welcome! Please follow the existing code style and create a new PR.
+
+## License
+
+[LICENSE](https://github.com/pixelaw/core/blob/main/LICENSE)
+
+For more information on the underlying smart contracts, please refer to the [pixelaw/core repository](https://github.com/pixelaw/core).

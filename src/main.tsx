@@ -9,6 +9,9 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/Sonner";
 import SwipeControl from "./components/SwipeControl";
 import { AppProvider } from "./contexts/AppContext";
+import { StarknetConfig, publicProvider, voyager } from "@starknet-react/core";
+import cartridgeConnector from "@/libs/cartriggeController";
+import { sepolia } from "@starknet-react/chains";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("React root not found");
@@ -38,12 +41,20 @@ const Main = () => {
     <React.StrictMode>
       <SwipeControl>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <DojoProvider value={setupResult}>
-            <AppProvider>
-              <App />
-            </AppProvider>
-            <Toaster richColors position="bottom-right" closeButton />
-          </DojoProvider>
+          <StarknetConfig
+            chains={[sepolia]}
+            provider={publicProvider()}
+            connectors={[cartridgeConnector]}
+            explorer={voyager}
+            autoConnect={true}
+          >
+            <DojoProvider value={setupResult}>
+              <AppProvider>
+                <App />
+              </AppProvider>
+              <Toaster richColors position="bottom-right" closeButton />
+            </DojoProvider>
+          </StarknetConfig>
         </ThemeProvider>
       </SwipeControl>
     </React.StrictMode>
