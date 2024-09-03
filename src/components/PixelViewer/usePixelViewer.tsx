@@ -106,6 +106,7 @@ export const usePixelViewer = () => {
           setOptimisticPixels({ x: cellX, y: cellY, color: selectedColor });
           play();
           await interact(activeAccount, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
+          console.log(optimisticPixels[optimisticPixels.length - 1]);
         });
       }
 
