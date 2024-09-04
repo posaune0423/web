@@ -1,5 +1,13 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BASE_CELL_SIZE, COLOR_PALETTE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "@/constants/webgl";
+import {
+  BASE_CELL_SIZE,
+  COLOR_PALETTE,
+  INERTIA_DAMPING,
+  INERTIA_STOP_THRESHOLD,
+  MAX_SCALE,
+  MIN_SCALE,
+  SWIPE_THRESHOLD,
+} from "@/constants/webgl";
 import { type Color } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
 import { rgbaToHex } from "@/utils";
@@ -24,6 +32,17 @@ export const usePixelViewer = () => {
     isGesture: false,
     gestureType: null as string | null,
     gestureStartTime: null as number | null,
+  });
+  const inertiaRef = useRef<{
+    speedX: number;
+    speedY: number;
+    lastTime: number;
+    animationFrame: number | null;
+  }>({
+    speedX: 0,
+    speedY: 0,
+    lastTime: 0,
+    animationFrame: null,
   });
 
   // States
@@ -232,6 +251,10 @@ export const usePixelViewer = () => {
 
         // Add a timestamp for the touch start
         gestureRef.current.gestureStartTime = performance.now();
+
+        if (inertiaRef.current.animationFrame) {
+          cancelAnimationFrame(inertiaRef.current.animationFrame);
+        }
       }
     },
     [updateCurrentMousePos]
@@ -296,6 +319,12 @@ export const usePixelViewer = () => {
         }
 
         if (isDraggingRef.current) {
+          const currentTime = performance.now();
+          const deltaTime = currentTime - inertiaRef.current.lastTime;
+          inertiaRef.current.speedX = (dx / deltaTime) * 15; // 係数を増やして慣性を強く
+          inertiaRef.current.speedY = (dy / deltaTime) * 15;
+          inertiaRef.current.lastTime = currentTime;
+
           setGridState((prev) => ({
             ...prev,
             offsetX: Math.max(0, prev.offsetX - dx / prev.scale),
@@ -308,6 +337,29 @@ export const usePixelViewer = () => {
     [updateCurrentMousePos, setGridState]
   );
 
+  const handleInertia = useCallback(() => {
+    const { speedX, speedY, animationFrame } = inertiaRef.current;
+
+    if (Math.abs(speedX) > INERTIA_STOP_THRESHOLD || Math.abs(speedY) > INERTIA_STOP_THRESHOLD) {
+      setGridState((prev) => ({
+        ...prev,
+        offsetX: Math.max(0, prev.offsetX - speedX / prev.scale),
+        offsetY: Math.max(0, prev.offsetY - speedY / prev.scale),
+      }));
+
+      inertiaRef.current.speedX *= INERTIA_DAMPING;
+      inertiaRef.current.speedY *= INERTIA_DAMPING;
+
+      inertiaRef.current.animationFrame = requestAnimationFrame(handleInertia);
+    } else {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        inertiaRef.current.animationFrame = null;
+      }
+      fetchPixels();
+    }
+  }, [setGridState, fetchPixels]);
+
   const handleTouchEnd = useCallback(
     async (e: React.TouchEvent<HTMLCanvasElement>) => {
       e.preventDefault();
@@ -318,14 +370,18 @@ export const usePixelViewer = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
 
-      if (isDraggingRef.current || wasPinchGesture) {
-        console.log("fetching pixels");
+      if (isDraggingRef.current) {
+        if (inertiaRef.current.animationFrame) {
+          cancelAnimationFrame(inertiaRef.current.animationFrame);
+        }
+        inertiaRef.current.animationFrame = requestAnimationFrame(handleInertia);
+      } else if (wasPinchGesture) {
         fetchPixels();
       }
 
       isDraggingRef.current = false;
     },
-    [fetchPixels]
+    [fetchPixels, handleInertia]
   );
 
   const handlePinchZoom = useCallback(
@@ -369,7 +425,7 @@ export const usePixelViewer = () => {
 
   // Effects
   useEffect(() => {
-    animate();
+    requestAnimationFrame(animate);
   }, [animate]);
 
   // initial fetch
