@@ -9,6 +9,9 @@ export const SWIPE_THRESHOLD = 10; // pixels
 export const BUFFER_RATIO = 1.5;
 export const BASE_LINE_WIDTH = 1.0;
 
+export const BUFFER_PIXEL_RANGE = 10;
+export const MAX_UINT32 = 4294967295;
+
 export const COLOR_PALETTE: Color[] = [
   { r: 1, g: 0, b: 0, a: 1 },
   { r: 0, g: 1, b: 0, a: 1 },

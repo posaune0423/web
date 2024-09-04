@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from
 import { GridState, Pixel } from "../types";
 import { BASE_CELL_SIZE } from "@/constants/webgl";
 import { useDojo } from "./useDojo";
-import { BUFFER_PIXEL_RANGE, MAX_UINT32 } from "@/constants";
+import { BUFFER_PIXEL_RANGE, MAX_UINT32 } from "@/constants/webgl";
 import { consoleBlue, consoleGreen, consoleRed, consoleYellow } from "@/utils/console";
 import { getPixelComponentFromEntities, getPixelEntities } from "@/libs/dojo/helper";
 
