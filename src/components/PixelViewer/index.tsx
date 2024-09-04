@@ -37,6 +37,9 @@ const PixelViewer: React.FC<PixelViewerProps> = () => {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onScroll={(e) => {
+          console.log("scroll", e);
+        }}
       />
       <CoordinateFinder currentMousePos={currentMousePos} animateJumpToCell={animateJumpToCell} />
       <ColorPalette selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
