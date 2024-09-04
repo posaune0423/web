@@ -54,7 +54,7 @@ export async function setupWorld(provider: DojoProvider) {
             entrypoint: "init",
             calldata: [],
           },
-          NAMESPACE,
+          NAMESPACE
         );
       } catch (error) {
         handleError("initCore", error);
@@ -71,7 +71,7 @@ export async function setupWorld(provider: DojoProvider) {
             entrypoint: "update_pixel",
             calldata: [ZERO_ADDRESS, ZERO_ADDRESS, pixelUpdate],
           },
-          NAMESPACE,
+          NAMESPACE
         );
       } catch (error) {
         handleError("updatePixel", error);
@@ -88,7 +88,7 @@ export async function setupWorld(provider: DojoProvider) {
             entrypoint: "init",
             calldata: [],
           },
-          NAMESPACE,
+          NAMESPACE
         );
       } catch (error) {
         handleError("initPaint", error);
@@ -96,19 +96,34 @@ export async function setupWorld(provider: DojoProvider) {
     },
     interact: async (account: Account | AccountInterface, params: DefaultParams) => {
       console.log("interact", params);
-      try {
-        return await provider.execute(
-          account,
-          {
-            contractName: "paint_actions",
-            entrypoint: "interact",
-            calldata: [{ forPlayer: ZERO_ADDRESS, forSystem: ZERO_ADDRESS, ...params }],
-          },
-          NAMESPACE,
-        );
-      } catch (error) {
-        handleError("putColor", error);
+      const maxRetries = 3;
+      let retryCount = 0;
+
+      while (retryCount < maxRetries) {
+        try {
+          const nonce = await account.getNonce();
+          return await provider.execute(
+            account,
+            {
+              contractName: "paint_actions",
+              entrypoint: "interact",
+              calldata: [{ forPlayer: ZERO_ADDRESS, forSystem: ZERO_ADDRESS, ...params }],
+            },
+            NAMESPACE,
+            { nonce: BigInt(nonce) + BigInt(retryCount) }
+          );
+        } catch (error) {
+          if (error instanceof Error && error.message.includes("nonce")) {
+            retryCount++;
+            console.info(`Retrying transaction with incremented nonce (attempt ${retryCount}/${maxRetries})`);
+            if (retryCount < maxRetries) {
+              continue;
+            }
+          }
+          handleError("interact", error);
+        }
       }
+      throw new Error("Max retries reached for interact");
     },
   });
 
