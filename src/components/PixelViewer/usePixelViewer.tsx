@@ -318,29 +318,14 @@ export const usePixelViewer = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
 
-      if (!isDraggingRef.current && !wasPinchGesture) {
-        const x = touchStartPosRef.current.x;
-        const y = touchStartPosRef.current.y;
-
-        const worldX = gridState.offsetX + x / gridState.scale;
-        const worldY = gridState.offsetY + y / gridState.scale;
-
-        const cellX = Math.floor(worldX / BASE_CELL_SIZE);
-        const cellY = Math.floor(worldY / BASE_CELL_SIZE);
-
-        startTransition(async () => {
-          setOptimisticPixels({ x: cellX, y: cellY, color: selectedColor });
-          play();
-          await interact(account, { x: cellX, y: cellY, color: rgbaToHex(selectedColor) });
-        });
-      } else {
+      if (isDraggingRef.current || wasPinchGesture) {
         console.log("fetching pixels");
         fetchPixels();
       }
 
       isDraggingRef.current = false;
     },
-    [gridState, selectedColor, account, interact, setOptimisticPixels, play, fetchPixels]
+    [fetchPixels]
   );
 
   const handlePinchZoom = useCallback(
