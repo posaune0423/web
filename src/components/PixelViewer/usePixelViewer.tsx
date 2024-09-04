@@ -48,6 +48,7 @@ export const usePixelViewer = () => {
   // States
   const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
+  const [hasFetchedThisInteraction, setHasFetchedThisInteraction] = useState(false);
 
   //Other Hooks
   const {
@@ -103,6 +104,10 @@ export const usePixelViewer = () => {
 
       if (!isDraggingRef.current && (Math.abs(dx) > SWIPE_THRESHOLD / 2 || Math.abs(dy) > SWIPE_THRESHOLD / 2)) {
         isDraggingRef.current = true;
+        if (!hasFetchedThisInteraction) {
+          fetchPixels();
+          setHasFetchedThisInteraction(true);
+        }
       }
 
       if (isDraggingRef.current) {
@@ -115,7 +120,7 @@ export const usePixelViewer = () => {
         mouseDownPosRef.current = { x, y };
       }
     },
-    [updateCurrentMousePos, setGridState]
+    [updateCurrentMousePos, setGridState, fetchPixels, hasFetchedThisInteraction]
   );
 
   const handleMouseUp = useCallback(
@@ -141,6 +146,7 @@ export const usePixelViewer = () => {
 
       mouseDownPosRef.current = null;
       isDraggingRef.current = false;
+      setHasFetchedThisInteraction(false);
     },
     [gridState, selectedColor, activeAccount, optimisticPixels, interact, setOptimisticPixels, play]
   );
@@ -148,6 +154,11 @@ export const usePixelViewer = () => {
   const handleWheel = useCallback(
     (e: React.WheelEvent<HTMLCanvasElement>) => {
       const { x, y } = convertClientPosToCanvasPos(canvasRef, e.clientX, e.clientY);
+
+      if (!hasFetchedThisInteraction) {
+        fetchPixels();
+        setHasFetchedThisInteraction(true);
+      }
 
       if (e.ctrlKey) {
         // TrackPad pinch gesture
@@ -160,10 +171,6 @@ export const usePixelViewer = () => {
           const newOffsetY = Math.max(0, worldY - y / newScale);
           return { ...prev, scale: newScale, offsetX: newOffsetX, offsetY: newOffsetY };
         });
-        if (Math.abs(e.deltaY) < 2) {
-          console.log("fetching pixels");
-          fetchPixels();
-        }
       } else {
         // Regular mouse wheel or swipe
         setGridState((prev) => ({
@@ -171,18 +178,13 @@ export const usePixelViewer = () => {
           offsetX: Math.max(0, prev.offsetX + e.deltaX / prev.scale),
           offsetY: Math.max(0, prev.offsetY + e.deltaY / prev.scale),
         }));
-
-        if (Math.abs(e.deltaX) < 2 && Math.abs(e.deltaY) < 2) {
-          console.log("fetching pixels");
-          fetchPixels();
-        }
       }
 
       startTransition(() => {
         updateCurrentMousePos(x, y);
       });
     },
-    [updateCurrentMousePos, fetchPixels, setGridState]
+    [updateCurrentMousePos, fetchPixels, setGridState, hasFetchedThisInteraction]
   );
 
   const animateJumpToCell = useCallback(
@@ -316,6 +318,10 @@ export const usePixelViewer = () => {
 
         if (!isDraggingRef.current && (Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD)) {
           isDraggingRef.current = true;
+          if (!hasFetchedThisInteraction) {
+            fetchPixels();
+            setHasFetchedThisInteraction(true);
+          }
         }
 
         if (isDraggingRef.current) {
@@ -334,21 +340,27 @@ export const usePixelViewer = () => {
         }
       }
     },
-    [updateCurrentMousePos, setGridState]
+    [updateCurrentMousePos, setGridState, fetchPixels, hasFetchedThisInteraction]
   );
 
   const handleInertia = useCallback(() => {
     const { speedX, speedY, animationFrame } = inertiaRef.current;
+    const speed = Math.sqrt(speedX * speedX + speedY * speedY);
 
-    if (Math.abs(speedX) > INERTIA_STOP_THRESHOLD || Math.abs(speedY) > INERTIA_STOP_THRESHOLD) {
+    if (speed > INERTIA_STOP_THRESHOLD) {
+      // Calculate a dynamic damping factor
+      const baseDamping = INERTIA_DAMPING;
+      const speedRatio = Math.min(speed / INERTIA_STOP_THRESHOLD, 1);
+      const dynamicDamping = baseDamping + (1 - baseDamping) * (1 - speedRatio) * 0.1;
+
       setGridState((prev) => ({
         ...prev,
         offsetX: Math.max(0, prev.offsetX - speedX / prev.scale),
         offsetY: Math.max(0, prev.offsetY - speedY / prev.scale),
       }));
 
-      inertiaRef.current.speedX *= INERTIA_DAMPING;
-      inertiaRef.current.speedY *= INERTIA_DAMPING;
+      inertiaRef.current.speedX *= dynamicDamping;
+      inertiaRef.current.speedY *= dynamicDamping;
 
       inertiaRef.current.animationFrame = requestAnimationFrame(handleInertia);
     } else {
@@ -380,6 +392,7 @@ export const usePixelViewer = () => {
       }
 
       isDraggingRef.current = false;
+      setHasFetchedThisInteraction(false);
     },
     [fetchPixels, handleInertia]
   );
@@ -425,7 +438,10 @@ export const usePixelViewer = () => {
 
   // Effects
   useEffect(() => {
-    requestAnimationFrame(animate);
+    const animateFrame = requestAnimationFrame(animate);
+    return () => {
+      cancelAnimationFrame(animateFrame);
+    };
   }, [animate]);
 
   // initial fetch
@@ -445,7 +461,7 @@ export const usePixelViewer = () => {
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
       gl.viewport(0, 0, canvas.width, canvas.height);
-      animate();
+      requestAnimationFrame(animate);
     });
 
     resizeObserver.observe(canvas);
