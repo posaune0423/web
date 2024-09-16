@@ -40,10 +40,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
     pixelProgramInfoRef.current = createProgramInfo(gl, [pixelVsSource, pixelFsSource]);
   }, [canvasRef]);
 
-  useEffect(() => {
-    initWebGL();
-  }, [initWebGL]);
-
   const drawGrid = useCallback(() => {
     const gl = glRef.current;
     if (!gl) {
@@ -170,6 +166,10 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
     },
     [gridState]
   );
+
+  useEffect(() => {
+    initWebGL();
+  }, [initWebGL]);
 
   return { glRef, drawGrid, drawPixels };
 };

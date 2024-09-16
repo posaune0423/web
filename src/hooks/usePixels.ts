@@ -104,7 +104,6 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   const forceFetch = useCallback(async () => {
     consoleYellow("forceFetch");
     const { upperLeftX, upperLeftY, lowerRightX, lowerRightY } = getVisiblePixelRange();
-    console.log(upperLeftX, upperLeftY, lowerRightX, lowerRightY);
     const entities = await getPixelEntities(toriiClient, pixelLimit, {
       upperLeftX: upperLeftX,
       upperLeftY: upperLeftY,
@@ -154,6 +153,11 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       setRefresh(false);
     }
   }, [forceFetch, refresh]);
+
+  // initial fetch
+  useEffect(() => {
+    fetchPixels();
+  }, []);
 
   return { optimisticPixels, setOptimisticPixels, fetchPixels };
 };
