@@ -3,9 +3,12 @@ import { useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from
 import { GridState, Pixel } from "../types";
 import { BASE_CELL_SIZE } from "@/constants/webgl";
 import { useDojo } from "./useDojo";
-import { BUFFER_PIXEL_RANGE, MAX_UINT32 } from "@/constants/webgl";
 import { consoleBlue, consoleGreen, consoleRed, consoleYellow } from "@/utils/console";
 import { getPixelComponentFromEntities, getPixelEntities } from "@/libs/dojo/helper";
+
+const BUFFER_PIXEL_RANGE = 30;
+const MAX_UINT32 = 4294967295;
+const THROTTLE_MS = 200; // throttleの間隔
 
 export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, gridState: GridState) => {
   const {
@@ -18,6 +21,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   const [optimisticPixels, setOptimisticPixels] = useOptimistic(visiblePixels, (pixels, newPixel: Pixel) => {
     return [...pixels, newPixel];
   });
+  const lastFetchTimeRef = useRef(0);
 
   const pixelLimit = useMemo(() => {
     const baseLimit = 30;
@@ -74,12 +78,16 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
 
     setIsFetching(true);
     try {
+      console.log("fetch start");
+      const start = performance.now();
       const entities = await getPixelEntities(toriiClient, pixelLimit, {
         upperLeftX: Math.max(0, upperLeftX - dynamicBufferX),
         upperLeftY: Math.max(0, upperLeftY - dynamicBufferY),
         lowerRightX: Math.min(MAX_UINT32, lowerRightX + dynamicBufferX),
         lowerRightY: Math.min(MAX_UINT32, lowerRightY + dynamicBufferY),
       });
+      const end = performance.now();
+      console.log(`fetch time: ${end - start}ms`);
 
       const newPixels = getPixelComponentFromEntities(entities);
 
@@ -104,7 +112,6 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   const forceFetch = useCallback(async () => {
     consoleYellow("forceFetch");
     const { upperLeftX, upperLeftY, lowerRightX, lowerRightY } = getVisiblePixelRange();
-    console.log(upperLeftX, upperLeftY, lowerRightX, lowerRightY);
     const entities = await getPixelEntities(toriiClient, pixelLimit, {
       upperLeftX: upperLeftX,
       upperLeftY: upperLeftY,
@@ -131,6 +138,14 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     consoleBlue(`update visible pixels: ${newPixels.length}`);
   }, [pixelLimit, toriiClient, getVisiblePixelRange]);
 
+  const throttledFetchPixels = useCallback(() => {
+    const now = Date.now();
+    if (now - lastFetchTimeRef.current >= THROTTLE_MS) {
+      lastFetchTimeRef.current = now;
+      fetchPixels();
+    }
+  }, [fetchPixels]);
+
   useEffect(() => {
     const subscription = async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,5 +170,10 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     }
   }, [forceFetch, refresh]);
 
-  return { optimisticPixels, setOptimisticPixels, fetchPixels };
+  // initial fetch
+  useEffect(() => {
+    fetchPixels();
+  }, []);
+
+  return { optimisticPixels, setOptimisticPixels, fetchPixels, throttledFetchPixels };
 };

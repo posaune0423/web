@@ -38,11 +38,10 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
     resizeCanvasToDisplaySize(canvas);
     gridProgramInfoRef.current = createProgramInfo(gl, [gridVsSource, gridFsSource]);
     pixelProgramInfoRef.current = createProgramInfo(gl, [pixelVsSource, pixelFsSource]);
-  }, [canvasRef]);
 
-  useEffect(() => {
-    initWebGL();
-  }, [initWebGL]);
+    gl.clearColor(0, 0, 0, 0.8);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }, [canvasRef]);
 
   const drawGrid = useCallback(() => {
     const gl = glRef.current;
@@ -50,12 +49,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       console.error("WebGL not supported");
       return;
     }
-
-    gl.clearColor(0, 0, 0, 0.8);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    resizeCanvasToDisplaySize(gl.canvas as HTMLCanvasElement);
 
     const gridProgramInfo = gridProgramInfoRef.current;
     if (!gridProgramInfo) {
@@ -106,9 +99,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         return;
       }
 
-      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-      resizeCanvasToDisplaySize(gl.canvas as HTMLCanvasElement);
-
       const pixelProgramInfo = pixelProgramInfoRef.current;
       if (!pixelProgramInfo) {
         console.error("ProgramInfo not initialized");
@@ -122,7 +112,8 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       const pixelSize = BASE_CELL_SIZE * 0.98; // Reduce the size slightly to leave space for grid lines
       const offset = (BASE_CELL_SIZE - pixelSize) / 2; // Center the smaller pixel within the grid cell
 
-      pixels.forEach((pixel) => {
+      for (let i = 0; i < pixels.length; i++) {
+        const pixel = pixels[i];
         const x = pixel.x * BASE_CELL_SIZE + offset;
         const y = pixel.y * BASE_CELL_SIZE + offset;
 
@@ -145,7 +136,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         for (let i = 0; i < 6; i++) {
           pixelColors.push(pixel.color.r, pixel.color.g, pixel.color.b, pixel.color.a);
         }
-      });
+      }
 
       const pixelBufferInfo = createBufferInfoFromArrays(gl, {
         aPosition: { numComponents: 2, data: pixelPositions },
@@ -170,6 +161,10 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
     },
     [gridState]
   );
+
+  useEffect(() => {
+    initWebGL();
+  }, [initWebGL]);
 
   return { glRef, drawGrid, drawPixels };
 };
