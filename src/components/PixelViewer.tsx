@@ -8,8 +8,11 @@ import { sounds } from "@/constants";
 import { usePixels } from "@/hooks/usePixels";
 import { useGridState } from "@/hooks/useGridState";
 import { useWebGL } from "@/hooks/useWebGL";
+import { CoordinateFinder } from "@/components/CoordinateFinder";
+import { ColorPalette } from "@/components/ColorPallette";
+import { CanvasGrid } from "@/components/CanvasGrid";
 
-export const usePixelViewer = () => {
+export const PixelViewer: React.FC = () => {
   // Refs
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -101,18 +104,20 @@ export const usePixelViewer = () => {
     [gridState, setGridState, setCurrentMousePos]
   );
 
-  return {
-    canvasRef,
-    selectedColor,
-    currentMousePos,
-    gridState,
-    optimisticPixels,
-    setSelectedColor,
-    setCurrentMousePos,
-    onCellClick,
-    onPan,
-    onDrawGrid,
-    setGridState,
-    animateJumpToCell,
-  };
+  return (
+    <section className="relative h-full w-full">
+      <CanvasGrid
+        canvasRef={canvasRef}
+        className="fixed inset-x-0 bottom top-[50px] h-[calc(100%-50px)] w-full bg-black/80"
+        onCellClick={onCellClick}
+        onSwipe={onPan}
+        onPan={onPan}
+        onDrawGrid={onDrawGrid}
+        onGridStateChange={setGridState}
+        setCurrentMousePos={setCurrentMousePos}
+      />
+      <CoordinateFinder currentMousePos={currentMousePos} animateJumpToCell={animateJumpToCell} />
+      <ColorPalette selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
+    </section>
+  );
 };

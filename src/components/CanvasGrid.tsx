@@ -5,6 +5,7 @@ import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
 import { useGridState } from "@/hooks/useGridState";
 import { GridState } from "@/types";
+import { resizeCanvasToDisplaySize } from "twgl.js";
 
 export const INERTIA_DAMPING = 0.97;
 export const INERTIA_STOP_THRESHOLD = 0.05;
@@ -383,6 +384,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
       gl.viewport(0, 0, canvas.width, canvas.height);
+      resizeCanvasToDisplaySize(gl.canvas as HTMLCanvasElement);
       animate();
     });
 

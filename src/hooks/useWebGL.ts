@@ -38,6 +38,9 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
     resizeCanvasToDisplaySize(canvas);
     gridProgramInfoRef.current = createProgramInfo(gl, [gridVsSource, gridFsSource]);
     pixelProgramInfoRef.current = createProgramInfo(gl, [pixelVsSource, pixelFsSource]);
+
+    gl.clearColor(0, 0, 0, 0.8);
+    gl.clear(gl.COLOR_BUFFER_BIT);
   }, [canvasRef]);
 
   const drawGrid = useCallback(() => {
@@ -46,12 +49,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       console.error("WebGL not supported");
       return;
     }
-
-    gl.clearColor(0, 0, 0, 0.8);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    resizeCanvasToDisplaySize(gl.canvas as HTMLCanvasElement);
 
     const gridProgramInfo = gridProgramInfoRef.current;
     if (!gridProgramInfo) {
@@ -101,9 +98,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         console.error("WebGL not supported");
         return;
       }
-
-      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-      resizeCanvasToDisplaySize(gl.canvas as HTMLCanvasElement);
 
       const pixelProgramInfo = pixelProgramInfoRef.current;
       if (!pixelProgramInfo) {
