@@ -31,7 +31,7 @@ export const PixelViewer: React.FC = () => {
 
   const { gridState, setGridState } = useGridState();
   const { drawPixels } = useWebGL(canvasRef, gridState);
-  const { optimisticPixels, setOptimisticPixels, fetchPixels } = usePixels(canvasRef, gridState);
+  const { optimisticPixels, setOptimisticPixels,  throttledFetchPixels } = usePixels(canvasRef, gridState);
   const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
@@ -54,12 +54,11 @@ export const PixelViewer: React.FC = () => {
 
   const onPan = useCallback(
     (dx: number, dy: number) => {
-      if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
-        console.log("fetching pixels");
-        fetchPixels();
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        throttledFetchPixels();
       }
     },
-    [fetchPixels]
+    [throttledFetchPixels]
   );
 
   const animateJumpToCell = useCallback(

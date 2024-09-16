@@ -152,6 +152,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         const cellX = Math.floor(worldX / BASE_CELL_SIZE);
         const cellY = Math.floor(worldY / BASE_CELL_SIZE);
 
+        console.log("click");
         onCellClick?.(cellX, cellY);
       }
 
@@ -252,12 +253,27 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
           setGridState((prev) => {
             const zoomFactor = currentDistance / (gestureRef.current.lastPinchDistance || currentDistance);
             const newScale = Math.max(minZoom, Math.min(maxZoom, prev.scale * zoomFactor));
-            onPinch?.(
-              newScale,
-              (currentPositions[0].x + currentPositions[1].x) / 2,
-              (currentPositions[0].y + currentPositions[1].y) / 2
-            );
-            return { ...prev, scale: newScale };
+
+            // Calculate the center point of the pinch gesture
+            const centerX = (currentPositions[0].x + currentPositions[1].x) / 2;
+            const centerY = (currentPositions[0].y + currentPositions[1].y) / 2;
+
+            // Convert center point to world coordinates
+            const worldCenterX = prev.offsetX + centerX / prev.scale;
+            const worldCenterY = prev.offsetY + centerY / prev.scale;
+
+            // Calculate new offsets to keep the center point stationary
+            const newOffsetX = worldCenterX - centerX / newScale;
+            const newOffsetY = worldCenterY - centerY / newScale;
+
+            onPinch?.(newScale, centerX, centerY);
+
+            return {
+              ...prev,
+              scale: newScale,
+              offsetX: Math.max(0, newOffsetX),
+              offsetY: Math.max(0, newOffsetY)
+            };
           });
         } else {
           setGridState((prev) => ({

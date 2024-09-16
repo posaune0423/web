@@ -43,7 +43,8 @@ export function createSystemCalls(
   ) => {
     console.log("interact", params);
     try {
-      await client.actions.interact(account, { ...params });
+      const tx = await client.actions.interact(account, { ...params });
+      console.log("interact tx", tx);
     } catch (e) {
       console.error(e);
     }
