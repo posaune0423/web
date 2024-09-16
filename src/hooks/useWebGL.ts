@@ -112,7 +112,8 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       const pixelSize = BASE_CELL_SIZE * 0.98; // Reduce the size slightly to leave space for grid lines
       const offset = (BASE_CELL_SIZE - pixelSize) / 2; // Center the smaller pixel within the grid cell
 
-      pixels.forEach((pixel) => {
+      for (let i = 0; i < pixels.length; i++) {
+        const pixel = pixels[i];
         const x = pixel.x * BASE_CELL_SIZE + offset;
         const y = pixel.y * BASE_CELL_SIZE + offset;
 
@@ -135,7 +136,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         for (let i = 0; i < 6; i++) {
           pixelColors.push(pixel.color.r, pixel.color.g, pixel.color.b, pixel.color.a);
         }
-      });
+      }
 
       const pixelBufferInfo = createBufferInfoFromArrays(gl, {
         aPosition: { numComponents: 2, data: pixelPositions },
