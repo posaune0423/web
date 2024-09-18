@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 
 const SwipeControl = ({ children }: { children: React.ReactNode }) => {
-  useEffect(() => {
+  useLayoutEffect(() => {
     // ブラウザの履歴にダミーのエントリを追加
     window.history.pushState(null, "", window.location.pathname);
 
     // popstateイベントのリスナーを追加
-    const handlePopState = () => {
+    const handlePopState = (e: PopStateEvent) => {
+      e.stopImmediatePropagation();
       // ブラウザバックを防止
       window.history.pushState(null, "", window.location.pathname);
     };
@@ -18,6 +19,16 @@ const SwipeControl = ({ children }: { children: React.ReactNode }) => {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+      },
+      { passive: false }
+    );
   }, []);
 
   const handlers = useSwipeable({

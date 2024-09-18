@@ -41,7 +41,6 @@ export function createSystemCalls(
     account: Account | AccountInterface,
     params: Pick<DefaultParams, "x" | "y" | "color">,
   ) => {
-    console.log("interact", params);
     try {
       const tx = await client.actions.interact(account, { ...params });
       console.log("interact tx", tx);
