@@ -1,8 +1,8 @@
 {
   "world": {
     "kind": "WorldContract",
-    "class_hash": "0xa349b743d361ce4567361475a89b84a386bb383448c6926954e5fe0b525597",
-    "original_class_hash": "0xa349b743d361ce4567361475a89b84a386bb383448c6926954e5fe0b525597",
+    "class_hash": "0x6f4515274ee23404789c3351a77107d0ec07508530119822046600ca6948d6e",
+    "original_class_hash": "0x6f4515274ee23404789c3351a77107d0ec07508530119822046600ca6948d6e",
     "abi": [
       {
         "type": "impl",
@@ -945,6 +945,11 @@
             "kind": "data"
           },
           {
+            "name": "entity_id",
+            "type": "core::felt252",
+            "kind": "data"
+          },
+          {
             "name": "keys",
             "type": "core::array::Span::<core::felt252>",
             "kind": "data"
@@ -1229,8 +1234,8 @@
         ]
       }
     ],
-    "address": "0x99b8dbc71926673405f5dfff9e4900ee4d9249798cc5e7ac6f3c3a07907399",
-    "transaction_hash": "0x35f5e7fa0bdbdbb031a662f1330cea66b8129beedcc77fe3cab4cf77b5739fb",
+    "address": "0x263ae44e5414519a5c5a135cccaf3d9d7ee196d37e8de47a178da91f3de9b34",
+    "transaction_hash": "0x3ef9b5872cef501848652bf2bf032dbf7e9b4d348bf67c5abcdee6e1f65e93f",
     "block_number": 3,
     "seed": "pixelaw",
     "metadata": {
@@ -1250,9 +1255,9 @@
   "contracts": [
     {
       "kind": "DojoContract",
-      "address": "0x11ec5bc4a60e3e989499f539da855af4be11b59c366692e32431695e0ba5c3c",
-      "class_hash": "0x1e3f8788f0bce2ddb5949ed71f9f15c3111c18064f6d5a72105d2e1f661f938",
-      "original_class_hash": "0x1e3f8788f0bce2ddb5949ed71f9f15c3111c18064f6d5a72105d2e1f661f938",
+      "address": "0x6c2ffdd97cb5a1bca13de416adb23a1d0e24ae3c805114b2100f6af95a7f60e",
+      "class_hash": "0x17d390af6c3b449b52da5a0969a00006a3b7935ffc08192dc8cefdeb563488f",
+      "original_class_hash": "0x17d390af6c3b449b52da5a0969a00006a3b7935ffc08192dc8cefdeb563488f",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1594,10 +1599,6 @@
               "type": "core::felt252"
             },
             {
-              "name": "manifest",
-              "type": "core::felt252"
-            },
-            {
               "name": "icon",
               "type": "core::felt252"
             },
@@ -1637,32 +1638,12 @@
               "name": "update_permission",
               "inputs": [
                 {
-                  "name": "for_system",
+                  "name": "app_key",
                   "type": "core::felt252"
                 },
                 {
                   "name": "permission",
                   "type": "pixelaw::core::models::permissions::Permission"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "update_app",
-              "inputs": [
-                {
-                  "name": "name",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "icon",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "manifest",
-                  "type": "core::felt252"
                 }
               ],
               "outputs": [],
@@ -1782,10 +1763,6 @@
                 },
                 {
                   "name": "icon",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "manifest",
                   "type": "core::felt252"
                 }
               ],
@@ -2064,7 +2041,6 @@
       "systems": [
         "init",
         "update_permission",
-        "update_app",
         "schedule_queue",
         "process_queue",
         "update_pixel",
@@ -2075,9 +2051,9 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x242b049a376eb129e57e860c6646fd80f2b06747b42bb3821064a70c0a76a36",
-      "class_hash": "0x36aa9f769c7b79280ee0f6c85b660b4b113b60d79cdcd79a12d47faec8555aa",
-      "original_class_hash": "0x36aa9f769c7b79280ee0f6c85b660b4b113b60d79cdcd79a12d47faec8555aa",
+      "address": "0x41b6ece4125198c4de0d9d7efa2fad0af34376178b2c0a5a4487c676f35d5c6",
+      "class_hash": "0x26345888698fbdcfa98dca43542f038a02620c9b485c1487b7e76a21f63aff",
+      "original_class_hash": "0x26345888698fbdcfa98dca43542f038a02620c9b485c1487b7e76a21f63aff",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2316,10 +2292,6 @@
             },
             {
               "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "manifest",
               "type": "core::felt252"
             },
             {
@@ -2581,9 +2553,9 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x79fe3be0c6f1e92617ee26754ec6a8a24a043e83107960dbe99c110f671f0f8",
-      "class_hash": "0x566a961335e1183fe83b156d6349a0320f401b4f0b4b20485e2b709e748dcd0",
-      "original_class_hash": "0x566a961335e1183fe83b156d6349a0320f401b4f0b4b20485e2b709e748dcd0",
+      "address": "0x7e90101cb87a2f0b670204fa83f70d42a48c64ef10ddf0aaf9862d84b4bc9df",
+      "class_hash": "0x6dbe6fed41677edc917050c80b2e15727f48534fd7752e153e7cf74542ebad9",
+      "original_class_hash": "0x6dbe6fed41677edc917050c80b2e15727f48534fd7752e153e7cf74542ebad9",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2822,10 +2794,6 @@
             },
             {
               "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "manifest",
               "type": "core::felt252"
             },
             {
@@ -3146,11 +3114,6 @@
           "key": false
         },
         {
-          "name": "manifest",
-          "type": "felt252",
-          "key": false
-        },
-        {
           "name": "icon",
           "type": "felt252",
           "key": false
@@ -3161,8 +3124,8 @@
           "key": false
         }
       ],
-      "class_hash": "0x34204d56b9f6a93b305e54a27b5e8e593f159f87212fcf39c770020b03bfce5",
-      "original_class_hash": "0x34204d56b9f6a93b305e54a27b5e8e593f159f87212fcf39c770020b03bfce5",
+      "class_hash": "0x4107d94a66470b68d2e06102c87937c03cca51fafa84a3a4fc45c95a4d2403c",
+      "original_class_hash": "0x4107d94a66470b68d2e06102c87937c03cca51fafa84a3a4fc45c95a4d2403c",
       "abi": [
         {
           "type": "impl",
@@ -3541,10 +3504,6 @@
             },
             {
               "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "manifest",
               "type": "core::felt252"
             },
             {
