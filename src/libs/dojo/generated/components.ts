@@ -9,18 +9,12 @@ export function defineContractComponents(world: World) {
     App: (() => {
       return defineComponent(
         world,
-        {
-          system: RecsType.BigInt,
-          name: RecsType.BigInt,
-          manifest: RecsType.BigInt,
-          icon: RecsType.BigInt,
-          action: RecsType.BigInt,
-        },
+        { system: RecsType.BigInt, name: RecsType.BigInt, icon: RecsType.BigInt, action: RecsType.BigInt },
         {
           metadata: {
             namespace: "pixelaw",
             name: "App",
-            types: ["contractaddress", "felt252", "felt252", "felt252", "felt252"],
+            types: ["contractaddress", "felt252", "felt252", "felt252"],
             customTypes: [],
           },
         }
