@@ -142,6 +142,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
   const handleMouseUp = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
       e.preventDefault();
+      e.stopPropagation();
 
       if (!isDraggingRef.current && mouseDownPosRef.current) {
         const { x, y } = convertClientPosToCanvasPos(canvasRef, e.clientX, e.clientY);
@@ -344,6 +345,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent<HTMLCanvasElement>) => {
       e.preventDefault();
+      e.stopPropagation();
       const wasPinchGesture = gestureRef.current.isGesture;
       gestureRef.current.isGesture = false;
       gestureRef.current.gestureType = null;
