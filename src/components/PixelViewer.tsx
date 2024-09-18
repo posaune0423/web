@@ -31,7 +31,7 @@ export const PixelViewer: React.FC = () => {
 
   const { gridState, setGridState } = useGridState();
   const { drawPixels } = useWebGL(canvasRef, gridState);
-  const { optimisticPixels, setOptimisticPixels,  throttledFetchPixels } = usePixels(canvasRef, gridState);
+  const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState);
   const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
@@ -113,8 +113,9 @@ export const PixelViewer: React.FC = () => {
         onPan={onPan}
         // onTap={onCellClick} // NOTE: somehow tap and mouseup events are called duplicated
         onDrawGrid={onDrawGrid}
-        onGridStateChange={setGridState}
         setCurrentMousePos={setCurrentMousePos}
+        gridState={gridState}
+        setGridState={setGridState}
       />
       <CoordinateFinder currentMousePos={currentMousePos} animateJumpToCell={animateJumpToCell} />
       <ColorPalette selectedColor={selectedColor} setSelectedColor={setSelectedColor} />

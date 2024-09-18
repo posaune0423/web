@@ -3,7 +3,6 @@ import { BASE_CELL_SIZE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "@/constan
 import { useWebGL } from "@/hooks/useWebGL";
 import { convertClientPosToCanvasPos } from "@/utils/canvas";
 import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
-import { useGridState } from "@/hooks/useGridState";
 import { GridState } from "@/types";
 import { resizeCanvasToDisplaySize } from "twgl.js";
 
@@ -14,7 +13,9 @@ interface CanvasGridProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   width?: number;
   height?: number;
+  gridState: GridState;
   className?: string;
+  setGridState: React.Dispatch<React.SetStateAction<GridState>>;
   onDrawGrid?: () => void;
   onCellClick?: (x: number, y: number) => void;
   onCellHover?: (x: number, y: number) => void;
@@ -23,7 +24,6 @@ interface CanvasGridProps {
   onSwipe?: (dx: number, dy: number) => void;
   onPan?: (dx: number, dy: number) => void;
   onZoom?: (scale: number, x: number, y: number) => void;
-  onGridStateChange?: (newState: GridState) => void;
   setCurrentMousePos?: React.Dispatch<
     React.SetStateAction<{
       x: number;
@@ -38,10 +38,15 @@ interface CanvasGridProps {
 }
 
 export const CanvasGrid: React.FC<CanvasGridProps> = ({
+  maxZoom = MAX_SCALE,
+  minZoom = MIN_SCALE,
+  damping = true,
+  gridState,
   canvasRef,
   width,
   height,
   className,
+  setGridState,
   onDrawGrid,
   onCellClick,
   onCellHover,
@@ -51,12 +56,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
   onSwipe,
   onZoom,
   setCurrentMousePos,
-  onGridStateChange,
-  maxZoom = MAX_SCALE,
-  minZoom = MIN_SCALE,
-  damping = true,
 }) => {
-  const { gridState, setGridState } = useGridState();
   const { glRef, drawGrid } = useWebGL(canvasRef, gridState);
 
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
@@ -273,7 +273,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
               ...prev,
               scale: newScale,
               offsetX: Math.max(0, newOffsetX),
-              offsetY: Math.max(0, newOffsetY)
+              offsetY: Math.max(0, newOffsetY),
             };
           });
         } else {
@@ -412,10 +412,6 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
       resizeObserver.disconnect();
     };
   }, [canvasRef, glRef, animate]);
-
-  useEffect(() => {
-    onGridStateChange?.(gridState);
-  }, [gridState, onGridStateChange]);
 
   return (
     <canvas

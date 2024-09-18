@@ -42,6 +42,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "twgl.js": "^5.5.4",
+    "use-debounce": "^10.0.3",
     "use-sound": "^4.0.3"
   },
   "devDependencies": {
