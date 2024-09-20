@@ -9,13 +9,13 @@ export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
 
-export const truncateAddress = (address: string, withPrefix?: boolean) => {
+export const truncateAddress = (address: string) => {
   const truncateRegex = /^(0x[a-zA-Z0-9]{4})[a-zA-Z0-9]+([a-zA-Z0-9]{4})$/;
   const match = address.match(truncateRegex);
   if (!match || match.length < 3) return address;
   const part1 = match[1] || "";
   const part2 = match[2] || "";
-  return `${withPrefix ? "0x" : ""}${part1}…${part2}`;
+  return `0x${part1}…${part2}`;
 };
 
 export const formatDate = (date: Date | string): string => {
