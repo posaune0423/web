@@ -15,6 +15,11 @@ interface CanvasGridProps {
   height?: number;
   gridState: GridState;
   className?: string;
+  initialScale?: number;
+  initialOffset?: { x: number; y: number };
+  maxZoom?: number;
+  minZoom?: number;
+  damping?: boolean;
   setGridState: React.Dispatch<React.SetStateAction<GridState>>;
   onDrawGrid?: () => void;
   onCellClick?: (x: number, y: number) => void;
@@ -30,11 +35,6 @@ interface CanvasGridProps {
       y: number;
     }>
   >;
-  initialScale?: number;
-  initialOffset?: { x: number; y: number };
-  maxZoom?: number;
-  minZoom?: number;
-  damping?: boolean;
 }
 
 export const CanvasGrid: React.FC<CanvasGridProps> = ({

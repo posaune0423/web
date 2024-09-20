@@ -1,12 +1,18 @@
+import { Pixel } from "@/types";
 import { hexToRgba } from "@/utils";
-import { Entities, ToriiClient } from "@dojoengine/torii-client";
 
-export const getPixelComponentFromEntities = (entities: Entities) => {
-  return Object.values(entities).map((entity) => ({
+import { Entities, Entity, ToriiClient } from "@dojoengine/torii-client";
+
+export const getPixelComponentValue = (entity: Entity): Pixel => {
+  return {
     x: entity["pixelaw-Pixel"].x.value as number,
     y: entity["pixelaw-Pixel"].y.value as number,
     color: hexToRgba(entity["pixelaw-Pixel"].color.value as number),
-  }));
+  };
+};
+
+export const getPixelComponentFromEntities = (entities: Entities) => {
+  return Object.values(entities).map(getPixelComponentValue);
 };
 
 export const getPixelEntities = async (
