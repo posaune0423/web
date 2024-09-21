@@ -23,31 +23,31 @@ export default defineConfig({
         enabled: true,
       },
       manifest: {
-        name: "PixeLAW Client",
-        short_name: "PixeLAW Client",
+        name: "PixeLAW",
+        short_name: "PixeLAW",
         description: "A pixel based autonomous world",
         theme_color: "#262C38",
         icons: [
           {
-            src: "/pwa-192x192.png",
+            src: "/icon.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/pwa-512x512.png",
+            src: "/icon.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/pwa-maskable-192x192.png",
+            src: "/icon.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "maskable",
           },
           {
-            src: "/pwa-maskable-512x512.png",
+            src: "/icon.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
