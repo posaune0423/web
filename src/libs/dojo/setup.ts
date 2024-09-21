@@ -8,7 +8,10 @@ import { createSystemCalls } from "./createSystemCalls";
 import { defineContractComponents } from "./typescript/models.gen";
 import { setupWorld } from "./typescript/contracts.gen";
 import { world } from "./world";
-import { getSyncEvents, getSyncEntities } from "@dojoengine/state";
+import {
+  getSyncEvents,
+  // getSyncEntities
+} from "@dojoengine/state";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -34,7 +37,7 @@ export async function setup({ ...config }: DojoConfig) {
   const eventSync = getSyncEvents(toriiClient, contractComponents as any, undefined, []);
 
   // Sync all entities
-  const sync = await getSyncEntities(toriiClient, contractComponents as any, []);
+  // const sync = await getSyncEntities(toriiClient, contractComponents as any, []);
 
   // setup world
   const client = await setupWorld(dojoProvider);
@@ -74,7 +77,7 @@ export async function setup({ ...config }: DojoConfig) {
     dojoProvider,
     burnerManager,
     toriiClient,
-    sync,
+    // sync,
     eventSync,
   };
 }

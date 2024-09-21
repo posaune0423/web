@@ -50,12 +50,14 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
 
   const fetchPixels = useCallback(async () => {
     if (isFetching) {
+      console.log("isFetching");
       return;
     }
     const currentRange = getVisiblePixelRange();
     const lastRange = lastFetchedRangeRef.current;
 
     if (!shouldFetch(currentRange, lastRange)) {
+      console.log("not enough distance");
       return;
     }
 
@@ -87,6 +89,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         });
         return Array.from(updatedPixels.values());
       });
+      console.log("fetchPixels", newPixels.length);
     } catch (error) {
       console.error("Error fetching pixels:", error);
     } finally {
