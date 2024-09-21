@@ -2548,15 +2548,7 @@
       "writes": [],
       "init_calldata": [],
       "tag": "pixelaw-paint_actions",
-      "systems": [
-        "on_pre_update",
-        "on_post_update",
-        "init",
-        "interact",
-        "put_color",
-        "pixel_row",
-        "fade"
-      ],
+      "systems": ["on_pre_update", "on_post_update", "init", "interact", "put_color", "pixel_row", "fade"],
       "manifest_name": "pixelaw-paint_actions-2afb94fe"
     },
     {
@@ -3103,12 +3095,7 @@
       "writes": [],
       "init_calldata": [],
       "tag": "pixelaw-snake_actions",
-      "systems": [
-        "on_pre_update",
-        "on_post_update",
-        "init",
-        "move"
-      ],
+      "systems": ["on_pre_update", "on_post_update", "init", "move"],
       "manifest_name": "pixelaw-snake_actions-4f967106"
     }
   ],

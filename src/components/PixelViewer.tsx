@@ -43,10 +43,10 @@ export const PixelViewer: React.FC = () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
         await interact(activeAccount, {
-          position: { x, y },
-          color: rgbaToHex(selectedColor),
           for_player: 0n,
           for_system: 0n,
+          position: { x, y },
+          color: rgbaToHex(selectedColor),
         });
       });
     },
