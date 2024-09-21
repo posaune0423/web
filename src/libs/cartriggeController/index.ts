@@ -5,7 +5,12 @@ import { ControllerOptions } from "@cartridge/controller";
 
 import { manifest } from "../../../dojoConfig";
 
-const paint_action_contract_address = getContractByName(manifest, "pixelaw", "paint_actions")?.address;
+const contract = getContractByName(manifest, "pixelaw", "paint_actions");
+if (!contract?.address) {
+  throw new Error("pixelaw paint_actions contract not found");
+}
+
+const paint_action_contract_address = contract?.address;
 
 const policies = [
   {

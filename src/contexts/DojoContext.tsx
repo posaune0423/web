@@ -1,13 +1,13 @@
 import { type BurnerAccount, useBurnerManager } from "@dojoengine/create-burner";
 import { type ReactNode, createContext, useContext, useMemo } from "react";
-import { Account } from "starknet";
+import { Account, type AccountInterface } from "starknet";
 import { type SetupResult } from "@/libs/dojo/setup";
 import { useAccount } from "@starknet-react/core";
 
 interface DojoContextType extends SetupResult {
   masterAccount: Account;
   account: BurnerAccount;
-  connectedAccount: Account | undefined;
+  connectedAccount: AccountInterface | undefined;
 }
 
 export const DojoContext = createContext<DojoContextType | null>(null);
@@ -67,7 +67,7 @@ export const DojoProvider = ({ children, value }: { children: ReactNode; value: 
           applyFromClipboard,
           checkIsDeployed,
         },
-        connectedAccount: connectedAccount as Account,
+        connectedAccount,
       }}
     >
       {children}
