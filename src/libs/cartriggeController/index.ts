@@ -3,7 +3,7 @@ import CartridgeConnector from "@cartridge/connector";
 import { getContractByName } from "@dojoengine/core";
 import { ControllerOptions } from "@cartridge/controller";
 
-import manifest from "@/libs/dojo/generated/manifests/deployments/slot/manifest.json";
+import { manifest } from "../../../dojoConfig";
 
 const paint_action_contract_address = getContractByName(manifest, "pixelaw", "paint_actions")?.address;
 

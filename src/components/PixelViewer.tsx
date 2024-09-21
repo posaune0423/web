@@ -42,7 +42,12 @@ export const PixelViewer: React.FC = () => {
       startTransition(async () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
-        await interact(activeAccount, { x, y, color: rgbaToHex(selectedColor) });
+        await interact(activeAccount, {
+          position: { x, y },
+          color: rgbaToHex(selectedColor),
+          for_player: 0n,
+          for_system: 0n,
+        });
       });
     },
     [selectedColor, activeAccount, interact, setOptimisticPixels, play]

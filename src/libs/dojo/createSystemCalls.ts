@@ -1,58 +1,43 @@
-/* eslint-disable @typescript-eslint/no-unused-vars -- for now */
-import { Account, type AccountInterface } from "starknet";
-import { type ClientComponents } from "./createClientComponents";
-import { type ContractComponents } from "./generated/components";
-import type { DefaultParams, IWorld, PixelUpdate } from "./generated/systems";
+import { defineSystem, Has, World } from "@dojoengine/recs";
+import { ClientComponents } from "./createClientComponents";
+import type { IWorld } from "./typescript/contracts.gen";
+import { Account } from "starknet";
+import { DefaultParameters } from "./typescript/models.gen";
+import { toast } from "sonner";
+import { handleTransactionError } from "@/utils";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
-export function createSystemCalls(
-  { client }: { client: IWorld },
-  _contractComponents: ContractComponents,
-  _clientComponents: ClientComponents,
-) {
-  const initCore = async (account: Account | AccountInterface) => {
+const handleError = (action: string, error: unknown) => {
+  console.error(`Error executing ${action}:`, error);
+  const errorMessage = handleTransactionError(error);
+  console.info(errorMessage);
+  toast.error(errorMessage);
+  throw error;
+};
+
+export function createSystemCalls({ client }: { client: IWorld }, clientComponents: ClientComponents, world: World) {
+  const interact = async (account: Account, default_params: DefaultParameters) => {
     try {
-      await client.actions.initCore({
+      console.log("interact", default_params);
+      await client.paint_actions.interact({
         account,
+        default_params,
+      });
+
+      // Wait for the indexer to update the entity
+      // By doing this we keep the optimistic UI in sync with the actual state
+      await new Promise<void>((resolve) => {
+        defineSystem(world, [Has(clientComponents.Pixel)], () => {
+          resolve();
+        });
       });
     } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const updatePixel = async (account: Account | AccountInterface, pixelUpdate: PixelUpdate) => {
-    try {
-      await client.actions.updatePixel(account, pixelUpdate);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const initPaint = async (account: Account | AccountInterface) => {
-    try {
-      await client.actions.initPaint(account);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const interact = async (
-    account: Account | AccountInterface,
-    params: Pick<DefaultParams, "x" | "y" | "color">,
-  ) => {
-    try {
-      const tx = await client.actions.interact(account, { ...params });
-      console.log("interact tx", tx);
-    } catch (e) {
-      console.error(e);
+      handleError("interact", e);
     }
   };
 
   return {
-    initCore,
-    updatePixel,
-    initPaint,
     interact,
   };
 }

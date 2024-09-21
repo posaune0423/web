@@ -9,9 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "preview": "vite preview",
-    "components": "npx @dojoengine/core ../core/contracts/manifests/dev/deployment/manifest.json src/libs/dojo/generated/components.ts http://localhost:5050 0x99b8dbc71926673405f5dfff9e4900ee4d9249798cc5e7ac6f3c3a07907399",
-    "components:release": "npx @dojoengine/core ../core/contracts/manifests/slot/deployment/manifest.json src/libs/dojo/generated/components.ts https://api.cartridge.gg/x/pixelaw-dev/katana/ 0x263ae44e5414519a5c5a135cccaf3d9d7ee196d37e8de47a178da91f3de9b34"
+    "preview": "vite preview"
   },
   "packageManager": "bun@1.1.26",
   "dependencies": {

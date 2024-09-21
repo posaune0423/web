@@ -1235,12 +1235,12 @@
       }
     ],
     "address": "0x263ae44e5414519a5c5a135cccaf3d9d7ee196d37e8de47a178da91f3de9b34",
-    "transaction_hash": "0x3ef9b5872cef501848652bf2bf032dbf7e9b4d348bf67c5abcdee6e1f65e93f",
+    "transaction_hash": "0x507cd13b0e34b357d25bd0ddafa527c8caf0729f894e57ad9129c1f29311768",
     "block_number": 3,
     "seed": "pixelaw",
     "metadata": {
-      "profile_name": "slot",
-      "rpc_url": "https://api.cartridge.gg/x/pixelaw-dev/katana/"
+      "profile_name": "dev",
+      "rpc_url": "http://localhost:5050/"
     },
     "manifest_name": "dojo-world"
   },
@@ -1248,7 +1248,7 @@
     "kind": "Class",
     "class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
     "original_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
-    "abi": "manifests/slot/deployment/abis/dojo-base.json",
+    "abi": "manifests/dev/deployment/abis/dojo-base.json",
     "tag": "dojo-base",
     "manifest_name": "dojo-base"
   },
@@ -2548,7 +2548,15 @@
       "writes": [],
       "init_calldata": [],
       "tag": "pixelaw-paint_actions",
-      "systems": ["on_pre_update", "on_post_update", "init", "interact", "put_color", "pixel_row", "fade"],
+      "systems": [
+        "on_pre_update",
+        "on_post_update",
+        "init",
+        "interact",
+        "put_color",
+        "pixel_row",
+        "fade"
+      ],
       "manifest_name": "pixelaw-paint_actions-2afb94fe"
     },
     {
@@ -3095,7 +3103,12 @@
       "writes": [],
       "init_calldata": [],
       "tag": "pixelaw-snake_actions",
-      "systems": ["on_pre_update", "on_post_update", "init", "move"],
+      "systems": [
+        "on_pre_update",
+        "on_post_update",
+        "init",
+        "move"
+      ],
       "manifest_name": "pixelaw-snake_actions-4f967106"
     }
   ],

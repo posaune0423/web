@@ -5,12 +5,13 @@ import { BurnerManager } from "@dojoengine/create-burner";
 import { Account, type ArraySignatureType } from "starknet";
 import { createClientComponents } from "./createClientComponents";
 import { createSystemCalls } from "./createSystemCalls";
-import { defineContractComponents } from "./generated/components";
-import { setupWorld } from "./generated/systems";
+import { defineContractComponents } from "./typescript/models.gen";
+import { setupWorld } from "./typescript/contracts.gen";
 import { world } from "./world";
 import {
   // getSyncEntities,
-  getSyncEvents } from "@dojoengine/state";
+  getSyncEvents,
+} from "@dojoengine/state";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -68,7 +69,7 @@ export async function setup({ ...config }: DojoConfig) {
     client,
     clientComponents,
     contractComponents,
-    systemCalls: createSystemCalls({ client }, contractComponents, clientComponents),
+    systemCalls: createSystemCalls({ client }, clientComponents, world),
     publish: (typedData: string, signature: ArraySignatureType) => {
       toriiClient.publishMessage(typedData, signature);
     },
