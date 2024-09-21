@@ -1,6 +1,6 @@
-import Spinner from "../Spinner";
 import EmojiAvatar from "./EmojiAvatar";
 import { cn } from "@/utils";
+import { Loader2 } from "lucide-react";
 
 interface AvatarProps {
   address: string;
@@ -11,10 +11,7 @@ interface AvatarProps {
 
 const Avatar = ({ address, loading, imageUrl, size }: AvatarProps) => {
   return (
-    <div
-      className="relative overflow-hidden rounded-full"
-      style={{ width: `${size}px`, height: `${size}px` }}
-    >
+    <div className="relative overflow-hidden rounded-full" style={{ width: `${size}px`, height: `${size}px` }}>
       <div
         className={cn("absolute flex items-center justify-center overflow-hidden rounded-full")}
         style={{
@@ -31,7 +28,7 @@ const Avatar = ({ address, loading, imageUrl, size }: AvatarProps) => {
       </div>
       {loading && (
         <div className="absolute flex items-center justify-center overflow-hidden rounded-full">
-          <Spinner size={4} color="primary" />
+          <Loader2 size={size} />
         </div>
       )}
     </div>

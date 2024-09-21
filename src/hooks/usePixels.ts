@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
 import { GridState, Pixel } from "../types";
-import { BASE_CELL_SIZE } from "@/constants/webgl";
+import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
 import { useDojo } from "./useDojo";
 import { getPixelComponentFromEntities, getPixelComponentValue, getPixelEntities } from "@/libs/dojo/helper";
 import { Entity } from "@dojoengine/torii-client";
+import { shouldFetch } from "@/utils/canvas";
 
-const BUFFER_PIXEL_RANGE = 30;
 const MAX_UINT32 = 4294967295;
-const THROTTLE_MS = 200; // throttleの間隔
+const THROTTLE_MS = 200; // throttle interval
 
 export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, gridState: GridState) => {
   const {
@@ -32,15 +32,13 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     return Math.round(baseLimit + (maxLimit - baseLimit) * Math.pow(scaleFactor, 3));
   }, [gridState.scale]);
 
+  // Callbacks
   const getVisiblePixelRange = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return { upperLeftX: 0, upperLeftY: 0, lowerRightX: 0, lowerRightY: 0 };
 
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvas.height;
-
-    const visibleWidth = canvasWidth / gridState.scale;
-    const visibleHeight = canvasHeight / gridState.scale;
+    const visibleWidth = canvas.width / gridState.scale;
+    const visibleHeight = canvas.height / gridState.scale;
 
     const upperLeftX = Math.floor(gridState.offsetX / BASE_CELL_SIZE);
     const upperLeftY = Math.floor(gridState.offsetY / BASE_CELL_SIZE);
@@ -57,13 +55,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     const currentRange = getVisiblePixelRange();
     const lastRange = lastFetchedRangeRef.current;
 
-    const shouldFetch =
-      Math.abs(currentRange.upperLeftX - lastRange.upperLeftX) > BUFFER_PIXEL_RANGE / 4 ||
-      Math.abs(currentRange.upperLeftY - lastRange.upperLeftY) > BUFFER_PIXEL_RANGE / 4 ||
-      Math.abs(currentRange.lowerRightX - lastRange.lowerRightX) > BUFFER_PIXEL_RANGE / 4 ||
-      Math.abs(currentRange.lowerRightY - lastRange.lowerRightY) > BUFFER_PIXEL_RANGE / 4;
-
-    if (!shouldFetch) {
+    if (!shouldFetch(currentRange, lastRange)) {
       return;
     }
 
@@ -88,13 +80,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       const newPixels = getPixelComponentFromEntities(entities);
 
       // Update pixels in hacky way
-      setVisiblePixels((prevPixels) => {
-        const updatedPixels = new Map(prevPixels.map((p) => [`${p.x},${p.y}`, p]));
-        newPixels.forEach((newPixel) => {
-          updatedPixels.set(`${newPixel.x},${newPixel.y}`, newPixel);
-        });
-        return Array.from(updatedPixels.values());
-      });
+      setVisiblePixels(newPixels);
     } catch (error) {
       console.error("Error fetching pixels:", error);
     } finally {
@@ -111,6 +97,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     }
   }, [fetchPixels]);
 
+  // Effects
   useEffect(() => {
     const subscription = async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

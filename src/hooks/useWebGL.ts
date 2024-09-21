@@ -72,7 +72,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       uResolution: [gl.canvas.width, gl.canvas.height],
       uOffset: [gridState.offsetX, gridState.offsetY],
       uScale: gridState.scale,
-      uLineWidth: BASE_LINE_WIDTH * gridState.scale,
+      uLineWidth: BASE_LINE_WIDTH / gridState.scale,
       uColor: [
         DEFAULT_GRID_COLOR.r * darker,
         DEFAULT_GRID_COLOR.g * darker,
@@ -109,7 +109,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       const pixelPositions: number[] = [];
       const pixelColors: number[] = [];
 
-      const pixelSize = BASE_CELL_SIZE * 0.98; // Reduce the size slightly to leave space for grid lines
+      const pixelSize = BASE_CELL_SIZE - BASE_LINE_WIDTH / gridState.scale; // Reduce the size slightly to leave space for grid lines
       const offset = (BASE_CELL_SIZE - pixelSize) / 2; // Center the smaller pixel within the grid cell
 
       for (let i = 0; i < pixels.length; i++) {

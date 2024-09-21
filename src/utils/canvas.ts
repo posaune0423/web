@@ -1,5 +1,5 @@
-import { BASE_CELL_SIZE } from "@/constants/webgl";
-import { GridState } from "@/types";
+import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
+import { GridState, PixelRange } from "@/types";
 
 export const convertClientPosToCanvasPos = (
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
@@ -26,4 +26,13 @@ export const getVisibleArea = (canvas: HTMLCanvasElement, gridState: GridState) 
   const endY = startY + visibleHeight + BASE_CELL_SIZE;
 
   return { startX, startY, endX, endY };
+};
+
+export const shouldFetch = (currentRange: PixelRange, lastRange: PixelRange) => {
+  return (
+    Math.abs(currentRange.upperLeftX - lastRange.upperLeftX) > BUFFER_PIXEL_RANGE / 4 ||
+    Math.abs(currentRange.upperLeftY - lastRange.upperLeftY) > BUFFER_PIXEL_RANGE / 4 ||
+    Math.abs(currentRange.lowerRightX - lastRange.lowerRightX) > BUFFER_PIXEL_RANGE / 4 ||
+    Math.abs(currentRange.lowerRightY - lastRange.lowerRightY) > BUFFER_PIXEL_RANGE / 4
+  );
 };

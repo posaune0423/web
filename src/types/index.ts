@@ -26,6 +26,13 @@ export interface Pixel {
   color: Color;
 }
 
+export interface PixelRange {
+  upperLeftX: number;
+  upperLeftY: number;
+  lowerRightX: number;
+  lowerRightY: number;
+}
+
 export interface GridAction {
   type: "add" | "remove";
   pixel: Pixel;
