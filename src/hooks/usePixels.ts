@@ -80,7 +80,13 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       const newPixels = getPixelComponentFromEntities(entities);
 
       // Update pixels in hacky way
-      setVisiblePixels(newPixels);
+      setVisiblePixels((prevPixels) => {
+        const updatedPixels = new Map(prevPixels.map((p) => [`${p.x},${p.y}`, p]));
+        newPixels.forEach((newPixel) => {
+          updatedPixels.set(`${newPixel.x},${newPixel.y}`, newPixel);
+        });
+        return Array.from(updatedPixels.values());
+      });
     } catch (error) {
       console.error("Error fetching pixels:", error);
     } finally {
