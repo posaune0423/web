@@ -37,7 +37,7 @@ const Header = () => {
         </h1>
         {/* <AppList /> */}
       </div>
-      <div className="flex items-center md:space-x-4 border-2 border-slate-600 rounded-sm p-1 px-3">
+      <div className="flex items-center space-x-2 md:space-x-4 border-2 border-slate-600 rounded-sm p-1 px-3">
         <div
           className="text-white cursor-pointer text-xs md:text-base"
           onClick={(e) => onCopy(e, activeAccount.address)}
