@@ -2,8 +2,8 @@ import { Connector } from "@starknet-react/core";
 import CartridgeConnector from "@cartridge/connector";
 import { getContractByName } from "@dojoengine/core";
 import { ControllerOptions } from "@cartridge/controller";
-
 import { manifest } from "../../../dojoConfig";
+import { shortString } from "starknet";
 
 const contract = getContractByName(manifest, "pixelaw", "paint_actions");
 if (!contract?.address) {
@@ -21,6 +21,7 @@ const policies = [
   {
     target: paint_action_contract_address,
     method: "interact",
+    description: "Interact with the paint_actions contract",
   },
 ];
 
@@ -28,7 +29,7 @@ const options: ControllerOptions = {
   rpc: import.meta.env.VITE_PUBLIC_RPC_URL,
   policies,
   paymaster: {
-    caller: "0x1091e8bd03d373366cc8fd0adaeac683293a67eeb1e5a9e2c68677ce2c77cb2",
+    caller: shortString.encodeShortString("ANY_CALLER"),
   },
 };
 
