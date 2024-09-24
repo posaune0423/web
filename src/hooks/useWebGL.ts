@@ -105,7 +105,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         return;
       }
 
-      // ピクセルの描画
+
       const pixelPositions: number[] = [];
       const pixelColors: number[] = [];
 

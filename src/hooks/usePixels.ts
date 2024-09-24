@@ -7,7 +7,7 @@ import { Entity } from "@dojoengine/torii-client";
 import { shouldFetch } from "@/utils/canvas";
 
 const MAX_UINT32 = 4294967295;
-const THROTTLE_MS = 200; // throttle interval
+const THROTTLE_MS = 80; // throttle interval
 
 export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, gridState: GridState) => {
   const {
