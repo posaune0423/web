@@ -37,7 +37,7 @@ export const getPixelEntities = async (
               model: "pixelaw-Pixel",
               member: "x",
               operator: "Gte",
-              value: { U32: upperLeftX },
+              value: { Primitive: { U32: upperLeftX } },
             },
           },
           {
@@ -45,7 +45,7 @@ export const getPixelEntities = async (
               model: "pixelaw-Pixel",
               member: "y",
               operator: "Gte",
-              value: { U32: upperLeftY },
+              value: { Primitive: { U32: upperLeftY } },
             },
           },
           {
@@ -53,7 +53,7 @@ export const getPixelEntities = async (
               model: "pixelaw-Pixel",
               member: "x",
               operator: "Lte",
-              value: { U32: lowerRightX },
+              value: { Primitive: { U32: lowerRightX } },
             },
           },
           {
@@ -61,7 +61,7 @@ export const getPixelEntities = async (
               model: "pixelaw-Pixel",
               member: "y",
               operator: "Lte",
-              value: { U32: lowerRightY },
+              value: { Primitive: { U32: lowerRightY } },
             },
           },
         ],

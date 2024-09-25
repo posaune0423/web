@@ -60,6 +60,8 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       console.log("not enough distance");
       return;
     }
+    const start = performance.now();
+    console.log("fetch start");
 
     const { upperLeftX, upperLeftY, lowerRightX, lowerRightY } = currentRange;
     // Calculate scroll direction
@@ -89,7 +91,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         });
         return Array.from(updatedPixels.values());
       });
-      console.log("fetchPixels", newPixels.length);
+      console.log("fetchPixels", newPixels.length, performance.now() - start);
     } catch (error) {
       console.error("Error fetching pixels:", error);
     } finally {
