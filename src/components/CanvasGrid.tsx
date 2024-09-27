@@ -427,10 +427,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
 
   // Effects
   useEffect(() => {
-    const animationFrame = requestAnimationFrame(animate);
-    return () => {
-      cancelAnimationFrame(animationFrame);
-    };
+    animate();
   }, [animate]);
 
   useEffect(() => {
