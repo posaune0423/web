@@ -1235,7 +1235,7 @@
       }
     ],
     "address": "0x263ae44e5414519a5c5a135cccaf3d9d7ee196d37e8de47a178da91f3de9b34",
-    "transaction_hash": "0x507cd13b0e34b357d25bd0ddafa527c8caf0729f894e57ad9129c1f29311768",
+    "transaction_hash": "0x3f0a3ef84b6c8c32b8b2169f3d9cba4206e0704e8f780d0e3e35747123c56fc",
     "block_number": 3,
     "seed": "pixelaw",
     "metadata": {
@@ -2035,7 +2035,16 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "pixelaw-App",
+        "pixelaw-AppName",
+        "pixelaw-CoreActionsAddress",
+        "pixelaw-Pixel",
+        "pixelaw-Permissions",
+        "pixelaw-QueueItem",
+        "pixelaw-Snake",
+        "pixelaw-Instruction"
+      ],
       "init_calldata": [],
       "tag": "pixelaw-actions",
       "systems": [
@@ -2545,7 +2554,7 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": ["pixelaw-Pixel"],
       "init_calldata": [],
       "tag": "pixelaw-paint_actions",
       "systems": ["on_pre_update", "on_post_update", "init", "interact", "put_color", "pixel_row", "fade"],
@@ -3092,7 +3101,7 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": ["pixelaw-Snake", "pixelaw-SnakeSegment"],
       "init_calldata": [],
       "tag": "pixelaw-snake_actions",
       "systems": ["on_pre_update", "on_post_update", "init", "move"],

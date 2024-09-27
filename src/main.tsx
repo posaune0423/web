@@ -9,9 +9,10 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/Sonner";
 import SwipeControl from "./components/SwipeControl";
 import { AppProvider } from "./contexts/AppContext";
-import { StarknetConfig, voyager, jsonRpcProvider } from "@starknet-react/core";
+import { StarknetConfig, voyager } from "@starknet-react/core";
 import cartridgeConnector from "@/libs/cartriggeController";
 import { sepolia } from "@starknet-react/chains";
+import { RpcProvider } from "starknet";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("React root not found");
@@ -43,7 +44,7 @@ const Main = () => {
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <StarknetConfig
             chains={[sepolia]}
-            provider={jsonRpcProvider({ rpc: () => ({ nodeUrl: import.meta.env.VITE_PUBLIC_RPC_URL }) })}
+            provider={() => new RpcProvider({ nodeUrl: import.meta.env.VITE_PUBLIC_RPC_URL })}
             connectors={[cartridgeConnector]}
             explorer={voyager}
             autoConnect={true}
