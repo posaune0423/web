@@ -18,7 +18,7 @@ const handleError = (action: string, error: unknown) => {
 export function createSystemCalls({ client }: { client: IWorld }, clientComponents: ClientComponents, world: World) {
   const interact = async (account: Account, default_params: DefaultParameters) => {
     try {
-      console.log("interact", default_params);
+      console.log("paint interact", default_params);
       await client.paint_actions.interact({
         account,
         default_params,
@@ -37,7 +37,7 @@ export function createSystemCalls({ client }: { client: IWorld }, clientComponen
   };
   const snakeInteract = async (account: Account, default_params: DefaultParameters, direction: Direction) => {
     try {
-      console.log("interact", default_params);
+      console.log("snake interact", default_params);
       await client.snake_actions.interact({
         account,
         default_params,
