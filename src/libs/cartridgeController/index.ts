@@ -11,14 +11,7 @@ if (!contract?.address) {
 }
 const paint_action_contract_address = contract?.address;
 
-const ETH_TOKEN_ADDRESS = "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
-
 const policies = [
-  {
-    target: ETH_TOKEN_ADDRESS,
-    method: "approve",
-    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-  },
   {
     target: import.meta.env.VITE_PUBLIC_FEE_TOKEN_ADDRESS,
     method: "approve",
