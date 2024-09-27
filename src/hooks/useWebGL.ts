@@ -105,7 +105,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         return;
       }
 
-
       const pixelPositions: number[] = [];
       const pixelColors: number[] = [];
 

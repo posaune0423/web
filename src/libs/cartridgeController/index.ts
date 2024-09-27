@@ -9,7 +9,6 @@ const contract = getContractByName(manifest, "pixelaw", "paint_actions");
 if (!contract?.address) {
   throw new Error("pixelaw paint_actions contract not found");
 }
-
 const paint_action_contract_address = contract?.address;
 
 const policies = [
@@ -32,6 +31,8 @@ const options: ControllerOptions = {
   paymaster: {
     caller: shortString.encodeShortString("ANY_CALLER"),
   },
+  // theme: "dope-wars",
+  // colorMode: "light"
 };
 
 const cartridgeConnector = new CartridgeConnector(options) as never as Connector;

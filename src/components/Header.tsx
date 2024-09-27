@@ -3,7 +3,7 @@ import { truncateAddress } from "@/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/DropDownMenu";
 import { useDojo } from "@/hooks/useDojo";
 import { toast } from "sonner";
-// import { AppList } from "./AppList";
+import { AppList } from "./AppList";
 import { ConnectButton } from "./ConnectButton";
 import { useControllerUsername } from "@/hooks/useControllerUserName";
 import { useDisconnect } from "@starknet-react/core";
@@ -35,7 +35,7 @@ const Header = () => {
         <h1 className="text-white text-lg font-bold">
           <img src="logo.png" alt="PixeLAW" className="object-contain h-10" />
         </h1>
-        {/* <AppList /> */}
+        <AppList />
       </div>
       <div className="flex items-center space-x-2 md:space-x-4 border-2 border-slate-600 rounded-sm p-1 px-3">
         <div

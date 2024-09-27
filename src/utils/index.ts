@@ -92,6 +92,5 @@ export const fromComponent = (appComponent: ReturnType<typeof getComponentValue>
     icon: felt252ToUnicode(appComponent.icon),
     action: shortString.decodeShortString(appComponent.action),
     system: appComponent.system,
-    manifest: appComponent.manifest,
   };
 };
