@@ -5,6 +5,8 @@ import { ControllerOptions } from "@cartridge/controller";
 import { manifest } from "../../../dojoConfig";
 import { shortString } from "starknet";
 
+const ETH_TOKEN_ADDRESS = "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
+
 const contract = getContractByName(manifest, "pixelaw", "paint_actions");
 if (!contract?.address) {
   throw new Error("pixelaw paint_actions contract not found");
@@ -13,6 +15,11 @@ if (!contract?.address) {
 const paint_action_contract_address = contract?.address;
 
 const policies = [
+  {
+    target: ETH_TOKEN_ADDRESS,
+    method: "approve",
+    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
   {
     target: import.meta.env.VITE_PUBLIC_FEE_TOKEN_ADDRESS,
     method: "approve",
@@ -27,6 +34,7 @@ const policies = [
 
 const options: ControllerOptions = {
   rpc: import.meta.env.VITE_PUBLIC_RPC_URL,
+  indexerUrl: import.meta.env.VITE_PUBLIC_TORII_URL,
   policies,
   paymaster: {
     caller: shortString.encodeShortString("ANY_CALLER"),
