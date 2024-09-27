@@ -1,5 +1,5 @@
-import { Pixel } from "@/types";
-import { hexToRgba } from "@/utils";
+import { App, Pixel } from "@/types";
+import { felt252ToString, felt252ToUnicode, hexToRgba } from "@/utils";
 
 import { Entities, Entity, ToriiClient } from "@dojoengine/torii-client";
 
@@ -8,6 +8,15 @@ export const getPixelComponentValue = (entity: Entity): Pixel => {
     x: entity["pixelaw-Pixel"].x.value as number,
     y: entity["pixelaw-Pixel"].y.value as number,
     color: hexToRgba(entity["pixelaw-Pixel"].color.value as number),
+  };
+};
+
+export const getAppComponentValue = (entity: Entity): App => {
+  return {
+    system: entity["pixelaw-App"].system.value as string,
+    name: felt252ToString(entity["pixelaw-App"].name.value as string),
+    icon: felt252ToUnicode(entity["pixelaw-App"].icon.value as string),
+    action: entity["pixelaw-App"].action.value as string,
   };
 };
 

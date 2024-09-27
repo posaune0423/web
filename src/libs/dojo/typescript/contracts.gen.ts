@@ -633,9 +633,35 @@ export async function setupWorld(provider: DojoProvider) {
     };
   }
 
+  function pix2048_actions() {
+    const contract_name = "pix2048_actions";
+
+    const interact = async (props: { account: Account; default_params: models.DefaultParameters }) => {
+      try {
+        return await provider.execute(
+          props.account,
+          {
+            contractName: contract_name,
+            entrypoint: "interact",
+            calldata: [props.default_params],
+          },
+          "pixelaw"
+        );
+      } catch (error) {
+        console.error("Error executing interact:", error);
+        throw error;
+      }
+    };
+
+    return {
+      interact,
+    };
+  }
+
   return {
     actions: actions(),
     paint_actions: paint_actions(),
     snake_actions: snake_actions(),
+    pix2048_actions: pix2048_actions(),
   };
 }

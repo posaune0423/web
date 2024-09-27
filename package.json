@@ -34,6 +34,7 @@
     "next-themes": "^0.3.0",
     "react": "^19.0.0-rc-fb9a90fa48-20240614",
     "react-dom": "^19.0.0-rc-fb9a90fa48-20240614",
+    "react-ga4": "^2.1.0",
     "react-swipeable": "^7.0.1",
     "sass": "^1.79.3",
     "sonner": "^1.5.0",
