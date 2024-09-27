@@ -56,8 +56,21 @@ export function createSystemCalls({ client }: { client: IWorld }, clientComponen
     }
   };
 
+  const pix2048Interact = async (account: Account, default_params: DefaultParameters) => {
+    try {
+      console.log("interact", default_params);
+      await client.pix2048_actions.interact({
+        account,
+        default_params,
+      });
+    } catch (e) {
+      handleError("pix2048 interact", e);
+    }
+  };
+
   return {
     interact,
     snakeInteract,
+    pix2048Interact,
   };
 }

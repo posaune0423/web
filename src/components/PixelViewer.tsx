@@ -25,7 +25,7 @@ export const PixelViewer: React.FC = () => {
   // Other Hooks
   const {
     setup: {
-      systemCalls: { interact, snakeInteract },
+      systemCalls: { interact, snakeInteract, pix2048Interact },
       account: { account },
       connectedAccount,
     },
@@ -65,10 +65,27 @@ export const PixelViewer: React.FC = () => {
             },
             { type: "Up" }
           );
+        } else if (currentApp.name === "pix2048") {
+          await pix2048Interact(activeAccount, {
+            for_player: 0n,
+            for_system: 0n,
+            position: { x, y },
+            color: rgbaToHex(selectedColor),
+          });
         }
       });
     },
-    [currentApp, selectedColor, activeAccount, interact, snakeInteract, setOptimisticPixels, play, vibe]
+    [
+      currentApp,
+      selectedColor,
+      activeAccount,
+      interact,
+      snakeInteract,
+      pix2048Interact,
+      setOptimisticPixels,
+      play,
+      vibe,
+    ]
   );
 
   const onDrawGrid = useCallback(() => {
