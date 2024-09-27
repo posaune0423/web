@@ -91,7 +91,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         });
         return Array.from(updatedPixels.values());
       });
-      console.log("fetchPixels", newPixels.length, performance.now() - start);
+      console.log("fetchPixels:", newPixels.length, "time:", performance.now() - start);
     } catch (error) {
       console.error("Error fetching pixels:", error);
     } finally {
