@@ -1,7 +1,10 @@
+import { detectMobile } from "@/utils/devices";
 import React, { useEffect, useLayoutEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 
 const SwipeControl = ({ children }: { children: React.ReactNode }) => {
+  const isMobile = detectMobile();
+
   useLayoutEffect(() => {
     // ブラウザの履歴にダミーのエントリを追加
     window.history.pushState(null, "", window.location.pathname);
@@ -22,14 +25,16 @@ const SwipeControl = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    if (!isMobile) return;
+    // NOTE: improve mobile scroll experience
     window.addEventListener(
       "wheel",
       (e) => {
         e.preventDefault();
       },
-      { passive: false }
+      { passive: false },
     );
-  }, []);
+  }, [isMobile]);
 
   const handlers = useSwipeable({
     preventScrollOnSwipe: true,
