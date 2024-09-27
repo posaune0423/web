@@ -12,6 +12,7 @@ import { CoordinateFinder } from "@/components/CoordinateFinder";
 import { ColorPalette } from "@/components/ColorPallette";
 import { CanvasGrid } from "@/components/CanvasGrid";
 import { useHaptic } from "use-haptic";
+import { useApp } from "@/hooks/useApp";
 
 export const PixelViewer: React.FC = () => {
   // Refs
@@ -24,7 +25,7 @@ export const PixelViewer: React.FC = () => {
   // Other Hooks
   const {
     setup: {
-      systemCalls: { interact },
+      systemCalls: { interact, snakeInteract },
       account: { account },
       connectedAccount,
     },
@@ -35,6 +36,7 @@ export const PixelViewer: React.FC = () => {
   const { drawPixels } = useWebGL(canvasRef, gridState);
   const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState);
   const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
+  const { currentApp } = useApp();
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
@@ -45,15 +47,28 @@ export const PixelViewer: React.FC = () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
         vibe();
-        await interact(activeAccount, {
-          for_player: 0n,
-          for_system: 0n,
-          position: { x, y },
-          color: rgbaToHex(selectedColor),
-        });
+        if (currentApp.name === "paint") {
+          await interact(activeAccount, {
+            for_player: 0n,
+            for_system: 0n,
+            position: { x, y },
+            color: rgbaToHex(selectedColor),
+          });
+        } else if (currentApp.name === "snake") {
+          await snakeInteract(
+            activeAccount,
+            {
+              for_player: 0n,
+              for_system: 0n,
+              position: { x, y },
+              color: rgbaToHex(selectedColor),
+            },
+            { type: "Up" }
+          );
+        }
       });
     },
-    [selectedColor, activeAccount, interact, setOptimisticPixels, play, vibe]
+    [currentApp, selectedColor, activeAccount, interact, snakeInteract, setOptimisticPixels, play, vibe]
   );
 
   const onDrawGrid = useCallback(() => {

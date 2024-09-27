@@ -13,6 +13,9 @@ import { StarknetConfig, voyager } from "@starknet-react/core";
 import cartridgeConnector from "@/libs/cartridgeController";
 import { sepolia } from "@starknet-react/chains";
 import { RpcProvider } from "starknet";
+import ReactGA from "react-ga4";
+
+ReactGA.initialize(import.meta.env.VITE_PUBLIC_GA_ID);
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("React root not found");

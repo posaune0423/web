@@ -10,6 +10,7 @@ type ImportMetaEnv = {
   VITE_PUBLIC_EXPLORER_URL: string
   VITE_PUBLIC_FEE_TOKEN_ADDRESS: string
   VITE_PUBLIC_PROFILE: string
+  VITE_PUBLIC_GA_ID: string
   BASE_URL: string
   MODE: string
   DEV: boolean
