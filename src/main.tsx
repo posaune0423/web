@@ -9,7 +9,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/Sonner";
 import SwipeControl from "./components/SwipeControl";
 import { AppProvider } from "./contexts/AppContext";
-import { StarknetConfig, voyager } from "@starknet-react/core";
+import { StarknetConfig, starkscan } from "@starknet-react/core";
 import cartridgeConnector from "@/libs/cartriggeController";
 import { sepolia } from "@starknet-react/chains";
 import { RpcProvider } from "starknet";
@@ -46,7 +46,7 @@ const Main = () => {
             chains={[sepolia]}
             provider={() => new RpcProvider({ nodeUrl: import.meta.env.VITE_PUBLIC_RPC_URL })}
             connectors={[cartridgeConnector]}
-            explorer={voyager}
+            explorer={starkscan}
             autoConnect
           >
             <DojoProvider value={setupResult}>
