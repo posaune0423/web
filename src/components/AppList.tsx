@@ -3,7 +3,6 @@ import { Skeleton } from "@/components/ui/Skelton";
 
 const AppList = () => {
   const { apps, selectedAppIndex, setSelectedAppIndex } = useApp();
-  console.log("apps", apps);
 
   const onSelect = (index: number) => {
     setSelectedAppIndex(index);
