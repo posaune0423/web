@@ -105,7 +105,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         return;
       }
 
-
       const pixelPositions: number[] = [];
       const pixelColors: number[] = [];
 
@@ -153,7 +152,6 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
       setBuffersAndAttributes(gl, pixelProgramInfo, pixelBufferInfo);
       setUniforms(pixelProgramInfo, pixelUniforms);
       drawBufferInfo(gl, pixelBufferInfo, gl.TRIANGLES, pixelPositions.length / 2);
-      console.log("draw call");
 
       const error = gl.getError();
       if (error) {
