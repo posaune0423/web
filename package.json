@@ -42,6 +42,7 @@
     "tailwindcss-animate": "^1.0.7",
     "twgl.js": "^5.5.4",
     "use-debounce": "^10.0.3",
+    "use-haptic": "^1.0.1",
     "use-sound": "^4.0.3"
   },
   "devDependencies": {

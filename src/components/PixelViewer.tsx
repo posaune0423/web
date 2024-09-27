@@ -11,6 +11,7 @@ import { useWebGL } from "@/hooks/useWebGL";
 import { CoordinateFinder } from "@/components/CoordinateFinder";
 import { ColorPalette } from "@/components/ColorPallette";
 import { CanvasGrid } from "@/components/CanvasGrid";
+import { useHaptic } from "use-haptic";
 
 export const PixelViewer: React.FC = () => {
   // Refs
@@ -28,6 +29,7 @@ export const PixelViewer: React.FC = () => {
       connectedAccount,
     },
   } = useDojo();
+  const { vibe } = useHaptic();
 
   const { gridState, setGridState } = useGridState();
   const { drawPixels } = useWebGL(canvasRef, gridState);
@@ -42,6 +44,7 @@ export const PixelViewer: React.FC = () => {
       startTransition(async () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
+        vibe();
         await interact(activeAccount, {
           for_player: 0n,
           for_system: 0n,
@@ -50,7 +53,7 @@ export const PixelViewer: React.FC = () => {
         });
       });
     },
-    [selectedColor, activeAccount, interact, setOptimisticPixels, play]
+    [selectedColor, activeAccount, interact, setOptimisticPixels, play, vibe]
   );
 
   const onDrawGrid = useCallback(() => {
