@@ -50,7 +50,7 @@ const Main = () => {
             provider={() => new RpcProvider({ nodeUrl: import.meta.env.VITE_PUBLIC_RPC_URL })}
             connectors={[cartridgeConnector]}
             explorer={voyager}
-            autoConnect={true}
+            autoConnect
           >
             <DojoProvider value={setupResult}>
               <AppProvider>

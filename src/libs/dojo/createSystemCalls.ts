@@ -19,10 +19,11 @@ export function createSystemCalls({ client }: { client: IWorld }, clientComponen
   const interact = async (account: Account, default_params: DefaultParameters) => {
     try {
       console.log("interact", default_params);
-      await client.paint_actions.interact({
+      const { transaction_hash } = await client.paint_actions.interact({
         account,
         default_params,
       });
+      console.log("transaction_hash", transaction_hash);
 
       // Wait for the indexer to update the entity
       // By doing this we keep the optimistic UI in sync with the actual state
