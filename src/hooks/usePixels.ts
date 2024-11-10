@@ -1,19 +1,20 @@
 import { useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
 import { GridState, Pixel } from "../types";
 import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
-import { useDojo } from "./useDojo";
 import { getPixelComponentFromEntities, getPixelComponentValue, getPixelEntities } from "@/libs/dojo/helper";
 import { Entity } from "@dojoengine/torii-client";
 import { shouldFetch } from "@/utils/canvas";
+import { SDK } from "@dojoengine/sdk";
+import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 
 const MAX_UINT32 = 4294967295;
 const THROTTLE_MS = 80; // throttle interval
 
-export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, gridState: GridState) => {
-  const {
-    setup: { toriiClient },
-  } = useDojo();
-
+export const usePixels = (
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
+  gridState: GridState,
+  sdk: SDK<PixelawSchemaType>,
+) => {
   // Ref
   const lastFetchedRangeRef = useRef({ upperLeftX: 0, upperLeftY: 0, lowerRightX: 100, lowerRightY: 100 });
   const lastFetchTimeRef = useRef(0);
@@ -74,7 +75,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
 
     setIsFetching(true);
     try {
-      const entities = await getPixelEntities(toriiClient, pixelLimit, {
+      const entities = await getPixelEntities(sdk, {
         upperLeftX: Math.max(0, upperLeftX - dynamicBufferX),
         upperLeftY: Math.max(0, upperLeftY - dynamicBufferY),
         lowerRightX: Math.min(MAX_UINT32, lowerRightX + dynamicBufferX),
@@ -98,7 +99,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       setIsFetching(false);
       lastFetchedRangeRef.current = currentRange;
     }
-  }, [getVisiblePixelRange, pixelLimit, toriiClient, isFetching]);
+  }, [getVisiblePixelRange, sdk, isFetching]);
 
   const throttledFetchPixels = useCallback(() => {
     const now = performance.now();
@@ -112,7 +113,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   useEffect(() => {
     const subscription = async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sub = await toriiClient.onEntityUpdated([], (_entityId: any, entity: Entity) => {
+      const sub = await sdk.client.onEntityUpdated([], (_entityId: any, entity: Entity) => {
         const pixel = getPixelComponentValue(entity);
         setVisiblePixels((prev) => [...prev, pixel]);
       });
@@ -124,7 +125,7 @@ export const usePixels = (canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     return () => {
       sub.then((sub) => sub.cancel());
     };
-  }, [toriiClient, setVisiblePixels]);
+  }, [sdk, setVisiblePixels]);
 
   // initial fetch
   useEffect(() => {

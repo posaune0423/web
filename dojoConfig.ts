@@ -1,6 +1,6 @@
 import { createDojoConfig } from "@dojoengine/core";
-import manifestDev from "./src/libs/dojo/manifests/dev/deployment/manifest.json";
-import manifestSlot from "./src/libs/dojo/manifests/slot/deployment/manifest.json";
+import manifestDev from "./src/libs/dojo/manifests/manifest_dev.json";
+import manifestSlot from "./src/libs/dojo/manifests/manifest_slot.json";
 
 export const manifest = import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? manifestDev : manifestSlot;
 

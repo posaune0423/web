@@ -1,6 +1,6 @@
-import { DojoProvider } from '@dojoengine/core'
-import { Account } from 'starknet'
-import * as models from './models.gen'
+import { DojoProvider } from "@dojoengine/core";
+import { Account } from "starknet";
+import * as models from "./models.gen";
 
 export async function setupWorld(provider: DojoProvider) {
   const paint_actions_init = async (account: Account) => {
@@ -8,151 +8,142 @@ export async function setupWorld(provider: DojoProvider) {
       return await provider.execute(
         account,
         {
-          contractName: 'paint_actions',
-          entrypoint: 'init',
+          contractName: "paint_actions",
+          entrypoint: "init",
           calldata: [],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const paint_actions_onPreUpdate = async (
     account: Account,
     pixelUpdate: models.PixelUpdate,
     appCaller: models.App,
-    playerCaller: string
+    playerCaller: string,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'paint_actions',
-          entrypoint: 'on_pre_update',
+          contractName: "paint_actions",
+          entrypoint: "on_pre_update",
           calldata: [pixelUpdate, appCaller, playerCaller],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const paint_actions_onPostUpdate = async (
     account: Account,
     pixelUpdate: models.PixelUpdate,
     appCaller: models.App,
-    playerCaller: string
+    playerCaller: string,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'paint_actions',
-          entrypoint: 'on_post_update',
+          contractName: "paint_actions",
+          entrypoint: "on_post_update",
           calldata: [pixelUpdate, appCaller, playerCaller],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  const paint_actions_interact = async (
-    account: Account,
-    defaultParams: models.DefaultParameters
-  ) => {
+  const paint_actions_interact = async (account: Account, defaultParams: models.DefaultParameters) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'paint_actions',
-          entrypoint: 'interact',
+          contractName: "paint_actions",
+          entrypoint: "interact",
           calldata: [defaultParams],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  const paint_actions_putColor = async (
-    account: Account,
-    defaultParams: models.DefaultParameters
-  ) => {
+  const paint_actions_putColor = async (account: Account, defaultParams: models.DefaultParameters) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'paint_actions',
-          entrypoint: 'put_color',
+          contractName: "paint_actions",
+          entrypoint: "put_color",
           calldata: [defaultParams],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  const paint_actions_fade = async (
-    account: Account,
-    defaultParams: models.DefaultParameters
-  ) => {
+  const paint_actions_fade = async (account: Account, defaultParams: models.DefaultParameters) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'paint_actions',
-          entrypoint: 'fade',
+          contractName: "paint_actions",
+          entrypoint: "fade",
           calldata: [defaultParams],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const paint_actions_pixelRow = async (
     account: Account,
     defaultParams: models.DefaultParameters,
-    imageData: Array<number>
+    imageData: Array<number>,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'paint_actions',
-          entrypoint: 'pixel_row',
+          contractName: "paint_actions",
+          entrypoint: "pixel_row",
           calldata: [defaultParams, imageData],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const actions_init = async (account: Account) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'init',
+          contractName: "actions",
+          entrypoint: "init",
           calldata: [],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const actions_canUpdatePixel = async (
     account: Account,
@@ -161,29 +152,22 @@ export async function setupWorld(provider: DojoProvider) {
     pixel: models.Pixel,
     pixelUpdate: models.PixelUpdate,
     areaIdHint: number,
-    allowModify: boolean
+    allowModify: boolean,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'can_update_pixel',
-          calldata: [
-            forPlayer,
-            forSystem,
-            pixel,
-            pixelUpdate,
-            areaIdHint,
-            allowModify,
-          ],
+          contractName: "actions",
+          entrypoint: "can_update_pixel",
+          calldata: [forPlayer, forSystem, pixel, pixelUpdate, areaIdHint, allowModify],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const actions_updatePixel = async (
     account: Account,
@@ -191,22 +175,22 @@ export async function setupWorld(provider: DojoProvider) {
     forSystem: string,
     pixelUpdate: models.PixelUpdate,
     areaId: number,
-    allowModify: boolean
+    allowModify: boolean,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'update_pixel',
+          contractName: "actions",
+          entrypoint: "update_pixel",
           calldata: [forPlayer, forSystem, pixelUpdate, areaId, allowModify],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const actions_processQueue = async (
     account: Account,
@@ -214,214 +198,198 @@ export async function setupWorld(provider: DojoProvider) {
     timestamp: number,
     calledSystem: string,
     selector: number,
-    calldata: Array<number>
+    calldata: Array<number>,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'process_queue',
+          contractName: "actions",
+          entrypoint: "process_queue",
           calldata: [id, timestamp, calledSystem, selector, calldata],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const actions_scheduleQueue = async (
     account: Account,
     timestamp: number,
     calledSystem: string,
     selector: number,
-    calldata: Array<number>
+    calldata: Array<number>,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'schedule_queue',
+          contractName: "actions",
+          entrypoint: "schedule_queue",
           calldata: [timestamp, calledSystem, selector, calldata],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  const actions_newApp = async (
-    account: Account,
-    system: string,
-    name: number,
-    icon: number
-  ) => {
+  const actions_newApp = async (account: Account, system: string, name: number, icon: number) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'new_app',
+          contractName: "actions",
+          entrypoint: "new_app",
           calldata: [system, name, icon],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  const actions_alertPlayer = async (
-    account: Account,
-    position: models.Position,
-    player: string,
-    message: number
-  ) => {
+  const actions_alertPlayer = async (account: Account, position: models.Position, player: string, message: number) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'alert_player',
+          contractName: "actions",
+          entrypoint: "alert_player",
           calldata: [position, player, message],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const actions_addArea = async (
     account: Account,
     bounds: models.Bounds,
     owner: string,
     color: number,
-    app: string
+    app: string,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'add_area',
+          contractName: "actions",
+          entrypoint: "add_area",
           calldata: [bounds, owner, color, app],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const actions_removeArea = async (account: Account, areaId: number) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'remove_area',
+          contractName: "actions",
+          entrypoint: "remove_area",
           calldata: [areaId],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  const actions_findAreaByPosition = async (
-    account: Account,
-    position: models.Position
-  ) => {
+  const actions_findAreaByPosition = async (account: Account, position: models.Position) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'find_area_by_position',
+          contractName: "actions",
+          entrypoint: "find_area_by_position",
           calldata: [position],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  const actions_findAreasInsideBounds = async (
-    account: Account,
-    bounds: models.Bounds
-  ) => {
+  const actions_findAreasInsideBounds = async (account: Account, bounds: models.Bounds) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'actions',
-          entrypoint: 'find_areas_inside_bounds',
+          contractName: "actions",
+          entrypoint: "find_areas_inside_bounds",
           calldata: [bounds],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const snake_actions_init = async (account: Account) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'snake_actions',
-          entrypoint: 'init',
+          contractName: "snake_actions",
+          entrypoint: "init",
           calldata: [],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const snake_actions_interact = async (
     account: Account,
     defaultParams: models.DefaultParameters,
-    direction: models.Direction
+    direction: models.Direction,
   ) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'snake_actions',
-          entrypoint: 'interact',
+          contractName: "snake_actions",
+          entrypoint: "interact",
           calldata: [defaultParams, direction],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const snake_actions_move = async (account: Account, owner: string) => {
     try {
       return await provider.execute(
         account,
         {
-          contractName: 'snake_actions',
-          entrypoint: 'move',
+          contractName: "snake_actions",
+          entrypoint: "move",
           calldata: [owner],
         },
-        'pixelaw'
-      )
+        "pixelaw",
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   return {
     paint_actions: {
@@ -451,5 +419,5 @@ export async function setupWorld(provider: DojoProvider) {
       interact: snake_actions_interact,
       move: snake_actions_move,
     },
-  }
+  };
 }

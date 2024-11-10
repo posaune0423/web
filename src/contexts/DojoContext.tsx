@@ -1,71 +1,51 @@
-import { type BurnerAccount, useBurnerManager } from "@dojoengine/create-burner";
-import { type ReactNode, createContext, useContext, useMemo } from "react";
+import { createContext, ReactNode, useContext, useMemo } from "react";
+import { BurnerAccount, BurnerManager, useBurnerManager } from "@dojoengine/create-burner";
 import { Account } from "starknet";
-import { type SetupResult } from "@/libs/dojo/setup";
+import { dojoConfig } from "../../dojoConfig";
+import { DojoProvider } from "@dojoengine/core";
+import { client } from "@/libs/dojo/typescript/contracts.gen";
 import { useAccount } from "@starknet-react/core";
 
-interface DojoContextType extends SetupResult {
+interface DojoContextType {
   masterAccount: Account;
+  client: ReturnType<typeof client>;
   account: BurnerAccount;
   connectedAccount: Account | undefined;
 }
 
 export const DojoContext = createContext<DojoContextType | null>(null);
 
-export const DojoProvider = ({ children, value }: { children: ReactNode; value: SetupResult }) => {
+export const DojoContextProvider = ({
+  children,
+  burnerManager,
+}: {
+  children: ReactNode;
+  burnerManager: BurnerManager;
+}) => {
   const currentValue = useContext(DojoContext);
-  if (currentValue) throw new Error("DojoProvider can only be used once");
+  if (currentValue) {
+    throw new Error("DojoProvider can only be used once");
+  }
 
-  const {
-    config: { masterAddress, masterPrivateKey },
-    burnerManager,
-    dojoProvider,
-  } = value;
+  const dojoProvider = new DojoProvider(dojoConfig.manifest, dojoConfig.rpcUrl);
 
   const masterAccount = useMemo(
-    () => new Account(dojoProvider.provider, masterAddress, masterPrivateKey, "1"),
-    [masterAddress, masterPrivateKey, dojoProvider.provider]
+    () => new Account(dojoProvider.provider, dojoConfig.masterAddress, dojoConfig.masterPrivateKey, "1"),
+    [],
   );
 
   const { account: connectedAccount } = useAccount();
 
-  const {
-    create,
-    list,
-    get,
-    select,
-    deselect,
-    remove,
-    clear,
-    account,
-    isDeploying,
-    count,
-    copyToClipboard,
-    applyFromClipboard,
-    checkIsDeployed,
-  } = useBurnerManager({
-    burnerManager,
-  });
+  const burnerManagerData = useBurnerManager({ burnerManager });
 
   return (
     <DojoContext.Provider
       value={{
-        ...value,
         masterAccount,
+        client: client(dojoProvider),
         account: {
-          create,
-          list,
-          get,
-          select,
-          deselect,
-          remove,
-          clear,
-          account: account ? account : masterAccount,
-          isDeploying,
-          count,
-          copyToClipboard,
-          applyFromClipboard,
-          checkIsDeployed,
+          ...burnerManagerData,
+          account: connectedAccount ? (connectedAccount as Account) : burnerManagerData.account || masterAccount,
         },
         connectedAccount: connectedAccount as Account,
       }}

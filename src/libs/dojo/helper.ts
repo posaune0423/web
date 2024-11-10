@@ -1,7 +1,8 @@
 import { App, Pixel } from "@/types";
 import { felt252ToString, felt252ToUnicode, hexToRgba } from "@/utils";
-
-import { Entities, Entity, ToriiClient } from "@dojoengine/torii-client";
+import { SDK } from "@dojoengine/sdk";
+import { Entities, Entity } from "@dojoengine/torii-client";
+import { PixelawSchemaType } from "./typescript/models.gen";
 
 export const getPixelComponentValue = (entity: Entity): Pixel => {
   return {
@@ -25,58 +26,43 @@ export const getPixelComponentFromEntities = (entities: Entities) => {
 };
 
 export const getPixelEntities = async (
-  client: ToriiClient,
-  limit: number,
+  sdk: SDK<PixelawSchemaType>,
   {
     upperLeftX,
     upperLeftY,
     lowerRightX,
     lowerRightY,
-  }: { upperLeftX: number; upperLeftY: number; lowerRightX: number; lowerRightY: number }
+  }: { upperLeftX: number; upperLeftY: number; lowerRightX: number; lowerRightY: number },
 ) => {
-  const entities = await client.getEntities({
-    limit,
-    offset: 0,
-    clause: {
-      Composite: {
-        operator: "And",
-        clauses: [
-          {
-            Member: {
-              model: "pixelaw-Pixel",
-              member: "x",
-              operator: "Gte",
-              value: { Primitive: { U32: upperLeftX } },
+  const entities = await sdk.getEntities(
+    {
+      pixelaw: {
+        Pixel: {
+          $: {
+            where: {
+              x: {
+                $gte: upperLeftX,
+                $lte: lowerRightX,
+              },
+              y: {
+                $gte: upperLeftY,
+                $lte: lowerRightY,
+              },
             },
           },
-          {
-            Member: {
-              model: "pixelaw-Pixel",
-              member: "y",
-              operator: "Gte",
-              value: { Primitive: { U32: upperLeftY } },
-            },
-          },
-          {
-            Member: {
-              model: "pixelaw-Pixel",
-              member: "x",
-              operator: "Lte",
-              value: { Primitive: { U32: lowerRightX } },
-            },
-          },
-          {
-            Member: {
-              model: "pixelaw-Pixel",
-              member: "y",
-              operator: "Lte",
-              value: { Primitive: { U32: lowerRightY } },
-            },
-          },
-        ],
+        },
       },
     },
-  });
+    (resp) => {
+      if (resp.error) {
+        console.error("resp.error.message:", resp.error.message);
+        return;
+      }
+      if (resp.data) {
+        state.setEntities(resp.data);
+      }
+    },
+  );
 
   return entities;
 };
