@@ -12,8 +12,8 @@ import { CoordinateFinder } from "@/components/CoordinateFinder";
 import { ColorPalette } from "@/components/ColorPallette";
 import { CanvasGrid } from "@/components/CanvasGrid";
 import { useHaptic } from "use-haptic";
-import { useApp } from "@/hooks/useApp";
-import { Direction } from "@/libs/dojo/typescript/models.gen";
+// import { useApp } from "@/hooks/useApp";
+// import { Direction } from "@/libs/dojo/typescript/models.gen";
 import { SDK } from "@dojoengine/sdk";
 import { type PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { useSystemCalls } from "@/hooks/useSystemCalls";
@@ -46,8 +46,8 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
   const { drawPixels } = useWebGL(canvasRef, gridState);
   const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState, sdk);
   const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
-  const { currentApp } = useApp();
-  const { interact, snakeInteract, pix2048Interact } = useSystemCalls();
+  // const { currentApp } = useApp();
+  const { interact } = useSystemCalls();
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
@@ -58,44 +58,49 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
         vibe();
-        if (currentApp.name === "paint") {
-          await interact(activeAccount, {
-            position: { x, y },
-            color: rgbaToHex(selectedColor),
-            player_override: activeAccount?.address,
-            app_override: currentApp.name,
-            area_hint: 0,
-          });
-        } else if (currentApp.name === "snake") {
-          await snakeInteract(
-            activeAccount,
-            {
-              position: { x, y },
-              color: rgbaToHex(selectedColor),
-              player_override: activeAccount?.address,
-              app_override: currentApp.name,
-              area_hint: 0,
-            },
-            Direction.Up,
-          );
-        } else if (currentApp.name === "pix2048") {
-          await pix2048Interact(activeAccount, {
-            position: { x, y },
-            color: rgbaToHex(selectedColor),
-            player_override: activeAccount?.address,
-            app_override: currentApp.name,
-            area_hint: 0,
-          });
-        }
+        await interact(activeAccount, {
+          position: { x, y },
+          color: rgbaToHex(selectedColor),
+          player_override: "",
+          app_override: "",
+          area_hint: 0,
+        });
+        // if (currentApp.name === "paint") {
+        //   await interact(activeAccount, {
+        //     position: { x, y },
+        //     color: rgbaToHex(selectedColor),
+        //     player_override: activeAccount?.address,
+        //     app_override: currentApp.name,
+        //     area_hint: 0,
+        //   });
+        // } else if (currentApp.name === "snake") {
+        //   await snakeInteract(
+        //     activeAccount,
+        //     {
+        //       position: { x, y },
+        //       color: rgbaToHex(selectedColor),
+        //       player_override: activeAccount?.address,
+        //       app_override: currentApp.name,
+        //       area_hint: 0,
+        //     },
+        //     Direction.Up,
+        //   );
+        // } else if (currentApp.name === "pix2048") {
+        //   await pix2048Interact(activeAccount, {
+        //     position: { x, y },
+        //     color: rgbaToHex(selectedColor),
+        //     player_override: activeAccount?.address,
+        //     app_override: currentApp.name,
+        //     area_hint: 0,
+        //   });
+        // }
       });
     },
     [
-      currentApp,
+      // currentApp,
       selectedColor,
       activeAccount,
       interact,
-      snakeInteract,
-      pix2048Interact,
       setOptimisticPixels,
       play,
       vibe,

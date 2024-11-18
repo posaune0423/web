@@ -59,7 +59,8 @@ export const getPixelEntities = async (
         return;
       }
       if (resp.data) {
-        state.setEntities(resp.data);
+        // state.setEntities(resp.data);
+        console.log("resp.data:", resp.data);
       }
     },
   );

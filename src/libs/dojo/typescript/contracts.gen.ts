@@ -2,7 +2,7 @@ import { DojoProvider } from "@dojoengine/core";
 import { Account } from "starknet";
 import * as models from "./models.gen";
 
-export async function setupWorld(provider: DojoProvider) {
+export const client = (provider: DojoProvider) => {
   const paint_actions_init = async (account: Account) => {
     try {
       return await provider.execute(
@@ -420,4 +420,4 @@ export async function setupWorld(provider: DojoProvider) {
       move: snake_actions_move,
     },
   };
-}
+};
