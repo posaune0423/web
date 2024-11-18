@@ -1,7 +1,7 @@
-import { App, Pixel } from "@/types";
+import { App, GameState, Pixel } from "@/types";
 import { felt252ToString, felt252ToUnicode, hexToRgba } from "@/utils";
-import { SDK } from "@dojoengine/sdk";
-import { Entities, Entity } from "@dojoengine/torii-client";
+import { SDK, StandardizedQueryResult } from "@dojoengine/sdk";
+import { Entity } from "@dojoengine/torii-client";
 import { PixelawSchemaType } from "./typescript/models.gen";
 
 export const getPixelComponentValue = (entity: Entity): Pixel => {
@@ -21,12 +21,21 @@ export const getAppComponentValue = (entity: Entity): App => {
   };
 };
 
-export const getPixelComponentFromEntities = (entities: Entities) => {
-  return Object.values(entities).map(getPixelComponentValue);
+export const getPixelComponentFromEntities = (entities: StandardizedQueryResult<PixelawSchemaType>): Pixel[] => {
+  return (
+    entities.map((entity) => {
+      return {
+        x: entity.models.pixelaw.Pixel?.x ?? 0,
+        y: entity.models.pixelaw.Pixel?.y ?? 0,
+        color: hexToRgba(entity.models.pixelaw.Pixel?.color ?? 0),
+      };
+    }) ?? []
+  );
 };
 
 export const getPixelEntities = async (
   sdk: SDK<PixelawSchemaType>,
+  state: GameState<PixelawSchemaType>,
   {
     upperLeftX,
     upperLeftY,
@@ -59,7 +68,7 @@ export const getPixelEntities = async (
         return;
       }
       if (resp.data) {
-        // state.setEntities(resp.data);
+        state.setEntities(resp.data);
         console.log("resp.data:", resp.data);
       }
     },

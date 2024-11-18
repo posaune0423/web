@@ -13,11 +13,11 @@ export interface Bounds {
 }
 
 export interface DefaultParameters {
+  player_override: bigint | undefined;
+  system_override: bigint | undefined;
+  area_hint: number | undefined;
   position: Position;
   color: number;
-  player_override: string | undefined;
-  app_override: string | undefined;
-  area_hint: number | undefined;
 }
 
 export interface PixelUpdate {

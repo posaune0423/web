@@ -17,6 +17,7 @@ import { useHaptic } from "use-haptic";
 import { SDK } from "@dojoengine/sdk";
 import { type PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { useSystemCalls } from "@/hooks/useSystemCalls";
+import { useDojoStore } from "@/app";
 
 type PixelViewerProps = {
   sdk: SDK<PixelawSchemaType>;
@@ -41,10 +42,11 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
     },
   } = useDojo();
   const { vibe } = useHaptic();
+  const state = useDojoStore((state) => state);
 
   const { gridState, setGridState } = useGridState();
   const { drawPixels } = useWebGL(canvasRef, gridState);
-  const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState, sdk);
+  const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState, sdk, state);
   const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
   // const { currentApp } = useApp();
   const { interact } = useSystemCalls();
@@ -59,11 +61,11 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
         play();
         vibe();
         await interact(activeAccount, {
+          player_override: 1n,
+          system_override: 1n,
+          area_hint: 1,
           position: { x, y },
           color: rgbaToHex(selectedColor),
-          player_override: "",
-          app_override: "",
-          area_hint: 0,
         });
         // if (currentApp.name === "paint") {
         //   await interact(activeAccount, {

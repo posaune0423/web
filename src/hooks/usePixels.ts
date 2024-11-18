@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
-import { GridState, Pixel } from "../types";
+import { useCallback, useEffect, useOptimistic, useRef, useState } from "react";
+import { GameState, GridState, Pixel } from "../types";
 import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
-import { getPixelComponentFromEntities, getPixelComponentValue, getPixelEntities } from "@/libs/dojo/helper";
-import { Entity } from "@dojoengine/torii-client";
+import { getPixelComponentFromEntities, getPixelEntities } from "@/libs/dojo/helper";
 import { shouldFetch } from "@/utils/canvas";
 import { SDK } from "@dojoengine/sdk";
 import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
@@ -14,6 +13,7 @@ export const usePixels = (
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   gridState: GridState,
   sdk: SDK<PixelawSchemaType>,
+  state: GameState<PixelawSchemaType>,
 ) => {
   // Ref
   const lastFetchedRangeRef = useRef({ upperLeftX: 0, upperLeftY: 0, lowerRightX: 100, lowerRightY: 100 });
@@ -25,13 +25,6 @@ export const usePixels = (
   const [optimisticPixels, setOptimisticPixels] = useOptimistic(visiblePixels, (pixels, newPixel: Pixel) => {
     return [...pixels, newPixel];
   });
-
-  const pixelLimit = useMemo(() => {
-    const baseLimit = 30;
-    const maxLimit = 20000;
-    const scaleFactor = (2 - gridState.scale) / 1.9; // Normalized scale factor
-    return Math.round(baseLimit + (maxLimit - baseLimit) * Math.pow(scaleFactor, 3));
-  }, [gridState.scale]);
 
   // Callbacks
   const getVisiblePixelRange = useCallback(() => {
@@ -75,7 +68,7 @@ export const usePixels = (
 
     setIsFetching(true);
     try {
-      const entities = await getPixelEntities(sdk, {
+      const entities = await getPixelEntities(sdk, state, {
         upperLeftX: Math.max(0, upperLeftX - dynamicBufferX),
         upperLeftY: Math.max(0, upperLeftY - dynamicBufferY),
         lowerRightX: Math.min(MAX_UINT32, lowerRightX + dynamicBufferX),
@@ -88,7 +81,13 @@ export const usePixels = (
       setVisiblePixels((prevPixels) => {
         const updatedPixels = new Map(prevPixels.map((p) => [`${p.x},${p.y}`, p]));
         newPixels.forEach((newPixel) => {
-          updatedPixels.set(`${newPixel.x},${newPixel.y}`, newPixel);
+          if (newPixel) {
+            updatedPixels.set(`${newPixel.x},${newPixel.y}`, {
+              x: newPixel?.x,
+              y: newPixel?.y,
+              color: newPixel?.color,
+            } as Pixel);
+          }
         });
         return Array.from(updatedPixels.values());
       });
@@ -111,19 +110,37 @@ export const usePixels = (
 
   // Effects
   useEffect(() => {
-    const subscription = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sub = await sdk.client.onEntityUpdated([], (_entityId: any, entity: Entity) => {
-        const pixel = getPixelComponentValue(entity);
-        setVisiblePixels((prev) => [...prev, pixel]);
-      });
+    let unsubscribe: (() => void) | undefined;
 
-      return sub;
+    const subscribe = async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const subscription = await sdk.subscribeEntityQuery(
+        {
+          pixelaw: {
+            Pixel: {
+              $: {},
+            },
+          },
+        },
+        (response) => {
+          if (response.error) {
+            console.error("Error setting up entity sync:", response.error);
+          } else if (response.data && response.data[0].entityId !== "0x0") {
+            console.log("subscribed", response.data[0]);
+            state.updateEntity(response.data[0]);
+          }
+        },
+      );
+
+      unsubscribe = () => subscription.cancel();
     };
 
-    const sub = subscription();
+    subscribe();
+
     return () => {
-      sub.then((sub) => sub.cancel());
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, [sdk, setVisiblePixels]);
 

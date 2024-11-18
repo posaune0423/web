@@ -40,17 +40,19 @@ export const useSystemCalls = () => {
   const interact = async (account: Account, default_params: DefaultParameters) => {
     // Generate a unique entity ID
     const entityId = generateEntityId();
+    console.log("entityId:", entityId);
 
     // Generate a unique transaction ID
     const transactionId = uuidv4();
+    console.log("transactionId:", transactionId);
 
     // Apply an optimistic update to the state
     // this uses immer drafts to update the state
     state.applyOptimisticUpdate(transactionId, (draft) => {
       if (draft.entities[entityId]?.models?.pixelaw?.Pixel) {
         draft.entities[entityId].models.pixelaw.Pixel = {
-          x: default_params.x,
-          y: default_params.y,
+          x: default_params.position.x,
+          y: default_params.position.y,
           color: default_params.color,
           owner: account?.address,
         };
@@ -59,18 +61,23 @@ export const useSystemCalls = () => {
 
     try {
       console.log("interact", default_params);
-      await client.paint_actions.interact(account, default_params);
+      const resp = await client.paint_actions.interact(account, default_params);
+      console.log("transaction_hash:", resp?.transaction_hash);
+
       // Wait for the entity to be updated with the new state
       await state.waitForEntityChange(entityId, (entity) => {
         return (
-          entity?.models?.pixelaw?.Pixel?.x === default_params.x &&
-          entity?.models?.pixelaw?.Pixel?.y === default_params.y
+          entity?.models?.pixelaw?.Pixel?.x === default_params.position.x &&
+          entity?.models?.pixelaw?.Pixel?.y === default_params.position.y
         );
-      });
+      }, 10000);
     } catch (e) {
       // Revert the optimistic update if an error occurs
       state.revertOptimisticUpdate(transactionId);
       handleError("paint interact", e);
+    } finally {
+      // Confirm the transaction if successful
+      state.confirmTransaction(transactionId);
     }
   };
 
