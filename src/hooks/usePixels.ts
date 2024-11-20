@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useOptimistic, useRef, useState } from "react";
-import { GameState, GridState, Pixel } from "../types";
+import { GridState, Pixel } from "../types";
 import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
 import { getPixelComponentFromEntities, getPixelEntities } from "@/libs/dojo/helper";
 import { shouldFetch } from "@/utils/canvas";
 import { SDK } from "@dojoengine/sdk";
 import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import { useDojoStore } from "@/store/dojo";
 
 const MAX_UINT32 = 4294967295;
 const THROTTLE_MS = 80; // throttle interval
@@ -13,13 +14,13 @@ export const usePixels = (
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   gridState: GridState,
   sdk: SDK<PixelawSchemaType>,
-  state: GameState<PixelawSchemaType>,
 ) => {
   // Ref
   const lastFetchedRangeRef = useRef({ upperLeftX: 0, upperLeftY: 0, lowerRightX: 100, lowerRightY: 100 });
   const lastFetchTimeRef = useRef(0);
 
   // State
+  const state = useDojoStore((state) => state);
   const [visiblePixels, setVisiblePixels] = useState<Pixel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [optimisticPixels, setOptimisticPixels] = useOptimistic(visiblePixels, (pixels, newPixel: Pixel) => {
@@ -98,7 +99,7 @@ export const usePixels = (
       setIsFetching(false);
       lastFetchedRangeRef.current = currentRange;
     }
-  }, [getVisiblePixelRange, sdk, isFetching]);
+  }, [getVisiblePixelRange, sdk, isFetching, state]);
 
   const throttledFetchPixels = useCallback(() => {
     const now = performance.now();
@@ -113,7 +114,6 @@ export const usePixels = (
     let unsubscribe: (() => void) | undefined;
 
     const subscribe = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const subscription = await sdk.subscribeEntityQuery(
         {
           pixelaw: {
@@ -126,7 +126,7 @@ export const usePixels = (
           if (response.error) {
             console.error("Error setting up entity sync:", response.error);
           } else if (response.data && response.data[0].entityId !== "0x0") {
-            console.log("subscribed", response.data[0]);
+            console.log("subscribed and updated entity", response.data[0]);
             state.updateEntity(response.data[0]);
           }
         },

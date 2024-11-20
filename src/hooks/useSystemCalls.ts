@@ -3,7 +3,7 @@ import { DefaultParameters } from "@/libs/dojo/typescript/models.gen";
 import { toast } from "sonner";
 import { handleTransactionError } from "@/utils";
 import { useDojo } from "./useDojo";
-import { useDojoStore } from "@/app";
+import { useDojoStore } from "@/store/dojo";
 import { v4 as uuidv4 } from "uuid";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 
@@ -37,14 +37,17 @@ export const useSystemCalls = () => {
     return getEntityIdFromKeys([BigInt(account?.address)]);
   };
 
+  /**
+   * Interacts with the the pixels by paint_actions.interact.
+   * @returns {Promise<void>}
+   * @throws {Error} If the interact action fails
+   */
   const interact = async (account: Account, default_params: DefaultParameters) => {
     // Generate a unique entity ID
     const entityId = generateEntityId();
-    console.log("entityId:", entityId);
 
     // Generate a unique transaction ID
     const transactionId = uuidv4();
-    console.log("transactionId:", transactionId);
 
     // Apply an optimistic update to the state
     // this uses immer drafts to update the state
@@ -61,8 +64,7 @@ export const useSystemCalls = () => {
 
     try {
       console.log("interact", default_params);
-      const resp = await client.paint_actions.interact(account, default_params);
-      console.log("transaction_hash:", resp?.transaction_hash);
+      await client.paint_actions.interact(account, default_params);
 
       // Wait for the entity to be updated with the new state
       await state.waitForEntityChange(entityId, (entity) => {
@@ -70,7 +72,7 @@ export const useSystemCalls = () => {
           entity?.models?.pixelaw?.Pixel?.x === default_params.position.x &&
           entity?.models?.pixelaw?.Pixel?.y === default_params.position.y
         );
-      }, 10000);
+      });
     } catch (e) {
       // Revert the optimistic update if an error occurs
       state.revertOptimisticUpdate(transactionId);
