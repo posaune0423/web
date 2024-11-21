@@ -142,7 +142,7 @@ export const usePixels = (
         unsubscribe();
       }
     };
-  }, [sdk, setVisiblePixels]);
+  }, [sdk, setVisiblePixels, state]);
 
   // initial fetch
   useEffect(() => {

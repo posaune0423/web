@@ -63,7 +63,6 @@ export const useSystemCalls = () => {
     });
 
     try {
-      console.log("interact", default_params);
       await client.paint_actions.interact(account, default_params);
 
       // Wait for the entity to be updated with the new state
@@ -75,11 +74,12 @@ export const useSystemCalls = () => {
       });
     } catch (e) {
       // Revert the optimistic update if an error occurs
-      state.revertOptimisticUpdate(transactionId);
+      // state.revertOptimisticUpdate(transactionId);
       handleError("paint interact", e);
     } finally {
       // Confirm the transaction if successful
       state.confirmTransaction(transactionId);
+      console.log('confirmed')
     }
   };
 
