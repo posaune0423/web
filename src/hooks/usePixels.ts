@@ -6,6 +6,7 @@ import { shouldFetch } from "@/utils/canvas";
 import { SDK } from "@dojoengine/sdk";
 import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { useDojoStore } from "@/store/dojo";
+import { hexToRgba } from "@/utils";
 
 const MAX_UINT32 = 4294967295;
 const THROTTLE_MS = 80; // throttle interval
@@ -128,6 +129,12 @@ export const usePixels = (
           } else if (response.data && response.data[0].entityId !== "0x0") {
             console.log("subscribed and updated entity", response.data[0]);
             state.updateEntity(response.data[0]);
+            const pixel: Pixel = {
+              x: response.data[0].models.pixelaw.Pixel?.x ?? 0,
+              y: response.data[0].models.pixelaw.Pixel?.y ?? 0,
+              color: hexToRgba(response.data[0].models.pixelaw.Pixel?.color ?? 0),
+            };
+            setVisiblePixels((prev) => [...prev, pixel]);
           }
         },
       );

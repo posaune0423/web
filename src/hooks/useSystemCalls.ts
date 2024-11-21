@@ -66,12 +66,12 @@ export const useSystemCalls = () => {
       await client.paint_actions.interact(account, default_params);
 
       // Wait for the entity to be updated with the new state
-      await state.waitForEntityChange(entityId, (entity) => {
-        return (
-          entity?.models?.pixelaw?.Pixel?.x === default_params.position.x &&
-          entity?.models?.pixelaw?.Pixel?.y === default_params.position.y
-        );
-      });
+      // await state.waitForEntityChange(entityId, (entity) => {
+      //   return (
+      //     entity?.models?.pixelaw?.Pixel?.x === default_params.position.x &&
+      //     entity?.models?.pixelaw?.Pixel?.y === default_params.position.y
+      //   );
+      // });
     } catch (e) {
       // Revert the optimistic update if an error occurs
       // state.revertOptimisticUpdate(transactionId);
