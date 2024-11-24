@@ -1,9 +1,9 @@
 import React, { createContext, useState, ReactNode, useMemo, useEffect } from "react";
-import { App } from "@/types";
-import { getAppComponentValue } from "@/libs/dojo/helper";
-import { Entities } from "@dojoengine/torii-client";
 import { SDK } from "@dojoengine/sdk";
 import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import { useDojoStore } from "@/store/dojo";
+import { App } from "@/types";
+import { getAppComponentValue } from "@/libs/dojo/helper";
 
 interface AppContextType {
   apps: App[];
@@ -15,8 +15,10 @@ interface AppContextType {
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode; sdk: SDK<PixelawSchemaType> }> = ({ children, sdk }) => {
-  const [appEntities, setAppEntities] = useState<Entities>({});
-  const apps = useMemo(() => Object.values(appEntities).map((entity) => getAppComponentValue(entity)), [appEntities]);
+  const state = useDojoStore((state) => state);
+  const entities = state.getEntitiesByModel("pixelaw", "App");
+  const apps = entities.map((entity) => getAppComponentValue(entity));
+
   const [selectedAppIndex, setSelectedAppIndex] = useState<number>(0);
   const currentApp = useMemo(() => apps[selectedAppIndex], [apps, selectedAppIndex]);
 
@@ -24,7 +26,15 @@ export const AppProvider: React.FC<{ children: ReactNode; sdk: SDK<PixelawSchema
     const fetchApps = async () => {
       await sdk.getEntities(
         {
-          pixelaw: { App: {} },
+          pixelaw: {
+            App: {
+              $: {
+                where: {
+                  name: { $gte: 0 },
+                },
+              },
+            },
+          },
         },
         (resp) => {
           if (resp.error) {
@@ -32,7 +42,8 @@ export const AppProvider: React.FC<{ children: ReactNode; sdk: SDK<PixelawSchema
             return;
           }
           if (resp.data) {
-            console.log("resp.data:", resp.data);
+            console.log("App resp.data:", resp.data);
+            state.setEntities(resp.data);
           }
         },
       );

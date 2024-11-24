@@ -16,6 +16,27 @@ const policies = [
     target: import.meta.env.VITE_PUBLIC_FEE_TOKEN_ADDRESS,
     method: "approve",
   },
+  {
+    target: import.meta.env.VITE_PUBLIC_FEE_TOKEN_ADDRESS,
+    method: "approve",
+    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    target: import.meta.env.VITE_PUBLIC_FEE_TOKEN_ADDRESS,
+    method: "transfer",
+  },
+  {
+    target: import.meta.env.VITE_PUBLIC_FEE_TOKEN_ADDRESS,
+    method: "mint",
+  },
+  {
+    target: import.meta.env.VITE_PUBLIC_FEE_TOKEN_ADDRESS,
+    method: "burn",
+  },
+  {
+    target: import.meta.env.VITE_PUBLIC_FEE_TOKEN_ADDRESS,
+    method: "allowance",
+  },
   // paint_actions
   {
     target: paint_action_contract_address,

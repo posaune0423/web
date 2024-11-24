@@ -15,6 +15,7 @@ import cartridgeConnector from "@/libs/cartridgeController";
 import { sepolia } from "@starknet-react/chains";
 import { RpcProvider } from "starknet";
 import ReactGA from "react-ga4";
+import { AppProvider } from "./contexts/AppContext";
 
 ReactGA.initialize(import.meta.env.VITE_PUBLIC_GA_ID);
 
@@ -53,9 +54,9 @@ const main = async () => {
             autoConnect
           >
             <DojoContextProvider burnerManager={await setupBurnerManager(dojoConfig)}>
-              {/* <AppProvider sdk={sdk}> */}
-              <App sdk={sdk} />
-              {/* </AppProvider> */}
+              <AppProvider sdk={sdk}>
+                <App sdk={sdk} />
+              </AppProvider>
               <Toaster richColors position="bottom-right" closeButton />
             </DojoContextProvider>
           </StarknetConfig>
