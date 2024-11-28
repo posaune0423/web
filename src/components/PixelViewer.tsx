@@ -53,7 +53,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
 
   // Handlers
   const onCellClick = useCallback(
-    async (x: number, y: number) => {
+    (x: number, y: number) => {
       startTransition(async () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
