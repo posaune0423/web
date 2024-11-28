@@ -11,5 +11,3 @@ export const dojoConfig = createDojoConfig({
   masterPrivateKey: import.meta.env.VITE_PUBLIC_MASTER_PRIVATE_KEY,
   manifest: import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? manifestDev : manifestSepolia,
 });
-
-console.log(dojoConfig);

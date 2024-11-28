@@ -79,7 +79,6 @@ export const useSystemCalls = () => {
     } finally {
       // Confirm the transaction if successful
       state.confirmTransaction(transactionId);
-      console.log('confirmed')
     }
   };
 

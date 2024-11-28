@@ -77,9 +77,9 @@ export const getPixelEntities = async (
     },
   };
 
-  const entities = await sdk.getEntities(
+  const entities = await sdk.getEntities({
     query,
-    (resp) => {
+    callback: (resp) => {
       if (resp.error) {
         console.error("resp.error.message:", resp.error.message);
         return;
@@ -89,8 +89,8 @@ export const getPixelEntities = async (
         console.log("pixels num:", resp.data.length);
       }
     },
-    MAX_QUERY_SIZE,
-  );
+    limit: MAX_QUERY_SIZE,
+  });
 
   return entities;
 };

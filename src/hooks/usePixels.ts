@@ -115,15 +115,15 @@ export const usePixels = (
     let unsubscribe: (() => void) | undefined;
 
     const subscribe = async () => {
-      const subscription = await sdk.subscribeEntityQuery(
-        {
+      const subscription = await sdk.subscribeEntityQuery({
+        query: {
           pixelaw: {
             Pixel: {
               $: {},
             },
           },
         },
-        (response) => {
+        callback: (response) => {
           if (response.error) {
             console.error("Error setting up entity sync:", response.error);
           } else if (response.data && response.data[0].entityId !== "0x0") {
@@ -137,7 +137,7 @@ export const usePixels = (
             setVisiblePixels((prev) => [...prev, pixel]);
           }
         },
-      );
+      });
 
       unsubscribe = () => subscription.cancel();
     };
