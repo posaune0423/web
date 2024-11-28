@@ -49,10 +49,16 @@ export default defineConfig({
         ],
       },
       workbox: {
-        maximumFileSizeToCacheInBytes: 3900000, // 3.9MB
+        maximumFileSizeToCacheInBytes: 4000000, // 4MB
       },
     }),
   ],
+  build: {
+    target: "esnext",
+  },
+  esbuild: {
+    target: "esnext",
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
