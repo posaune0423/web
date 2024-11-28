@@ -1,4 +1,4 @@
-import { startTransition, useCallback, useMemo, useRef, useState } from "react";
+import { startTransition, useCallback, useRef, useState } from "react";
 import { COLOR_PALETTE, BASE_CELL_SIZE } from "@/constants/webgl";
 import { type Color } from "@/types";
 import { useDojo } from "@/hooks/useDojo";
@@ -35,17 +35,13 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
 
   // Other Hooks
   const {
-    setup: {
-      account: { account },
-      connectedAccount,
-    },
+    setup: { account },
   } = useDojo();
   const { vibe } = useHaptic();
 
   const { gridState, setGridState } = useGridState();
   const { drawPixels } = useWebGL(canvasRef, gridState);
   const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState, sdk);
-  const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
   // const { currentApp } = useApp();
   const { interact } = useSystemCalls();
 
@@ -58,7 +54,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
         vibe();
-        await interact(activeAccount, {
+        await interact(account, {
           player_override: 1n,
           system_override: 1n,
           area_hint: 1,
@@ -70,7 +66,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
     [
       // currentApp,
       selectedColor,
-      activeAccount,
+      account,
       interact,
       setOptimisticPixels,
       play,

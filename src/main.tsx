@@ -23,6 +23,8 @@ const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("React root not found");
 const root = ReactDOM.createRoot(rootElement as HTMLElement);
 
+const chainId = import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? "KATANA" : "SEPOLIA";
+
 const main = async () => {
   const sdk = await init<PixelawSchemaType>(
     {
@@ -35,7 +37,7 @@ const main = async () => {
       domain: {
         name: "pixelaw",
         version: "1.0",
-        chainId: "KATANA",
+        chainId,
         revision: "1",
       },
     },

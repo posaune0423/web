@@ -119,20 +119,19 @@ export const usePixels = (
         query: {
           pixelaw: {
             Pixel: {
-              $: {},
+              $: {}, //NOTE: empty query to subscribe to all pixels
             },
           },
         },
-        callback: (response) => {
-          if (response.error) {
-            console.error("Error setting up entity sync:", response.error);
-          } else if (response.data && response.data[0].entityId !== "0x0") {
-            console.log("subscribed and updated entity", response.data[0]);
-            state.updateEntity(response.data[0]);
+        callback: (resp) => {
+          if (resp.error) {
+            console.error("Error setting up entity sync:", resp.error);
+          } else if (resp.data && resp.data[0].entityId !== "0x0") {
+            state.updateEntity(resp.data[0]);
             const pixel: Pixel = {
-              x: response.data[0].models.pixelaw.Pixel?.x ?? 0,
-              y: response.data[0].models.pixelaw.Pixel?.y ?? 0,
-              color: hexToRgba(response.data[0].models.pixelaw.Pixel?.color ?? 0),
+              x: resp.data[0].models.pixelaw.Pixel?.x ?? 0,
+              y: resp.data[0].models.pixelaw.Pixel?.y ?? 0,
+              color: hexToRgba(resp.data[0].models.pixelaw.Pixel?.color ?? 0),
             };
             setVisiblePixels((prev) => [...prev, pixel]);
           }

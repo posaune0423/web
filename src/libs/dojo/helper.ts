@@ -86,7 +86,6 @@ export const getPixelEntities = async (
       }
       if (resp.data) {
         state.setEntities(resp.data);
-        console.log("pixels num:", resp.data.length);
       }
     },
     limit: MAX_QUERY_SIZE,

@@ -24,8 +24,8 @@ export const AppProvider: React.FC<{ children: ReactNode; sdk: SDK<PixelawSchema
 
   useEffect(() => {
     const fetchApps = async () => {
-      await sdk.getEntities(
-        {
+      await sdk.getEntities({
+        query: {
           pixelaw: {
             App: {
               $: {
@@ -36,17 +36,16 @@ export const AppProvider: React.FC<{ children: ReactNode; sdk: SDK<PixelawSchema
             },
           },
         },
-        (resp) => {
+        callback: (resp) => {
           if (resp.error) {
             console.error("resp.error.message:", resp.error.message);
             return;
           }
           if (resp.data) {
-            console.log("App resp.data:", resp.data);
             state.setEntities(resp.data);
           }
         },
-      );
+      });
     };
 
     fetchApps();
