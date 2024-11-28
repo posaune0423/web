@@ -1,6 +1,6 @@
 import { startTransition, useCallback, useMemo, useRef, useState } from "react";
 import { BASE_CELL_SIZE, COLOR_PALETTE } from "../constants/webgl.ts";
-import { type Color } from "../types/index.ts";
+import { GridState, type Color } from "../types/index.ts";
 import { useDojo } from "../hooks/useDojo.ts";
 import { rgbaToHex } from "../utils/index.ts";
 import { useSound } from "use-sound";
@@ -113,7 +113,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
         // easing function (optional: smooth movement)
         const easeProgress = 1 - Math.pow(1 - progress, 3);
 
-        setGridState((prev) => ({
+        setGridState((prev: GridState) => ({
           ...prev,
           offsetX: startOffsetX + (targetOffsetX - startOffsetX) * easeProgress,
           offsetY: startOffsetY + (targetOffsetY - startOffsetY) * easeProgress,

@@ -1,4 +1,5 @@
 import { detectMobile } from "../utils/devices.ts";
+// @deno-types="@types/react"
 import React, { useEffect, useLayoutEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 

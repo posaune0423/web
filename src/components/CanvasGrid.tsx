@@ -1,3 +1,4 @@
+// @deno-types="@types/react"
 import React, { useCallback, useEffect, useRef } from "react";
 import { BASE_CELL_SIZE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../constants/webgl.ts";
 import { useWebGL } from "../hooks/useWebGL.ts";
