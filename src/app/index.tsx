@@ -1,6 +1,6 @@
-import { PixelViewer } from "@/components/PixelViewer";
-import { Header } from "@/components/Header";
-import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import { PixelViewer } from "../components/PixelViewer.tsx";
+import { Header } from "../components/Header.tsx";
+import { PixelawSchemaType } from "../libs/dojo/typescript/models.gen.ts";
 import { SDK } from "@dojoengine/sdk";
 
 export const App = ({ sdk }: { sdk: SDK<PixelawSchemaType> }) => {

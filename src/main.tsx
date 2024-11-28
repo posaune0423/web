@@ -1,22 +1,25 @@
+// @deno-types="@types/react"
 import React from "react";
+// @deno-types="@types/react-dom/client"
 import ReactDOM from "react-dom/client";
 import "./index.scss";
-import { App } from "./app";
+import { App } from "./app/index.tsx";
 import { init } from "@dojoengine/sdk";
-import { type PixelawSchemaType, schema } from "@/libs/dojo/typescript/models.gen";
-import { DojoContextProvider } from "@/contexts/DojoContext";
+import { type PixelawSchemaType, schema } from "./libs/dojo/typescript/models.gen.ts";
+import { DojoContextProvider } from "./contexts/DojoContext.tsx";
 import { setupBurnerManager } from "@dojoengine/create-burner";
-import { dojoConfig } from "../dojoConfig";
-import { ThemeProvider } from "./components/ThemeProvider";
-import { Toaster } from "./components/ui/Sonner";
-import SwipeControl from "./components/SwipeControl";
+import { dojoConfig } from "../dojoConfig.ts";
+import { ThemeProvider } from "./components/ThemeProvider.tsx";
+import { Toaster } from "./components/ui/Sonner.tsx";
+import SwipeControl from "./components/SwipeControl.tsx";
 import { StarknetConfig, voyager } from "@starknet-react/core";
-import cartridgeConnector from "@/libs/cartridgeController";
+import cartridgeConnector from "./libs/cartridgeController/index.ts";
 import { sepolia } from "@starknet-react/chains";
 import { RpcProvider } from "starknet";
 import ReactGA from "react-ga4";
-import { AppProvider } from "./contexts/AppContext";
+import { AppProvider } from "./contexts/AppContext.tsx";
 
+// @ts-expect-error Unable to infer type at the moment
 ReactGA.initialize(import.meta.env.VITE_PUBLIC_GA_ID);
 
 const rootElement = document.getElementById("root");
@@ -55,7 +58,9 @@ const main = async () => {
             explorer={voyager}
             autoConnect
           >
-            <DojoContextProvider burnerManager={await setupBurnerManager(dojoConfig)}>
+            <DojoContextProvider
+              burnerManager={await setupBurnerManager(dojoConfig)}
+            >
               <AppProvider sdk={sdk}>
                 <App sdk={sdk} />
               </AppProvider>

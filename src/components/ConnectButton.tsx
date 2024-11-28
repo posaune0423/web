@@ -1,7 +1,7 @@
 import { type Connector, useConnect } from "@starknet-react/core";
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../components/ui/Button.tsx";
 
 export const ConnectButton = () => {
   const { connectAsync, connectors } = useConnect();
@@ -16,7 +16,7 @@ export const ConnectButton = () => {
         toast.error("Wallet is not installed");
       }
     },
-    [connectAsync]
+    [connectAsync],
   );
 
   return <Button onClick={() => handleConnect(connectors[0])}>Connect Controller</Button>;

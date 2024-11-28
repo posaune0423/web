@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
-import { COLOR_PALETTE } from "@/constants/webgl";
-import { type Color } from "@/types";
-import { rgbaToHex } from "@/utils";
+import { COLOR_PALETTE } from "../constants/webgl.ts";
+import { type Color } from "../types/index.ts";
+import { rgbaToHex } from "../utils/index.ts";
 
 export const ColorPalette = ({
   selectedColor,
@@ -36,13 +36,13 @@ export const ColorPalette = ({
           g: pickedColor.g,
           b: pickedColor.b,
           a: pickedColor.a,
-        })
+        }),
       );
       setSelectedColor(pickedColor);
       setCustomColors([...customColors, pickedColor]);
       setPickedColor(null);
     },
-    [pickedColor, customColors, setSelectedColor]
+    [pickedColor, customColors, setSelectedColor],
   );
 
   return (
@@ -69,13 +69,13 @@ export const ColorPalette = ({
           onChange={handleColorPickerChange}
           className="opacity-0 absolute bottom-[10px] right-0 left-0 w-full h-full z-10"
         />
-        {pickedColor ? (
-          <button className="w-8 h-8 rounded-full bg-white z-20" onClick={onSelectColor}>
-            👍
-          </button>
-        ) : (
-          <span className="z-20">+</span>
-        )}
+        {pickedColor
+          ? (
+            <button className="w-8 h-8 rounded-full bg-white z-20" onClick={onSelectColor}>
+              👍
+            </button>
+          )
+          : <span className="z-20">+</span>}
       </label>
     </div>
   );

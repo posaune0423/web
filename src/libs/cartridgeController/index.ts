@@ -2,7 +2,7 @@ import { Connector } from "@starknet-react/core";
 import CartridgeConnector from "@cartridge/connector";
 import { getContractByName } from "@dojoengine/core";
 import { ControllerOptions } from "@cartridge/controller";
-import { manifest } from "../../../dojoConfig";
+import { manifest } from "../../../dojoConfig.ts";
 import { shortString } from "starknet";
 
 const contract = getContractByName(manifest, "pixelaw", "paint_actions");

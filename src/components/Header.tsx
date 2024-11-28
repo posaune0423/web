@@ -1,13 +1,13 @@
-import Avatar from "./Avatar";
-import { truncateAddress } from "@/utils";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/DropDownMenu";
-import { useDojo } from "@/hooks/useDojo";
+import Avatar from "./Avatar/index.tsx";
+import { truncateAddress } from "../utils/index.ts";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/ui/DropDownMenu.tsx";
+import { useDojo } from "../hooks/useDojo.ts";
 import { toast } from "sonner";
-import { AppList } from "./AppList";
-import { ConnectButton } from "./ConnectButton";
-import { useControllerUsername } from "@/hooks/useControllerUserName";
+import { AppList } from "./AppList.tsx";
+import { ConnectButton } from "./ConnectButton.tsx";
+import { useControllerUsername } from "../hooks/useControllerUserName.ts";
 import { useDisconnect } from "@starknet-react/core";
-import { Button } from "./ui/Button";
+import { Button } from "../components/ui/Button.tsx";
 import { useMemo } from "react";
 
 const Header = () => {

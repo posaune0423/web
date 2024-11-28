@@ -18,13 +18,17 @@ export const truncateAddress = (address: string) => {
 
 export const formatDate = (date: Date | string): string => {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  return `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1).toString().padStart(2, "0")}/${dateObj
-    .getDate()
-    .toString()
-    .padStart(2, "0")}:${dateObj.getHours().toString().padStart(2, "0")}:${dateObj
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}`;
+  return `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1).toString().padStart(2, "0")}/${
+    dateObj
+      .getDate()
+      .toString()
+      .padStart(2, "0")
+  }:${dateObj.getHours().toString().padStart(2, "0")}:${
+    dateObj
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")
+  }`;
 };
 
 export const rgbaToHex = (color: Color): number => {

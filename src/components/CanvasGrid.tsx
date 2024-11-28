@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useCallback } from "react";
-import { BASE_CELL_SIZE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "@/constants/webgl";
-import { useWebGL } from "@/hooks/useWebGL";
-import { convertClientPosToCanvasPos } from "@/utils/canvas";
-import { getPinchDistance, getTouchPositions } from "@/utils/gestures";
-import { GridState } from "@/types";
+import React, { useCallback, useEffect, useRef } from "react";
+import { BASE_CELL_SIZE, MAX_SCALE, MIN_SCALE, SWIPE_THRESHOLD } from "../constants/webgl.ts";
+import { useWebGL } from "../hooks/useWebGL.ts";
+import { convertClientPosToCanvasPos } from "../utils/canvas.ts";
+import { getPinchDistance, getTouchPositions } from "../utils/gestures.ts";
+import { GridState } from "../types/index.ts";
 import { resizeCanvasToDisplaySize } from "twgl.js";
 
 export const INERTIA_DAMPING = 0.97;
@@ -104,11 +104,11 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         if (maxCellSize) {
           const maxOffsetX = Math.max(
             0,
-            maxCellSize * BASE_CELL_SIZE - (canvasRef.current?.width || 0) / newState.scale
+            maxCellSize * BASE_CELL_SIZE - (canvasRef.current?.width || 0) / newState.scale,
           );
           const maxOffsetY = Math.max(
             0,
-            maxCellSize * BASE_CELL_SIZE - (canvasRef.current?.height || 0) / newState.scale
+            maxCellSize * BASE_CELL_SIZE - (canvasRef.current?.height || 0) / newState.scale,
           );
           return {
             ...newState,
@@ -119,7 +119,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         return newState;
       });
     },
-    [setGridState, maxCellSize, canvasRef]
+    [setGridState, maxCellSize, canvasRef],
   );
 
   const updateCurrentMousePos = useCallback(
@@ -133,7 +133,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
       setCurrentMousePos?.({ x: cellX, y: cellY });
       onCellHover?.(cellX, cellY);
     },
-    [gridState, onCellHover, setCurrentMousePos]
+    [gridState, onCellHover, setCurrentMousePos],
   );
 
   const handleMouseDown = useCallback(
@@ -145,7 +145,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
       mouseDownPosRef.current = { x, y };
       isDraggingRef.current = false;
     },
-    [canvasRef]
+    [canvasRef],
   );
 
   const handleMouseMove = useCallback(
@@ -176,7 +176,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         mouseDownPosRef.current = { x, y };
       }
     },
-    [canvasRef, updateCurrentMousePos, onSwipe, setLimitedGridState]
+    [canvasRef, updateCurrentMousePos, onSwipe, setLimitedGridState],
   );
 
   const handleMouseUp = useCallback(
@@ -203,7 +203,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
       mouseDownPosRef.current = null;
       isDraggingRef.current = false;
     },
-    [canvasRef, gridState, onCellClick]
+    [canvasRef, gridState, onCellClick],
   );
 
   const handleWheel = useCallback(
@@ -236,7 +236,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
 
       updateCurrentMousePos(x, y);
     },
-    [canvasRef, minZoom, maxZoom, updateCurrentMousePos, onZoom, setLimitedGridState, onPan]
+    [canvasRef, minZoom, maxZoom, updateCurrentMousePos, onZoom, setLimitedGridState, onPan],
   );
 
   const handleTouchStart = useCallback(
@@ -266,7 +266,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
       // 慣性スクロールのための時間をリセット
       inertiaRef.current.lastTime = performance.now();
     },
-    [canvasRef, updateCurrentMousePos]
+    [canvasRef, updateCurrentMousePos],
   );
 
   const handleTouchMove = useCallback(
@@ -352,7 +352,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         }
       }
     },
-    [canvasRef, minZoom, maxZoom, updateCurrentMousePos, setLimitedGridState, onPinch, onSwipe]
+    [canvasRef, minZoom, maxZoom, updateCurrentMousePos, setLimitedGridState, onPinch, onSwipe],
   );
 
   const handleInertia = useCallback(() => {
@@ -417,7 +417,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
       // reset time for inertia scroll
       inertiaRef.current.lastTime = 0;
     },
-    [canvasRef, damping, gridState, handleInertia, onTap]
+    [canvasRef, damping, gridState, handleInertia, onTap],
   );
 
   const animate = useCallback(() => {
@@ -469,7 +469,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
       (e) => {
         e.preventDefault();
       },
-      { passive: false }
+      { passive: false },
     );
   }, [canvasRef]);
 

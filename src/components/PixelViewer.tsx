@@ -1,22 +1,22 @@
 import { startTransition, useCallback, useMemo, useRef, useState } from "react";
-import { COLOR_PALETTE, BASE_CELL_SIZE } from "@/constants/webgl";
-import { type Color } from "@/types";
-import { useDojo } from "@/hooks/useDojo";
-import { rgbaToHex } from "@/utils";
+import { BASE_CELL_SIZE, COLOR_PALETTE } from "../constants/webgl.ts";
+import { type Color } from "../types/index.ts";
+import { useDojo } from "../hooks/useDojo.ts";
+import { rgbaToHex } from "../utils/index.ts";
 import { useSound } from "use-sound";
-import { sounds } from "@/constants";
-import { usePixels } from "@/hooks/usePixels";
-import { useGridState } from "@/hooks/useGridState";
-import { useWebGL } from "@/hooks/useWebGL";
-import { CoordinateFinder } from "@/components/CoordinateFinder";
-import { ColorPalette } from "@/components/ColorPallette";
-import { CanvasGrid } from "@/components/CanvasGrid";
+import { sounds } from "../constants/index.ts";
+import { usePixels } from "../hooks/usePixels.ts";
+import { useGridState } from "../hooks/useGridState.ts";
+import { useWebGL } from "../hooks/useWebGL.ts";
+import { CoordinateFinder } from "../components/CoordinateFinder.tsx";
+import { ColorPalette } from "../components/ColorPallette.tsx";
+import { CanvasGrid } from "../components/CanvasGrid.tsx";
 import { useHaptic } from "use-haptic";
 // import { useApp } from "@/hooks/useApp";
 // import { Direction } from "@/libs/dojo/typescript/models.gen";
 import { SDK } from "@dojoengine/sdk";
-import { type PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
-import { useSystemCalls } from "@/hooks/useSystemCalls";
+import { type PixelawSchemaType } from "../libs/dojo/typescript/models.gen.ts";
+import { useSystemCalls } from "../hooks/useSystemCalls.ts";
 
 type PixelViewerProps = {
   sdk: SDK<PixelawSchemaType>;

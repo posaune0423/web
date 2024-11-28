@@ -1,9 +1,9 @@
 import { Account } from "starknet";
-import { DefaultParameters } from "@/libs/dojo/typescript/models.gen";
+import { DefaultParameters } from "../libs/dojo/typescript/models.gen.ts";
 import { toast } from "sonner";
-import { handleTransactionError } from "@/utils";
-import { useDojo } from "./useDojo";
-import { useDojoStore } from "@/store/dojo";
+import { handleTransactionError } from "../utils/index.ts";
+import { useDojo } from "./useDojo.ts";
+import { useDojoStore } from "../store/dojo.ts";
 import { v4 as uuidv4 } from "uuid";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 

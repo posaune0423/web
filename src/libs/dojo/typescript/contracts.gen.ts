@@ -1,6 +1,6 @@
 import { DojoProvider } from "@dojoengine/core";
 import { Account } from "starknet";
-import * as models from "./models.gen";
+import * as models from "./models.gen.ts";
 
 export const client = (provider: DojoProvider) => {
   const paint_actions_init = async (account: Account) => {
