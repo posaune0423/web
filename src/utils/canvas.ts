@@ -1,5 +1,5 @@
-import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
-import { GridState, PixelRange } from "@/types";
+import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "../constants/webgl.ts";
+import { GridState, PixelRange } from "../types/index.ts";
 
 export const convertClientPosToCanvasPos = (
   canvasRef: React.RefObject<HTMLCanvasElement | null>,

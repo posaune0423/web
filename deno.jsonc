@@ -9,6 +9,7 @@
   "imports": {
     "@cartridge/connector": "npm:@cartridge/connector@0.3.46",
     "@cartridge/controller": "npm:@cartridge/controller@0.3.46",
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.1",
     "@dojoengine/core": "npm:@dojoengine/core@1.0.2",
     "@dojoengine/create-burner": "npm:@dojoengine/create-burner@1.0.2",
     "@dojoengine/sdk": "npm:@dojoengine/sdk@1.0.2",
@@ -20,6 +21,7 @@
     "@radix-ui/react-tooltip": "npm:@radix-ui/react-tooltip@1.1.4",
     "@starknet-react/chains": "npm:@starknet-react/chains@^3.1.0",
     "@starknet-react/core": "npm:@starknet-react/core@2.9.0",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.0.0-beta.3",
     "class-variance-authority": "npm:class-variance-authority@0.7.1",
     "clsx": "npm:clsx@2.1.1",
     "idle-task": "npm:idle-task@4.3.0",
@@ -30,7 +32,6 @@
     "react-dom": "npm:react-dom@19.0.0-rc-fb9a90fa48-20240614",
     "react-ga4": "npm:react-ga4@2.1.0",
     "react-swipeable": "npm:react-swipeable@7.0.2",
-    "sass": "npm:sass@1.81.0",
     "sonner": "npm:sonner@1.7.0",
     "starknet": "npm:starknet@6.11.0",
     "tailwind-merge": "npm:tailwind-merge@2.5.5",
@@ -44,11 +45,8 @@
     "@types/react": "npm:types-react@rc",
     "@types/react-dom": "npm:types-react-dom@rc",
     "@vite-pwa/assets-generator": "npm:@vite-pwa/assets-generator@0.2.6",
-    "@vitejs/plugin-react-swc": "npm:@vitejs/plugin-react-swc@3.7.2",
-    "autoprefixer": "npm:autoprefixer@10.4.20",
-    "globals": "npm:globals@15.12.0",
-    "tailwindcss": "npm:tailwindcss@3.4.15",
-    "typescript": "npm:typescript@5.7.2",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.4",
+    "tailwindcss": "npm:tailwindcss@^4.0.0-beta.3",
     "vite": "npm:vite@5.4.11",
     "vite-plugin-glsl": "npm:vite-plugin-glsl@1.3.0",
     "vite-plugin-pwa": "npm:vite-plugin-pwa@0.20.5",
@@ -56,9 +54,10 @@
   },
   "nodeModulesDir": "auto",
   "compilerOptions": {
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "lib": ["dom", "dom.iterable", "esnext"]
+    "jsxImportSourceTypes": "@types/react"
   },
   "fmt": {
     "indentWidth": 2,

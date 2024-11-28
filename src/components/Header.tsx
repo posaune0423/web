@@ -1,6 +1,11 @@
 import Avatar from "./Avatar/index.tsx";
 import { truncateAddress } from "../utils/index.ts";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/ui/DropDownMenu.tsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/DropDownMenu.tsx";
 import { useDojo } from "../hooks/useDojo.ts";
 import { toast } from "sonner";
 import { AppList } from "./AppList.tsx";

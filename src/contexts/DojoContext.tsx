@@ -45,7 +45,9 @@ export const DojoContextProvider = ({
         client: client(dojoProvider),
         account: {
           ...burnerManagerData,
-          account: connectedAccount ? (connectedAccount as unknown as Account) : burnerManagerData.account || masterAccount,
+          account: connectedAccount
+            ? (connectedAccount as unknown as Account)
+            : burnerManagerData.account || masterAccount,
         },
         connectedAccount: connectedAccount as unknown as Account,
       }}

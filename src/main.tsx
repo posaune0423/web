@@ -2,7 +2,7 @@
 import React from "react";
 // @deno-types="@types/react-dom/client"
 import ReactDOM from "react-dom/client";
-import "./index.scss";
+import "./index.css";
 import { App } from "./app/index.tsx";
 import { init } from "@dojoengine/sdk";
 import { type PixelawSchemaType, schema } from "./libs/dojo/typescript/models.gen.ts";

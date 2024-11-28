@@ -1,7 +1,7 @@
-import { App, GameState, Pixel } from "@/types";
-import { felt252ToString, felt252ToUnicode, hexToRgba } from "@/utils";
+import { App, GameState, Pixel } from "../../types/index.ts";
+import { felt252ToString, felt252ToUnicode, hexToRgba } from "../../utils/index.ts";
 import { ParsedEntity, QueryType, SDK, StandardizedQueryResult } from "@dojoengine/sdk";
-import { PixelawSchemaType } from "./typescript/models.gen";
+import { PixelawSchemaType } from "./typescript/models.gen.ts";
 
 export const getPixelComponentValue = (entity: ParsedEntity<PixelawSchemaType>): Pixel => {
   return {

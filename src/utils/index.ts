@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { type Color } from "@/types";
+import { type Color } from "../types/index.ts";
 import { shortString } from "starknet";
 
 export const cn = (...inputs: ClassValue[]) => {
