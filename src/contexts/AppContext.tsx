@@ -1,8 +1,9 @@
 import React, { createContext, useState, ReactNode, useMemo, useEffect } from "react";
+import { SDK } from "@dojoengine/sdk";
+import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import { useDojoStore } from "@/store/dojo";
 import { App } from "@/types";
-import { useDojo } from "@/hooks/useDojo";
 import { getAppComponentValue } from "@/libs/dojo/helper";
-import { Entities } from "@dojoengine/torii-client";
 
 interface AppContextType {
   apps: App[];
@@ -13,34 +14,46 @@ interface AppContextType {
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const {
-    setup: { toriiClient },
-  } = useDojo();
+export const AppProvider: React.FC<{ children: ReactNode; sdk: SDK<PixelawSchemaType> }> = ({ children, sdk }) => {
+  const state = useDojoStore((state) => state);
+  const entities = state.getEntitiesByModel("pixelaw", "App");
+  const apps = entities.map((entity) => getAppComponentValue(entity));
 
-  const [appEntities, setAppEntities] = useState<Entities>({});
-  const apps = useMemo(() => Object.values(appEntities).map((entity) => getAppComponentValue(entity)), [appEntities]);
   const [selectedAppIndex, setSelectedAppIndex] = useState<number>(0);
   const currentApp = useMemo(() => apps[selectedAppIndex], [apps, selectedAppIndex]);
 
   useEffect(() => {
     const fetchApps = async () => {
-      const appEntities = await toriiClient.getEntities({
-        limit: 100,
-        offset: 0,
-        clause: {
-          Keys: {
-            keys: [],
-            pattern_matching: "VariableLen",
-            models: ["pixelaw-App"],
+      await sdk.getEntities({
+        query: {
+          pixelaw: {
+            App: {
+              $: {
+                where: {
+                  name: { $gte: 0 },
+                },
+              },
+            },
           },
         },
+        callback: (resp) => {
+          if (resp.error) {
+            console.error("resp.error.message:", resp.error.message);
+            return;
+          }
+          if (resp.data) {
+            state.setEntities(resp.data);
+          }
+        },
       });
-      setAppEntities(appEntities);
     };
 
     fetchApps();
-  }, [toriiClient]);
+  }, [sdk]);
 
-  return <AppContext.Provider value={{ apps, selectedAppIndex, setSelectedAppIndex, currentApp }}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ apps, selectedAppIndex, setSelectedAppIndex, currentApp }}>
+      {children}
+    </AppContext.Provider>
+  );
 };

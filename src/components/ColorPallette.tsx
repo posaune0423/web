@@ -47,7 +47,7 @@ export const ColorPalette = ({
 
   return (
     <div className="px-4 bg-slate-900 max-w-[310px] fixed mx-auto bottom-1 left-0 right-0 flex h-[50px] items-center justify-center shadow-md">
-      <div className="flex items-center h-full w-full overflow-x-auto px-2">
+      <div className="flex items-center h-full w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-2">
         <div className="flex items-center space-x-2 h-full flex-grow">
           {[...customColors, ...COLOR_PALETTE].map((color, index) => (
             <button

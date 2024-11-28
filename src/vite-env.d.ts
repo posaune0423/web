@@ -5,9 +5,9 @@ type ImportMetaEnv = {
   // You probably want to add `/src/vite-env.d.ts` to your .prettierignore
   VITE_PUBLIC_TORII_URL: string
   VITE_PUBLIC_RPC_URL: string
+  VITE_PUBLIC_ACCOUNT_CLASS_HASH: string
   VITE_PUBLIC_MASTER_ADDRESS: string
   VITE_PUBLIC_MASTER_PRIVATE_KEY: string
-  VITE_PUBLIC_EXPLORER_URL: string
   VITE_PUBLIC_FEE_TOKEN_ADDRESS: string
   VITE_PUBLIC_PROFILE: string
   VITE_PUBLIC_GA_ID: string

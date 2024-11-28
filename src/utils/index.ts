@@ -1,8 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { type Color } from "@/types";
-import { getComponentValue } from "@dojoengine/recs";
-import { App } from "@/types";
 import { shortString } from "starknet";
 
 export const cn = (...inputs: ClassValue[]) => {
@@ -76,21 +74,16 @@ export const felt252ToString = (felt252: string | number | bigint) => {
 
 export const felt252ToUnicode = (felt252: string | number) => {
   const string = felt252ToString(felt252);
+
   if (string.includes("U+")) {
-    const text = string.replace("U+", "");
-    const codePoint = Number.parseInt(text, 16);
-    return String.fromCodePoint(codePoint);
+    const cleanString = string.replace(/\0/g, "").replace(/\s+/g, "");
+    const text = cleanString.replace("U+", "");
+    const codePoint = parseInt(text, 16);
+
+    if (!isNaN(codePoint)) {
+      return String.fromCodePoint(codePoint);
+    }
   }
+
   return string;
-};
-
-export const fromComponent = (appComponent: ReturnType<typeof getComponentValue>): App | undefined => {
-  if (!appComponent) return undefined;
-
-  return {
-    name: shortString.decodeShortString(appComponent.name),
-    icon: felt252ToUnicode(appComponent.icon),
-    action: shortString.decodeShortString(appComponent.action),
-    system: appComponent.system,
-  };
 };

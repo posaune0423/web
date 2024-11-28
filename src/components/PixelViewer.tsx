@@ -12,20 +12,30 @@ import { CoordinateFinder } from "@/components/CoordinateFinder";
 import { ColorPalette } from "@/components/ColorPallette";
 import { CanvasGrid } from "@/components/CanvasGrid";
 import { useHaptic } from "use-haptic";
-import { useApp } from "@/hooks/useApp";
+// import { useApp } from "@/hooks/useApp";
+// import { Direction } from "@/libs/dojo/typescript/models.gen";
+import { SDK } from "@dojoengine/sdk";
+import { type PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import { useSystemCalls } from "@/hooks/useSystemCalls";
 
-export const PixelViewer: React.FC = () => {
+type PixelViewerProps = {
+  sdk: SDK<PixelawSchemaType>;
+};
+
+export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
   // Refs
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // States
   const [selectedColor, setSelectedColor] = useState<Color>(COLOR_PALETTE[0]);
-  const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [currentMousePos, setCurrentMousePos] = useState<{
+    x: number;
+    y: number;
+  }>({ x: 0, y: 0 });
 
   // Other Hooks
   const {
     setup: {
-      systemCalls: { interact, snakeInteract, pix2048Interact },
       account: { account },
       connectedAccount,
     },
@@ -34,9 +44,10 @@ export const PixelViewer: React.FC = () => {
 
   const { gridState, setGridState } = useGridState();
   const { drawPixels } = useWebGL(canvasRef, gridState);
-  const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState);
+  const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState, sdk);
   const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
-  const { currentApp } = useApp();
+  // const { currentApp } = useApp();
+  const { interact } = useSystemCalls();
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
@@ -47,45 +58,24 @@ export const PixelViewer: React.FC = () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
         vibe();
-        if (currentApp.name === "paint") {
-          await interact(activeAccount, {
-            for_player: 0n,
-            for_system: 0n,
-            position: { x, y },
-            color: rgbaToHex(selectedColor),
-          });
-        } else if (currentApp.name === "snake") {
-          await snakeInteract(
-            activeAccount,
-            {
-              for_player: 0n,
-              for_system: 0n,
-              position: { x, y },
-              color: rgbaToHex(selectedColor),
-            },
-            { type: "Up" }
-          );
-        } else if (currentApp.name === "pix2048") {
-          await pix2048Interact(activeAccount, {
-            for_player: 0n,
-            for_system: 0n,
-            position: { x, y },
-            color: rgbaToHex(selectedColor),
-          });
-        }
+        await interact(activeAccount, {
+          player_override: 1n,
+          system_override: 1n,
+          area_hint: 1,
+          position: { x, y },
+          color: rgbaToHex(selectedColor),
+        });
       });
     },
     [
-      currentApp,
+      // currentApp,
       selectedColor,
       activeAccount,
       interact,
-      snakeInteract,
-      pix2048Interact,
       setOptimisticPixels,
       play,
       vibe,
-    ]
+    ],
   );
 
   const onDrawGrid = useCallback(() => {
@@ -98,7 +88,7 @@ export const PixelViewer: React.FC = () => {
         throttledFetchPixels();
       }
     },
-    [throttledFetchPixels]
+    [throttledFetchPixels],
   );
 
   const animateJumpToCell = useCallback(
@@ -140,7 +130,7 @@ export const PixelViewer: React.FC = () => {
 
       requestAnimationFrame(animateFrame);
     },
-    [gridState, setGridState, setCurrentMousePos]
+    [gridState, setGridState, setCurrentMousePos],
   );
 
   return (
