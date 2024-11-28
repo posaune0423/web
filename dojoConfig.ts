@@ -1,13 +1,15 @@
 import { createDojoConfig } from "@dojoengine/core";
 import manifestDev from "./src/libs/dojo/manifests/manifest_dev.json";
-import manifestSlot from "./src/libs/dojo/manifests/manifest_slot.json";
+import manifestSepolia from "./src/libs/dojo/manifests/manifest_sepolia.json";
 
-export const manifest = import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? manifestDev : manifestSlot;
+export const manifest = import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? manifestDev : manifestSepolia;
 
 export const dojoConfig = createDojoConfig({
   toriiUrl: import.meta.env.VITE_PUBLIC_TORII_URL,
   rpcUrl: import.meta.env.VITE_PUBLIC_RPC_URL,
   masterAddress: import.meta.env.VITE_PUBLIC_MASTER_ADDRESS,
   masterPrivateKey: import.meta.env.VITE_PUBLIC_MASTER_PRIVATE_KEY,
-  manifest: import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? manifestDev : manifestSlot,
+  manifest: import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? manifestDev : manifestSepolia,
 });
+
+console.log(dojoConfig);
