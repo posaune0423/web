@@ -8,7 +8,7 @@ import { getEntityIdFromKeys } from "@dojoengine/utils";
 import { dojoConfig } from "../../dojoConfig";
 import { DojoProvider } from "@dojoengine/core";
 import { client } from "@/libs/dojo/typescript/contracts.gen";
-import { useAccount } from "@starknet-react/core";
+import { useAccount, useExplorer } from "@starknet-react/core";
 
 const handleError = (action: string, error: unknown) => {
   console.error(`Error executing ${action}:`, error);
@@ -27,6 +27,7 @@ const handleError = (action: string, error: unknown) => {
 export const useSystemCalls = () => {
   const state = useDojoStore((state) => state);
   const { account } = useAccount();
+  const explorer = useExplorer();
 
   const dojoProvider = new DojoProvider(dojoConfig.manifest, dojoConfig.rpcUrl);
   const dojoClient = client(dojoProvider);
@@ -64,18 +65,31 @@ export const useSystemCalls = () => {
     });
 
     try {
-      await dojoClient.paint_actions.interact(account, default_params);
+      const res = await dojoClient.paint_actions.interact(account, default_params);
+
+      if (res?.transaction_hash) {
+        toast.success(`View transaction on ${explorer?.name}`, {
+          action: {
+            label: "Tx",
+            onClick: () => window.open(explorer?.transaction(res.transaction_hash), "_blank"),
+          },
+        });
+      }
 
       // Wait for the entity to be updated with the new state
-      // await state.waitForEntityChange(entityId, (entity) => {
-      //   return (
-      //     entity?.models?.pixelaw?.Pixel?.x === default_params.position.x &&
-      //     entity?.models?.pixelaw?.Pixel?.y === default_params.position.y
-      //   );
-      // });
+      await state.waitForEntityChange(entityId, (entity) => {
+        return (
+          entity?.models?.pixelaw?.Pixel?.x === default_params.position.x &&
+          entity?.models?.pixelaw?.Pixel?.y === default_params.position.y
+        );
+      });
     } catch (e) {
       // Revert the optimistic update if an error occurs
-      // state.revertOptimisticUpdate(transactionId);
+      // TODO: FIX THIS. SHOULD NOT ignore timeout errors
+      if (e instanceof Error && e.message.includes("Timeout of")) {
+        return;
+      }
+      state.revertOptimisticUpdate(transactionId);
       handleError("paint interact", e);
     } finally {
       // Confirm the transaction if successful

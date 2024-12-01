@@ -73,21 +73,25 @@ const Header = () => {
                 <Avatar address={account.address || ""} size={32} />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Button onClick={() => disconnect()}>Disconnect</Button>
-                </DropdownMenuItem>
                 {username && (
                   <DropdownMenuItem>
-                    <Button onClick={() => ctrlConnector.controller.openProfile()}>PROFILE</Button>
+                    <Button className="w-full" onClick={() => ctrlConnector.controller.openProfile()}>
+                      PROFILE
+                    </Button>
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem>
+                  <Button className="w-full" onClick={() => disconnect()}>
+                    Disconnect
+                  </Button>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </>
         ) : (
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline">Connect Wallet</Button>
+              <Button>Connect Wallet</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
