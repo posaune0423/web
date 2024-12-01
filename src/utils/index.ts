@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { type Color } from "@/types";
+import type { Color } from "@/types";
 import { shortString } from "starknet";
 
 export const cn = (...inputs: ClassValue[]) => {
@@ -78,7 +78,7 @@ export const felt252ToUnicode = (felt252: string | number) => {
   if (string.includes("U+")) {
     const cleanString = string.replace(/\0/g, "").replace(/\s+/g, "");
     const text = cleanString.replace("U+", "");
-    const codePoint = parseInt(text, 16);
+    const codePoint = Number.parseInt(text, 16);
 
     if (!isNaN(codePoint)) {
       return String.fromCodePoint(codePoint);

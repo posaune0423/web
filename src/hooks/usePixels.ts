@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useOptimistic, useRef, useState } from "react";
-import { GridState, Pixel } from "../types";
+import type { GridState, Pixel } from "../types";
 import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
 import { getPixelComponentFromEntities, getPixelEntities } from "@/libs/dojo/helper";
 import { shouldFetch } from "@/utils/canvas";
-import { SDK } from "@dojoengine/sdk";
-import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import type { SDK } from "@dojoengine/sdk";
+import type { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { useDojoStore } from "@/store/dojo";
 import { hexToRgba } from "@/utils";
 

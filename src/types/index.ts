@@ -1,6 +1,6 @@
-import { ParsedEntity, SchemaType } from "@dojoengine/sdk";
-import { Draft } from "immer";
-import { Patch } from "immer";
+import type { ParsedEntity, SchemaType } from "@dojoengine/sdk";
+import type { Draft } from "immer";
+import type { Patch } from "immer";
 
 export type App = {
   system: string;

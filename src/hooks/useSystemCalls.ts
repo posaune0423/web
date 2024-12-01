@@ -1,11 +1,11 @@
-import { Account } from "starknet";
-import { DefaultParameters } from "@/libs/dojo/typescript/models.gen";
+import type { Account } from "starknet";
+import type { DefaultParameters } from "@/libs/dojo/typescript/models.gen";
 import { toast } from "sonner";
 import { handleTransactionError } from "@/utils";
 import { useDojoStore } from "@/store/dojo";
 import { v4 as uuidv4 } from "uuid";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
-import { dojoConfig } from "../../dojoConfig";
+import { dojoConfig } from "@/libs/dojo/config";
 import { DojoProvider } from "@dojoengine/core";
 import { client } from "@/libs/dojo/typescript/contracts.gen";
 import { useAccount, useExplorer } from "@starknet-react/core";

@@ -1,6 +1,6 @@
 import { startTransition, useCallback, useRef, useState } from "react";
 import { COLOR_PALETTE, BASE_CELL_SIZE } from "@/constants/webgl";
-import { type Color } from "@/types";
+import type { Color } from "@/types";
 import { rgbaToHex } from "@/utils";
 import { useSound } from "use-sound";
 import { sounds } from "@/constants";
@@ -12,11 +12,11 @@ import { ColorPalette } from "@/components/ColorPallette";
 import { CanvasGrid } from "@/components/CanvasGrid";
 import { useHaptic } from "use-haptic";
 // import { useApp } from "@/hooks/useApp";
-import { SDK } from "@dojoengine/sdk";
-import { type PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import type { SDK } from "@dojoengine/sdk";
+import type { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { useSystemCalls } from "@/hooks/useSystemCalls";
 import { useAccount, useConnect } from "@starknet-react/core";
-import { Account } from "starknet";
+import type { Account } from "starknet";
 
 type PixelViewerProps = {
   sdk: SDK<PixelawSchemaType>;
@@ -93,7 +93,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
   );
 
   const animateJumpToCell = useCallback(
-    (x: number, y: number, duration: number = 500) => {
+    (x: number, y: number, duration = 500) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
 

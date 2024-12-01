@@ -1,8 +1,5 @@
 export const getPinchDistance = (touches: React.TouchList) => {
-  return Math.hypot(
-    touches[0].clientX - touches[1].clientX,
-    touches[0].clientY - touches[1].clientY,
-  );
+  return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
 };
 
 export const getTouchPositions = (touches: React.TouchList) => {

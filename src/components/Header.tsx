@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "sonner";
 import { AppList } from "./AppList";
 import { useControllerUsername } from "@/hooks/useControllerUserName";
-import { useAccount, useDisconnect, useConnect, Connector } from "@starknet-react/core";
+import { useAccount, useDisconnect, useConnect, type Connector } from "@starknet-react/core";
 import { Button } from "./ui/Button";
 import {
   Dialog,
@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState, useCallback } from "react";
-import ControllerConnector from "@cartridge/connector";
+import type ControllerConnector from "@cartridge/connector";
 
 const Header = () => {
   const { disconnect } = useDisconnect();

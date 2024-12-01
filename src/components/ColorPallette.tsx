@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { COLOR_PALETTE } from "@/constants/webgl";
-import { type Color } from "@/types";
+import type { Color } from "@/types";
 import { rgbaToHex, cn } from "@/utils";
 import { Palette } from "lucide-react";
 
@@ -19,9 +19,9 @@ export const ColorPalette = ({
   const handleColorPickerChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const hex = e.target.value;
-    const r = parseInt(hex.slice(1, 3), 16) / 255;
-    const g = parseInt(hex.slice(3, 5), 16) / 255;
-    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    const r = Number.parseInt(hex.slice(1, 3), 16) / 255;
+    const g = Number.parseInt(hex.slice(3, 5), 16) / 255;
+    const b = Number.parseInt(hex.slice(5, 7), 16) / 255;
     const newColor: Color = { r, g, b, a: 1 };
     setPickedColor(newColor);
   }, []);

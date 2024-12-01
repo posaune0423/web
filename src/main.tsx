@@ -1,17 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.scss";
+import "./index.css";
 import { App } from "./app";
 import { init } from "@dojoengine/sdk";
 import { type PixelawSchemaType, schema } from "@/libs/dojo/typescript/models.gen";
 // import { DojoContextProvider } from "@/contexts/DojoContext";
 // import { setupBurnerManager } from "@dojoengine/create-burner";
-import { dojoConfig } from "../dojoConfig";
+import { dojoConfig } from "@/libs/dojo/config";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/Sonner";
 import SwipeControl from "./components/SwipeControl";
 import {
-  Connector,
+  type Connector,
   StarknetConfig,
   //  argent,
   voyager,
@@ -27,7 +27,9 @@ import { detectMobile } from "./utils/devices";
 ReactGA.initialize(import.meta.env.VITE_PUBLIC_GA_ID);
 
 const rootElement = document.getElementById("root");
-if (!rootElement) throw new Error("React root not found");
+if (!rootElement) {
+  throw new Error("React root not found");
+}
 const root = ReactDOM.createRoot(rootElement as HTMLElement);
 
 const chainId = import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? "KATANA" : "SEPOLIA";
