@@ -15,6 +15,9 @@
         "useKeyWithClickEvents": "warn",
         "useKeyWithMouseEvents": "warn"
       },
+      "complexity": {
+        "noForEach": "off"
+      },
       "suspicious": {
         "noExplicitAny": "error",
         "noArrayIndexKey": "warn"
@@ -23,7 +26,13 @@
         "noNonNullAssertion": "error",
         "useShorthandArrayType": "error"
       }
-    }
+    },
+    "ignore": [
+      "dist/**",
+      "node_modules/**",
+      ".vite/**",
+      "src/libs/dojo/typescript/**"
+    ]
   },
   "formatter": {
     "enabled": true,
