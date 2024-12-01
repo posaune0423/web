@@ -1,6 +1,6 @@
 import { useAccount } from "@starknet-react/core";
 import { useState, useEffect } from "react";
-import CartridgeConnector from "@cartridge/connector";
+import type CartridgeConnector from "@cartridge/connector";
 
 export const useControllerUsername = () => {
   const { address, connector } = useAccount();

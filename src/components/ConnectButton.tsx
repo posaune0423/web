@@ -16,7 +16,7 @@ export const ConnectButton = () => {
         toast.error("Wallet is not installed");
       }
     },
-    [connectAsync]
+    [connectAsync],
   );
 
   return <Button onClick={() => handleConnect(connectors[0])}>Connect Controller</Button>;

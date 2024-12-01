@@ -213,11 +213,11 @@ export interface SnakeSegment {
 
 // Type definition for `pixelaw::core::utils::Direction` enum
 export enum Direction {
-  None,
-  Left,
-  Right,
-  Up,
-  Down,
+  None = 0,
+  Left = 1,
+  Right = 2,
+  Up = 3,
+  Down = 4,
 }
 
 export interface PixelawSchemaType extends SchemaType {

@@ -1,4 +1,4 @@
-import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import type { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { createDojoStore } from "@dojoengine/sdk";
 
 /**

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import { type Pixel, type GridState } from "@/types";
+import type { Pixel, GridState } from "@/types";
 
 import gridVsSource from "@/libs/webgl/shaders/grid.vs";
 import gridFsSource from "@/libs/webgl/shaders/grid.fs";
@@ -13,7 +13,7 @@ import {
   setUniforms,
   drawBufferInfo,
   resizeCanvasToDisplaySize,
-  ProgramInfo,
+  type ProgramInfo,
 } from "twgl.js";
 import { BASE_CELL_SIZE, BASE_LINE_WIDTH, BUFFER_RATIO, DEFAULT_GRID_COLOR, MIN_SCALE } from "@/constants/webgl";
 import { getVisibleArea } from "@/utils/canvas";
@@ -158,7 +158,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         console.error("WebGL error", error);
       }
     },
-    [gridState]
+    [gridState],
   );
 
   useEffect(() => {

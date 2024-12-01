@@ -1,8 +1,9 @@
-import path from "path";
+import path from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import wasm from "vite-plugin-wasm";
 import glsl from "vite-plugin-glsl";
+import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
@@ -11,6 +12,7 @@ export default defineConfig({
     react(),
     wasm(),
     glsl(),
+    tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
       devOptions: {

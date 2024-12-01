@@ -1,5 +1,5 @@
 import { useDojoStore } from "@/store/dojo";
-import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import type { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 
 /**
  * Custom hook to retrieve a specific model for a given entityId within a specified namespace.

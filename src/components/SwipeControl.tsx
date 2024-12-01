@@ -1,5 +1,6 @@
 import { detectMobile } from "@/utils/devices";
-import React, { useEffect, useLayoutEffect } from "react";
+import type React from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 
 const SwipeControl = ({ children }: { children: React.ReactNode }) => {

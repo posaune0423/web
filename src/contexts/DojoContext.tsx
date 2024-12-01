@@ -1,7 +1,7 @@
-import { createContext, ReactNode, useContext, useMemo } from "react";
-import { BurnerAccount, BurnerManager, useBurnerManager } from "@dojoengine/create-burner";
+import { createContext, type ReactNode, useContext, useMemo } from "react";
+import { type BurnerAccount, type BurnerManager, useBurnerManager } from "@dojoengine/create-burner";
 import { Account } from "starknet";
-import { dojoConfig } from "../../dojoConfig";
+import { dojoConfig } from "@/libs/dojo/config";
 import { DojoProvider } from "@dojoengine/core";
 import { client } from "@/libs/dojo/typescript/contracts.gen";
 import { useAccount } from "@starknet-react/core";

@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "sonner";
 import { AppList } from "./AppList";
 import { useControllerUsername } from "@/hooks/useControllerUserName";
-import { useAccount, useDisconnect, useConnect, Connector } from "@starknet-react/core";
+import { useAccount, useDisconnect, useConnect, type Connector } from "@starknet-react/core";
 import { Button } from "./ui/Button";
 import {
   Dialog,
@@ -13,9 +13,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 import { useState, useCallback } from "react";
-import ControllerConnector from "@cartridge/connector";
+import type ControllerConnector from "@cartridge/connector";
 
 const Header = () => {
   const { disconnect } = useDisconnect();
@@ -110,6 +110,7 @@ const Header = () => {
                       (connector.icon.dark.startsWith("<") ? (
                         <div
                           className="flex max-h-6 max-w-6 items-center justify-center"
+                          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
                           dangerouslySetInnerHTML={{ __html: connector.icon.dark }}
                         />
                       ) : (

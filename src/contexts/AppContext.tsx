@@ -1,8 +1,9 @@
-import React, { createContext, useState, ReactNode, useMemo, useEffect } from "react";
-import { SDK } from "@dojoengine/sdk";
-import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
+import type React from "react";
+import { createContext, useState, type ReactNode, useMemo, useEffect } from "react"
+import type { SDK } from "@dojoengine/sdk";
+import type { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { useDojoStore } from "@/store/dojo";
-import { App } from "@/types";
+import type { App } from "@/types";
 import { getAppComponentValue } from "@/libs/dojo/helper";
 
 interface AppContextType {

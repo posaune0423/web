@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-export const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T) => void] => {
+export const useLocalStorage = <T>(key: string, initialValue: T): [T, (value: T) => void] => {
   // Get from local storage then
   // parse stored json or return initialValue
   const readValue = useCallback((): T => {
