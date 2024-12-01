@@ -12,11 +12,10 @@ import { ColorPalette } from "@/components/ColorPallette";
 import { CanvasGrid } from "@/components/CanvasGrid";
 import { useHaptic } from "use-haptic";
 // import { useApp } from "@/hooks/useApp";
-// import { Direction } from "@/libs/dojo/typescript/models.gen";
 import { SDK } from "@dojoengine/sdk";
 import { type PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { useSystemCalls } from "@/hooks/useSystemCalls";
-import { useAccount } from "@starknet-react/core";
+import { useAccount, useConnect } from "@starknet-react/core";
 import { Account } from "starknet";
 
 type PixelViewerProps = {
@@ -43,13 +42,18 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
   const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState, sdk);
   // const { currentApp } = useApp();
   const { interact } = useSystemCalls();
+  const { connect, connectors } = useConnect();
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
   // Handlers
   const onCellClick = useCallback(
     (x: number, y: number) => {
-      if (!account) return;
+      if (!account) {
+        console.log("Connecting to StarkNet...");
+        connect({ connector: connectors[0] });
+        return;
+      }
       startTransition(async () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
@@ -67,6 +71,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
       // currentApp,
       selectedColor,
       account,
+      connect,
       interact,
       setOptimisticPixels,
       play,

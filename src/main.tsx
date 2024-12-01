@@ -10,11 +10,16 @@ import { dojoConfig } from "../dojoConfig";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/Sonner";
 import SwipeControl from "./components/SwipeControl";
-import { Connector, StarknetConfig, argent, voyager } from "@starknet-react/core";
+import {
+  Connector,
+  StarknetConfig,
+  //  argent,
+  voyager,
+} from "@starknet-react/core";
 import cartridgeConnector from "@/libs/cartridgeController";
 import { sepolia } from "@starknet-react/chains";
 import { RpcProvider } from "starknet";
-import { ArgentMobileConnector } from "starknetkit/argentMobile";
+// import { ArgentMobileConnector } from "starknetkit/argentMobile";
 import ReactGA from "react-ga4";
 import { AppProvider } from "./contexts/AppContext";
 import { detectMobile } from "./utils/devices";
@@ -26,10 +31,20 @@ if (!rootElement) throw new Error("React root not found");
 const root = ReactDOM.createRoot(rootElement as HTMLElement);
 
 const chainId = import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? "KATANA" : "SEPOLIA";
-const argentMobileConnector = ArgentMobileConnector.init({
-  options: { dappName: "Pixelaw", url: "https://pixelaw.xyz" },
-}) as unknown as Connector;
-const connectors: Connector[] = detectMobile() ? [cartridgeConnector, argentMobileConnector] : [argent()];
+
+// const argentMobileConnector = ArgentMobileConnector.init({
+//   options: { dappName: "Pixelaw", url: "https://pixelaw.xyz" },
+// }) as unknown as Connector;
+
+const connectors: Connector[] = detectMobile()
+  ? [
+      cartridgeConnector,
+      // argentMobileConnector
+    ]
+  : [
+      cartridgeConnector,
+      // argent()
+    ];
 
 const main = async () => {
   const sdk = await init<PixelawSchemaType>(
@@ -62,10 +77,10 @@ const main = async () => {
             autoConnect
           >
             {/* <DojoContextProvider burnerManager={await setupBurnerManager(dojoConfig)}> */}
-              <AppProvider sdk={sdk}>
-                <App sdk={sdk} />
-              </AppProvider>
-              <Toaster richColors position="bottom-right" closeButton />
+            <AppProvider sdk={sdk}>
+              <App sdk={sdk} />
+            </AppProvider>
+            <Toaster richColors position="bottom-right" closeButton />
             {/* </DojoContextProvider> */}
           </StarknetConfig>
         </ThemeProvider>
