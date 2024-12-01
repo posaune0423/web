@@ -1,10 +1,10 @@
-import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
-import { GridState, PixelRange } from "@/types";
+import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "../constants/webgl.ts";
+import { GridState, PixelRange } from "../types/index.ts";
 
 export const convertClientPosToCanvasPos = (
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   clientX: number,
-  clientY: number
+  clientY: number,
 ) => {
   const canvas = canvasRef.current;
   if (!canvas) return { x: 0, y: 0 };

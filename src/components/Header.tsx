@@ -1,11 +1,16 @@
-import Avatar from "./Avatar";
-import { truncateAddress } from "@/utils";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/DropDownMenu";
+import Avatar from "./Avatar/index.tsx";
+import { truncateAddress } from "../utils/index.ts";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/DropDownMenu.tsx";
 import { toast } from "sonner";
-import { AppList } from "./AppList";
-import { useControllerUsername } from "@/hooks/useControllerUserName";
+import { AppList } from "./AppList.tsx";
+import { useControllerUsername } from "../hooks/useControllerUserName.ts";
 import { useAccount, useDisconnect, useConnect, Connector } from "@starknet-react/core";
-import { Button } from "./ui/Button";
+import { Button } from "../components/ui/Button.tsx";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "../components/ui/dialog.tsx";
 import { useState, useCallback } from "react";
 import ControllerConnector from "@cartridge/connector";
 
@@ -37,7 +42,7 @@ const Header = () => {
   const handleConnect = useCallback(
     async (connector: Connector) => {
       try {
-        setPending((prev) => ({ ...prev, [connector.id]: true }));
+        setPending((prev: Record<string, boolean>) => ({ ...prev, [connector.id]: true }));
         await connectAsync({ connector });
         setIsOpen(false);
         toast.success("Successfully connected!");
@@ -45,7 +50,7 @@ const Header = () => {
         console.error(error);
         toast.error("Wallet is not installed");
       } finally {
-        setPending((prev) => ({ ...prev, [connector.id]: false }));
+        setPending((prev: Record<string, boolean>) => ({ ...prev, [connector.id]: false }));
       }
     },
     [connectAsync],

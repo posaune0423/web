@@ -1,9 +1,9 @@
 import { createContext, ReactNode, useContext, useMemo } from "react";
 import { BurnerAccount, BurnerManager, useBurnerManager } from "@dojoengine/create-burner";
 import { Account } from "starknet";
-import { dojoConfig } from "../../dojoConfig";
+import { dojoConfig } from "../../dojoConfig.ts";
 import { DojoProvider } from "@dojoengine/core";
-import { client } from "@/libs/dojo/typescript/contracts.gen";
+import { client } from "../libs/dojo/typescript/contracts.gen.ts";
 import { useAccount } from "@starknet-react/core";
 
 interface DojoContextType {
@@ -45,9 +45,11 @@ export const DojoContextProvider = ({
         client: client(dojoProvider),
         account: {
           ...burnerManagerData,
-          account: connectedAccount ? (connectedAccount as Account) : burnerManagerData.account || masterAccount,
+          account: connectedAccount
+            ? (connectedAccount as unknown as Account)
+            : burnerManagerData.account || masterAccount,
         },
-        connectedAccount: connectedAccount as Account,
+        connectedAccount: connectedAccount as unknown as Account,
       }}
     >
       {children}

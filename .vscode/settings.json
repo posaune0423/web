@@ -1,8 +1,5 @@
 {
-  "deno.enable": false,
-  "cSpell.words": [
-    "COOLDOWN",
-    "dojoengine",
-    "Pixelaw"
-  ]
+  "editor.defaultFormatter": "denoland.vscode-deno",
+  "eslint.enable": false,
+  "cSpell.words": ["COOLDOWN", "dojoengine", "Pixelaw"]
 }

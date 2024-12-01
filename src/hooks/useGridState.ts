@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { GridState } from "@/types";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { GridState } from "../types/index.ts";
+import { useLocalStorage } from "./useLocalStorage.ts";
 import { setIdleTask } from "idle-task";
 
 export const useGridState = () => {

@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useRef } from "react";
-import { type Pixel, type GridState } from "@/types";
+import { type GridState, type Pixel } from "../types/index.ts";
 
-import gridVsSource from "@/libs/webgl/shaders/grid.vs";
-import gridFsSource from "@/libs/webgl/shaders/grid.fs";
-import pixelVsSource from "@/libs/webgl/shaders/pixel.vs";
-import pixelFsSource from "@/libs/webgl/shaders/pixel.fs";
+import gridVsSource from "../libs/webgl/shaders/grid.vs?raw";
+import gridFsSource from "../libs/webgl/shaders/grid.fs?raw";
+import pixelVsSource from "../libs/webgl/shaders/pixel.vs?raw";
+import pixelFsSource from "../libs/webgl/shaders/pixel.fs?raw";
 
 import {
-  createProgramInfo,
   createBufferInfoFromArrays,
+  createProgramInfo,
+  drawBufferInfo,
+  ProgramInfo,
+  resizeCanvasToDisplaySize,
   setBuffersAndAttributes,
   setUniforms,
-  drawBufferInfo,
-  resizeCanvasToDisplaySize,
-  ProgramInfo,
 } from "twgl.js";
-import { BASE_CELL_SIZE, BASE_LINE_WIDTH, BUFFER_RATIO, DEFAULT_GRID_COLOR, MIN_SCALE } from "@/constants/webgl";
-import { getVisibleArea } from "@/utils/canvas";
+import { BASE_CELL_SIZE, BASE_LINE_WIDTH, BUFFER_RATIO, DEFAULT_GRID_COLOR, MIN_SCALE } from "../constants/webgl.ts";
+import { getVisibleArea } from "../utils/canvas.ts";
 
 export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, gridState: GridState) => {
   const glRef = useRef<WebGLRenderingContext | null>(null);
@@ -158,7 +158,7 @@ export const useWebGL = (canvasRef: React.RefObject<HTMLCanvasElement | null>, g
         console.error("WebGL error", error);
       }
     },
-    [gridState]
+    [gridState],
   );
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useAccount } from "@starknet-react/core";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import CartridgeConnector from "@cartridge/connector";
 
 export const useControllerUsername = () => {
@@ -13,7 +13,7 @@ export const useControllerUsername = () => {
         return;
       }
 
-      const cartridgeConnector = connector as CartridgeConnector;
+      const cartridgeConnector = connector as unknown as CartridgeConnector;
       if (typeof cartridgeConnector.username === "function") {
         try {
           const name = await cartridgeConnector.username();

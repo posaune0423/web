@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
-import { COLOR_PALETTE } from "@/constants/webgl";
-import { type Color } from "@/types";
-import { rgbaToHex, cn } from "@/utils";
+import { COLOR_PALETTE } from "../constants/webgl.ts";
+import { type Color } from "../types/index.ts";
+import { rgbaToHex, cn } from "../utils/index.ts";
 import { Palette } from "lucide-react";
 
 export const ColorPalette = ({
@@ -14,7 +14,7 @@ export const ColorPalette = ({
   const [customColors, setCustomColors] = useState<Color[]>([]);
   const [pickedColor, setPickedColor] = useState<Color | null>(null);
   const [isOpen, setIsOpen] = useState(true);
-  const toggleOpen = () => setIsOpen((prev) => !prev);
+  const toggleOpen = () => setIsOpen((prev: boolean) => !prev);
 
   const handleColorPickerChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();

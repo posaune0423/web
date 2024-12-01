@@ -1,20 +1,20 @@
 import { startTransition, useCallback, useRef, useState } from "react";
-import { COLOR_PALETTE, BASE_CELL_SIZE } from "@/constants/webgl";
-import { type Color } from "@/types";
-import { rgbaToHex } from "@/utils";
+import { COLOR_PALETTE, BASE_CELL_SIZE } from "../constants/webgl.ts";
+import { GridState, type Color } from "../types/index.ts";
+import { rgbaToHex } from "../utils/index.ts";
 import { useSound } from "use-sound";
-import { sounds } from "@/constants";
-import { usePixels } from "@/hooks/usePixels";
-import { useGridState } from "@/hooks/useGridState";
-import { useWebGL } from "@/hooks/useWebGL";
-import { CoordinateFinder } from "@/components/CoordinateFinder";
-import { ColorPalette } from "@/components/ColorPallette";
-import { CanvasGrid } from "@/components/CanvasGrid";
+import { sounds } from "../constants/index.ts";
+import { usePixels } from "../hooks/usePixels.ts";
+import { useGridState } from "../hooks/useGridState.ts";
+import { useWebGL } from "../hooks/useWebGL.ts";
+import { CoordinateFinder } from "../components/CoordinateFinder.tsx";
+import { ColorPalette } from "../components/ColorPallette.tsx";
+import { CanvasGrid } from "../components/CanvasGrid.tsx";
 import { useHaptic } from "use-haptic";
 // import { useApp } from "@/hooks/useApp";
 import { SDK } from "@dojoengine/sdk";
-import { type PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
-import { useSystemCalls } from "@/hooks/useSystemCalls";
+import { type PixelawSchemaType } from "../libs/dojo/typescript/models.gen.ts";
+import { useSystemCalls } from "../hooks/useSystemCalls.ts";
 import { useAccount, useConnect } from "@starknet-react/core";
 import { Account } from "starknet";
 
@@ -58,7 +58,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
         vibe();
-        await interact(account as Account, {
+        await interact(account as unknown as Account, {
           player_override: 1n,
           system_override: 1n,
           area_hint: 1,
@@ -114,7 +114,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
         // easing function (optional: smooth movement)
         const easeProgress = 1 - Math.pow(1 - progress, 3);
 
-        setGridState((prev) => ({
+        setGridState((prev: GridState) => ({
           ...prev,
           offsetX: startOffsetX + (targetOffsetX - startOffsetX) * easeProgress,
           offsetY: startOffsetY + (targetOffsetY - startOffsetY) * easeProgress,

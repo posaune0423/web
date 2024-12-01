@@ -1,6 +1,6 @@
 import { createDojoConfig } from "@dojoengine/core";
-import manifestDev from "./src/libs/dojo/manifests/manifest_dev.json";
-import manifestSepolia from "./src/libs/dojo/manifests/manifest_sepolia.json";
+import manifestDev from "./src/libs/dojo/manifests/manifest_dev.json" with { type: "json" };
+import manifestSepolia from "./src/libs/dojo/manifests/manifest_sepolia.json" with { type: "json" };
 
 export const manifest = import.meta.env.VITE_PUBLIC_PROFILE === "dev" ? manifestDev : manifestSepolia;
 

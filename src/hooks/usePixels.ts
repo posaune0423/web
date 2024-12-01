@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useOptimistic, useRef, useState } from "react";
-import { GridState, Pixel } from "../types";
-import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "@/constants/webgl";
-import { getPixelComponentFromEntities, getPixelEntities } from "@/libs/dojo/helper";
-import { shouldFetch } from "@/utils/canvas";
+import { GridState, Pixel } from "../types/index.ts";
+import { BASE_CELL_SIZE, BUFFER_PIXEL_RANGE } from "../constants/webgl.ts";
+import { getPixelComponentFromEntities, getPixelEntities } from "../libs/dojo/helper.ts";
+import { shouldFetch } from "../utils/canvas.ts";
 import { SDK } from "@dojoengine/sdk";
-import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
-import { useDojoStore } from "@/store/dojo";
-import { hexToRgba } from "@/utils";
+import { PixelawSchemaType } from "../libs/dojo/typescript/models.gen.ts";
+import { useDojoStore } from "../store/dojo.ts";
+import { hexToRgba } from "../utils/index.ts";
 
 const MAX_UINT32 = 4294967295;
 const THROTTLE_MS = 80; // throttle interval
@@ -24,7 +24,7 @@ export const usePixels = (
   const state = useDojoStore((state) => state);
   const [visiblePixels, setVisiblePixels] = useState<Pixel[]>([]);
   const [isFetching, setIsFetching] = useState(false);
-  const [optimisticPixels, setOptimisticPixels] = useOptimistic(visiblePixels, (pixels, newPixel: Pixel) => {
+  const [optimisticPixels, setOptimisticPixels] = useOptimistic(visiblePixels, (pixels: Pixel[], newPixel: Pixel) => {
     return [...pixels, newPixel];
   });
 
@@ -80,7 +80,7 @@ export const usePixels = (
       const newPixels = getPixelComponentFromEntities(entities);
 
       // Update pixels in hacky way
-      setVisiblePixels((prevPixels) => {
+      setVisiblePixels((prevPixels: Pixel[]) => {
         const updatedPixels = new Map(prevPixels.map((p) => [`${p.x},${p.y}`, p]));
         newPixels.forEach((newPixel) => {
           if (newPixel) {
@@ -133,7 +133,7 @@ export const usePixels = (
               y: resp.data[0].models.pixelaw.Pixel?.y ?? 0,
               color: hexToRgba(resp.data[0].models.pixelaw.Pixel?.color ?? 0),
             };
-            setVisiblePixels((prev) => [...prev, pixel]);
+            setVisiblePixels((prev: Pixel[]) => [...prev, pixel]);
           }
         },
       });

@@ -1,13 +1,13 @@
 import { Account } from "starknet";
-import { DefaultParameters } from "@/libs/dojo/typescript/models.gen";
+import { DefaultParameters } from "../libs/dojo/typescript/models.gen.ts";
 import { toast } from "sonner";
-import { handleTransactionError } from "@/utils";
-import { useDojoStore } from "@/store/dojo";
+import { handleTransactionError } from "../utils/index.ts";
+import { useDojoStore } from "../store/dojo.ts";
 import { v4 as uuidv4 } from "uuid";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
-import { dojoConfig } from "../../dojoConfig";
+import { dojoConfig } from "../../dojoConfig.ts";
 import { DojoProvider } from "@dojoengine/core";
-import { client } from "@/libs/dojo/typescript/contracts.gen";
+import { client } from "../libs/dojo/typescript/contracts.gen.ts";
 import { useAccount, useExplorer } from "@starknet-react/core";
 
 const handleError = (action: string, error: unknown) => {

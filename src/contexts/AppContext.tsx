@@ -1,9 +1,10 @@
-import React, { createContext, useState, ReactNode, useMemo, useEffect } from "react";
+// @deno-types="@types/react"
+import React, { createContext, ReactNode, useEffect, useMemo, useState } from "react";
 import { SDK } from "@dojoengine/sdk";
-import { PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
-import { useDojoStore } from "@/store/dojo";
-import { App } from "@/types";
-import { getAppComponentValue } from "@/libs/dojo/helper";
+import { PixelawSchemaType } from "../libs/dojo/typescript/models.gen.ts";
+import { useDojoStore } from "../store/dojo.ts";
+import { App } from "../types/index.ts";
+import { getAppComponentValue } from "../libs/dojo/helper.ts";
 
 interface AppContextType {
   apps: App[];

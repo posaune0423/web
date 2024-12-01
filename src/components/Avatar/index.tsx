@@ -1,5 +1,5 @@
-import EmojiAvatar from "./EmojiAvatar";
-import { cn } from "@/utils";
+import EmojiAvatar from "./EmojiAvatar.tsx";
+import { cn } from "../../utils/index.ts";
 import { Loader2 } from "lucide-react";
 
 interface AvatarProps {
