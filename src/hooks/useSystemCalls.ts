@@ -2,10 +2,13 @@ import { Account } from "starknet";
 import { DefaultParameters } from "@/libs/dojo/typescript/models.gen";
 import { toast } from "sonner";
 import { handleTransactionError } from "@/utils";
-import { useDojo } from "./useDojo";
 import { useDojoStore } from "@/store/dojo";
 import { v4 as uuidv4 } from "uuid";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
+import { dojoConfig } from "../../dojoConfig";
+import { DojoProvider } from "@dojoengine/core";
+import { client } from "@/libs/dojo/typescript/contracts.gen";
+import { useAccount } from "@starknet-react/core";
 
 const handleError = (action: string, error: unknown) => {
   console.error(`Error executing ${action}:`, error);
@@ -23,18 +26,16 @@ const handleError = (action: string, error: unknown) => {
  */
 export const useSystemCalls = () => {
   const state = useDojoStore((state) => state);
+  const { account } = useAccount();
 
-  const {
-    setup: { client },
-    account: { account },
-  } = useDojo();
-
+  const dojoProvider = new DojoProvider(dojoConfig.manifest, dojoConfig.rpcUrl);
+  const dojoClient = client(dojoProvider);
   /**
    * Generates a unique entity ID based on the current account address.
    * @returns {string} The generated entity ID
    */
   const generateEntityId = () => {
-    return getEntityIdFromKeys([BigInt(account?.address)]);
+    return getEntityIdFromKeys([BigInt(account?.address || "")]);
   };
 
   /**
@@ -63,7 +64,7 @@ export const useSystemCalls = () => {
     });
 
     try {
-      await client.paint_actions.interact(account, default_params);
+      await dojoClient.paint_actions.interact(account, default_params);
 
       // Wait for the entity to be updated with the new state
       // await state.waitForEntityChange(entityId, (entity) => {

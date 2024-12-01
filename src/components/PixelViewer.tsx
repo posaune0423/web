@@ -1,7 +1,6 @@
-import { startTransition, useCallback, useMemo, useRef, useState } from "react";
+import { startTransition, useCallback, useRef, useState } from "react";
 import { COLOR_PALETTE, BASE_CELL_SIZE } from "@/constants/webgl";
 import { type Color } from "@/types";
-import { useDojo } from "@/hooks/useDojo";
 import { rgbaToHex } from "@/utils";
 import { useSound } from "use-sound";
 import { sounds } from "@/constants";
@@ -17,6 +16,8 @@ import { useHaptic } from "use-haptic";
 import { SDK } from "@dojoengine/sdk";
 import { type PixelawSchemaType } from "@/libs/dojo/typescript/models.gen";
 import { useSystemCalls } from "@/hooks/useSystemCalls";
+import { useAccount } from "@starknet-react/core";
+import { Account } from "starknet";
 
 type PixelViewerProps = {
   sdk: SDK<PixelawSchemaType>;
@@ -34,18 +35,12 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
   }>({ x: 0, y: 0 });
 
   // Other Hooks
-  const {
-    setup: {
-      account: { account },
-      connectedAccount,
-    },
-  } = useDojo();
+  const { account } = useAccount();
   const { vibe } = useHaptic();
 
   const { gridState, setGridState } = useGridState();
   const { drawPixels } = useWebGL(canvasRef, gridState);
   const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState, sdk);
-  const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
   // const { currentApp } = useApp();
   const { interact } = useSystemCalls();
 
@@ -53,12 +48,13 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
 
   // Handlers
   const onCellClick = useCallback(
-    async (x: number, y: number) => {
+    (x: number, y: number) => {
+      if (!account) return;
       startTransition(async () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
         vibe();
-        await interact(activeAccount, {
+        await interact(account as Account, {
           player_override: 1n,
           system_override: 1n,
           area_hint: 1,
@@ -70,7 +66,7 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
     [
       // currentApp,
       selectedColor,
-      activeAccount,
+      account,
       interact,
       setOptimisticPixels,
       play,
