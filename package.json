@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
-    "generate-pwa-assets": "pwa-assets-generator"
+    "generate-pwa-assets": "pwa-assets-generator",
+    "pr-summary": "bun run scripts/generate-pr-summary.ts"
   },
   "dependencies": {
     "@cartridge/connector": "^0.3.46",
@@ -50,13 +51,16 @@
     "uuid": "^11.0.3"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
     "@eslint/js": "^9.16.0",
+    "@types/bun": "^1.1.14",
     "@types/node": "^22.10.1",
     "@types/react": "npm:types-react@rc",
     "@types/react-dom": "npm:types-react-dom@rc",
     "@vite-pwa/assets-generator": "^0.2.6",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "autoprefixer": "^10.4.20",
+    "bun": "^1.1.38",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.37.2",
