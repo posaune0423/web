@@ -4,11 +4,14 @@
     "build": "deno run -A --node-modules-dir npm:vite build",
     "preview": "deno run -A --node-modules-dir npm:vite preview",
     "serve": "deno run --allow-net --allow-read jsr:@std/http@1/file-server dist/",
-    "generate-pwa-assets": "deno run --allow-read --allow-write pwa-assets-generator.ts"
+    "generate-pwa-assets": "deno run --allow-read --allow-write pwa-assets-generator.ts",
+    "pr-sum": "deno run --allow-all scripts/generate-pr-summary.ts"
   },
   "imports": {
+    "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.32.1",
     "@cartridge/connector": "npm:@cartridge/connector@0.3.46",
     "@cartridge/controller": "npm:@cartridge/controller@0.3.46",
+    "@david/dax": "jsr:@david/dax@^0.42.0",
     "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.1",
     "@dojoengine/core": "npm:@dojoengine/core@1.0.2",
     "@dojoengine/create-burner": "npm:@dojoengine/create-burner@1.0.2",
@@ -54,7 +57,7 @@
   },
   "nodeModulesDir": "auto",
   "compilerOptions": {
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "deno.ns"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "jsxImportSourceTypes": "@types/react"
