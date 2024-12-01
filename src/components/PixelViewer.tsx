@@ -1,7 +1,6 @@
-import { startTransition, useCallback, useMemo, useRef, useState } from "react";
-import { BASE_CELL_SIZE, COLOR_PALETTE } from "../constants/webgl.ts";
+import { startTransition, useCallback, useRef, useState } from "react";
+import { COLOR_PALETTE, BASE_CELL_SIZE } from "../constants/webgl.ts";
 import { GridState, type Color } from "../types/index.ts";
-import { useDojo } from "../hooks/useDojo.ts";
 import { rgbaToHex } from "../utils/index.ts";
 import { useSound } from "use-sound";
 import { sounds } from "../constants/index.ts";
@@ -13,10 +12,11 @@ import { ColorPalette } from "../components/ColorPallette.tsx";
 import { CanvasGrid } from "../components/CanvasGrid.tsx";
 import { useHaptic } from "use-haptic";
 // import { useApp } from "@/hooks/useApp";
-// import { Direction } from "@/libs/dojo/typescript/models.gen";
 import { SDK } from "@dojoengine/sdk";
 import { type PixelawSchemaType } from "../libs/dojo/typescript/models.gen.ts";
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
+import { useAccount, useConnect } from "@starknet-react/core";
+import { Account } from "starknet";
 
 type PixelViewerProps = {
   sdk: SDK<PixelawSchemaType>;
@@ -34,31 +34,31 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
   }>({ x: 0, y: 0 });
 
   // Other Hooks
-  const {
-    setup: {
-      account: { account },
-      connectedAccount,
-    },
-  } = useDojo();
+  const { account } = useAccount();
   const { vibe } = useHaptic();
 
   const { gridState, setGridState } = useGridState();
   const { drawPixels } = useWebGL(canvasRef, gridState);
   const { optimisticPixels, setOptimisticPixels, throttledFetchPixels } = usePixels(canvasRef, gridState, sdk);
-  const activeAccount = useMemo(() => connectedAccount || account, [connectedAccount, account]);
   // const { currentApp } = useApp();
   const { interact } = useSystemCalls();
+  const { connect, connectors } = useConnect();
 
   const [play] = useSound(sounds.placeColor, { volume: 0.5 });
 
   // Handlers
   const onCellClick = useCallback(
     (x: number, y: number) => {
+      if (!account) {
+        console.log("Connecting to StarkNet...");
+        connect({ connector: connectors[0] });
+        return;
+      }
       startTransition(async () => {
         setOptimisticPixels({ x, y, color: selectedColor });
         play();
         vibe();
-        await interact(activeAccount, {
+        await interact(account as unknown as Account, {
           player_override: 1n,
           system_override: 1n,
           area_hint: 1,
@@ -70,7 +70,8 @@ export const PixelViewer: React.FC<PixelViewerProps> = ({ sdk }) => {
     [
       // currentApp,
       selectedColor,
-      activeAccount,
+      account,
+      connect,
       interact,
       setOptimisticPixels,
       play,

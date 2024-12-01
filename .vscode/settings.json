@@ -1,5 +1,5 @@
 {
   "compile-hero.disable-compile-files-on-did-save-code": true,
-  "cSpell.words": ["Pixelaw"],
-  "denno.enable": true
+  "denno.enable": true,
+  "cSpell.words": ["COOLDOWN", "dojoengine", "Pixelaw"]
 }
