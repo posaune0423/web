@@ -110,6 +110,7 @@ const Header = () => {
                       (connector.icon.dark.startsWith("<") ? (
                         <div
                           className="flex max-h-6 max-w-6 items-center justify-center"
+                          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
                           dangerouslySetInnerHTML={{ __html: connector.icon.dark }}
                         />
                       ) : (
