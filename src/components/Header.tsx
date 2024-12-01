@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 import { useState, useCallback } from "react";
 import type ControllerConnector from "@cartridge/connector";
 
