@@ -1,7 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
 
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin 'tailwindcss-animate';
+
+@variant dark (&:is(.dark *));
 
 @layer base {
   :root {
@@ -88,12 +90,9 @@
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-
-  --font-family-poppins: var(--font-poppins);
-  --font-family-inter: var(--font-inter);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -102,26 +101,52 @@
     from {
       height: 0;
     }
-
     to {
       height: var(--radix-accordion-content-height);
     }
   }
-
   @keyframes accordion-up {
     from {
       height: var(--radix-accordion-content-height);
     }
-
     to {
-      height: "0";
+      height: 0;
     }
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
   }
 }
 
 @layer base {
   * {
-    font-family: "Silkscreen", sans-serif;
+    font-family: 'Silkscreen', sans-serif;
     touch-action: pan-x pan-y;
     user-select: none;
     -webkit-user-select: none;
