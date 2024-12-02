@@ -56,7 +56,7 @@ export const ColorPalette = ({
       className={cn(
         'bg-slate-900 fixed mx-auto bottom-1 left-0 right-0 flex items-center justify-center shadow-md transition-all duration-300 ease-in-out rounded-full',
         isOpen
-          ? 'max-w-[340px] px-4 h-[50px]'
+          ? 'max-w-[360px] px-4 h-[50px]'
           : 'w-12 h-12 rounded-full cursor-pointer hover:bg-slate-800'
       )}
       onClick={isOpen ? undefined : () => setIsOpen(true)}
@@ -68,11 +68,11 @@ export const ColorPalette = ({
           isOpen ? 'flex opacity-100 w-[calc(100%-40px)]' : 'hidden opacity-0'
         )}
       >
-        <div className="flex items-center space-x-2 h-full flex-grow">
+        <div className="flex items-center space-x-2 h-full grow">
           {[...customColors, ...COLOR_PALETTE].map((color, index) => (
             <button
               key={index}
-              className={`flex-shrink-0 w-8 h-8 rounded-full ${
+              className={`shrink-0 w-8 h-8 rounded-full ${
                 selectedColor === color ? 'ring-2 ring-black ring-offset-2' : ''
               }`}
               style={{

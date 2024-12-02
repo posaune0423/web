@@ -16,10 +16,9 @@ const AppList = () => {
     <div className="flex items-center space-x-2">
       {apps.map((app, index) => (
         <div
-          key={app.action}
+          key={app.name}
           className={`${selectedAppIndex === index ? 'bg-white/10' : ''} py-2 px-3 rounded-md cursor-pointer`}
           onClick={() => onSelect(index)}
-          onKeyDown={(e) => e.key === 'Enter' && onSelect(index)}
         >
           {app.icon}
         </div>
